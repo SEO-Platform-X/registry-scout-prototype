@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Registry Scout prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Cormorant:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1F4FE0; --ink:#0B1A2E; --paper:#F4F1EA; --coral:#FF5A3C;
+  --card:#FBFAF6; --line:#DDD7C9; --mute:#55627A; --tint:#E4EAFB; --map:#E6E1D3;
+  --s-bg:#E7E2D6; --s-fg:#0B1A2E; --s-mute:#4A566B; --s-card:#F4F1EA; --s-line:#CFC9BA;
+  --sbh:50px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--s-bg:#070C14;--s-fg:#EEF0F4;--s-mute:#9AA6BA;--s-card:#101A2B;--s-line:#22304A}
+}
+:root[data-theme="dark"]{--s-bg:#070C14;--s-fg:#EEF0F4;--s-mute:#9AA6BA;--s-card:#101A2B;--s-line:#22304A}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--s-bg);color:var(--s-fg);font-family:'Hanken Grotesk',system-ui,sans-serif;display:flex;flex-direction:column;-webkit-text-size-adjust:100%;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;text-align:left}
+input{font:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.topbar{display:none;align-items:center;justify-content:space-between;padding:6px 14px;height:48px;flex:none}
+.topbar b{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px}
+.pill{min-height:40px;padding:0 16px;border-radius:20px;background:var(--s-card);border:1px solid var(--s-line);font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:14px;color:var(--s-fg)}
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:56px;padding:24px}
+.rail{width:300px;flex:none}
+.rail h1{font-family:'Cormorant',serif;font-weight:600;font-size:40px;line-height:1.05;margin:0 0 8px}
+.rail p{margin:0 0 18px;color:var(--s-mute);font-size:15px;line-height:1.5}
+.chap{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.chap button{display:flex;gap:12px;align-items:center;width:100%;min-height:42px;padding:4px 12px;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-weight:500;font-size:15px;color:var(--s-fg)}
+.chap button:hover{background:var(--s-card)}
+.chap button[aria-current="true"]{background:var(--s-card);box-shadow:inset 3px 0 0 var(--blue);font-weight:700}
+.chap i{font-style:normal;width:22px;color:var(--s-mute);font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--s-mute);line-height:1.5;margin-top:16px}
+
+.device{position:relative;flex:none}
+.hw{position:absolute;width:4px;border-radius:2px;background:linear-gradient(90deg,#6f6d69,#c9c7c2)}
+.hw-a{left:-8px;top:118px;height:30px}
+.hw-v1{left:-8px;top:170px;height:54px}
+.hw-v2{left:-8px;top:236px;height:54px}
+.hw-p{right:-8px;top:200px;height:88px;background:linear-gradient(270deg,#6f6d69,#c9c7c2)}
+.phone{position:relative;flex:none;container-type:size;width:390px;height:min(844px,calc(100dvh - 48px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)));border:11px solid #050B14;border-radius:56px;overflow:hidden;background:var(--paper);color:var(--ink);box-shadow:0 0 0 2px #77756f,0 0 0 5px #cfcdc7,0 0 0 6px #8f8d88,0 40px 90px rgba(0,0,0,.4)}
+.sb{position:absolute;top:0;left:0;right:0;height:var(--sbh);display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;z-index:6;pointer-events:none;color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:16px}
+.sb-r{display:flex;align-items:center;gap:6px}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:112px;height:33px;border-radius:20px;background:#000;z-index:7;pointer-events:none}
+.hb{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:var(--ink);opacity:.9;z-index:6;pointer-events:none}
+.phone.dk .sb{color:#fff}
+.phone.dk .hb{background:#fff}
+@media (max-width:900px){
+  :root{--sbh:0px}
+  .rail{display:none}
+  .topbar{display:flex}
+  .stage{padding:0;gap:0;align-items:stretch}
+  .device{width:100%;height:100%}
+  .hw,.sb,.island,.hb{display:none}
+  .phone{width:100%;height:100%;border:0;border-radius:0;box-shadow:none}
+}
+.sheet-back{position:fixed;inset:0;background:rgba(5,11,20,.5);display:none;z-index:20}
+.sheet-back.open{display:flex;align-items:flex-end}
+.sheet{background:var(--s-card);color:var(--s-fg);width:100%;border-radius:20px 20px 0 0;padding:18px 14px calc(18px + env(safe-area-inset-bottom,0px))}
+.sheet h2{font-family:'Cormorant',serif;font-size:28px;margin:0 8px 8px}
+
+/* shell: one screen, never scrolls */
+.host{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--paper);overflow:hidden}
+.scr{flex:1;min-height:0;display:flex;flex-direction:column;padding:calc(var(--sbh) + 8px) 22px 0;animation:fade .2s ease}
+.scr.dark{background:var(--ink);color:var(--paper)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.scr{animation:none}.pulse,.spin{animation:none!important}}
+.top{flex:none;display:flex;align-items:center;gap:10px;min-height:44px}
+.mid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.bot{flex:none;padding:12px 0 26px;display:flex;flex-direction:column;gap:6px}
+@supports (height:1cqh){
+  .scr{padding-top:calc(var(--sbh) + clamp(4px,1cqh,12px))}
+  .mid{gap:clamp(8px,2cqh,20px)}
+  .bot{padding-bottom:clamp(22px,3cqh,30px)}
+}
+
+.t1{font-family:'Cormorant',serif;font-weight:600;font-size:34px;line-height:1.04;letter-spacing:-.01em;margin:0}
+.t2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;margin:0}
+.lbl{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:14px;color:var(--mute)}
+.p{font-size:16px;line-height:1.45;margin:0}
+.mute{color:var(--mute)}
+.money{font-family:'Cormorant',serif;font-weight:700;font-variant-numeric:lining-nums tabular-nums;letter-spacing:-.01em}
+.bf{font-family:'Bricolage Grotesque',sans-serif}
+@supports (height:1cqh){
+  .t1{font-size:clamp(26px,4.9cqh,42px)}
+  .p{font-size:clamp(14px,2.1cqh,18px)}
+}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;width:100%;padding:0 20px;border-radius:16px;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:18px;text-align:center}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-paper{background:var(--paper);color:var(--ink)}
+.btn-line{border:1.5px solid var(--ink);color:var(--ink)}
+.btn-text{min-height:44px;font-size:16px;color:var(--mute)}
+.btn[disabled]{opacity:.45}
+@supports (height:1cqh){.btn{min-height:clamp(50px,7.2cqh,62px)}}
+.iconbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;margin-left:-10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.row{display:flex;align-items:center;gap:12px}
+.between{justify-content:space-between}
+.grow{flex:1;min-width:0}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none}
+.dot-ok{background:var(--blue)}
+.dots{flex:1;display:flex;gap:5px}
+.dots i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.dots i.on{background:var(--blue)}
+.sample{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:12px;padding:4px 10px;border-radius:12px;background:var(--tint);color:var(--blue)}
+.tag{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:12px;padding:4px 10px;border-radius:12px;background:var(--tint);color:var(--blue);white-space:nowrap}
+.tag.warn{background:#FFE3DC;color:#8A2410}
+
+/* tab bar */
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:14px}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:11px;color:var(--mute);text-align:center}
+.tab[aria-current="page"]{color:var(--blue)}
+.badge{position:absolute;top:6px;left:calc(50% + 4px);min-width:18px;height:18px;border-radius:9px;background:var(--coral);color:var(--ink);font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 5px}
+
+/* app store */
+.appicon{width:92px;height:92px;border-radius:21px;background:var(--blue);display:grid;place-items:center;flex:none;color:#fff}
+.get{min-height:38px;min-width:88px;padding:0 22px;border-radius:19px;background:var(--blue);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;text-align:center}
+.prog{width:38px;height:38px;border-radius:50%;background:conic-gradient(var(--blue) calc(var(--p,0)*1%),var(--line) 0);display:grid;place-items:center}
+.prog::after{content:"";width:29px;height:29px;border-radius:50%;background:var(--paper)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line)}
+.facts div{padding:8px 2px;text-align:center;font-size:11px;color:var(--mute);border-right:1px solid var(--line)}
+.facts div:last-child{border-right:0}
+.facts b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;color:var(--ink);margin-top:2px}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.shot{border-radius:16px;padding:12px 10px;height:clamp(110px,17cqh,170px);display:flex;flex-direction:column;justify-content:space-between}
+.shot p{font-family:'Cormorant',serif;font-weight:600;font-size:18px;line-height:1.08;margin:0}
+.num{width:30px;height:30px;border-radius:50%;background:var(--tint);color:var(--blue);display:grid;place-items:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;flex:none}
+
+/* onboarding */
+.cbars{display:flex;align-items:flex-end;gap:22px;height:clamp(120px,24cqh,220px);padding:0 10px}
+.cbar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;height:100%;text-align:center}
+.cbar i{display:block;border-radius:10px 10px 4px 4px;background:var(--blue)}
+.cbar b{font-family:'Cormorant',serif;font-size:36px;line-height:1}
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:12px 16px;border-radius:18px;font-size:16px;line-height:1.35}
+.msg.q{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:6px}
+.msg.a{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px;position:relative}
+.stamp{display:inline-block;margin-top:8px;border:3px solid var(--coral);color:#C8341A;border-radius:8px;padding:2px 10px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:20px;transform:rotate(-6deg);letter-spacing:.04em}
+.leg3{display:flex;flex-direction:column;gap:10px}
+.leg3 .r{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.funnel{display:flex;flex-direction:column;gap:8px}
+.funnel .f{display:flex;align-items:center;justify-content:space-between;border-radius:12px;padding:12px 16px;color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:16px}
+.funnel .f b{font-family:'Cormorant',serif;font-size:26px}
+.idcard{border:2px dashed var(--ink);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;background:var(--card)}
+.opt{width:100%;min-height:64px;padding:12px 16px;border-radius:16px;border:1.5px solid var(--ink);background:var(--card);font-size:17px;line-height:1.3;font-weight:500}
+.lic{background:var(--ink);color:var(--paper);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px;border:1px solid #22304A}
+.lic .av2{width:64px;height:64px;border-radius:14px;background:var(--blue);display:grid;place-items:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:24px}
+
+/* board */
+.inkcard{background:var(--ink);color:var(--paper);border-radius:18px;padding:12px 14px}
+.us{width:100%;display:block;height:clamp(100px,17cqh,180px)}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.5);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+.tick{font-size:14px;line-height:1.3;display:flex;justify-content:space-between;gap:10px;min-height:20px}
+.tick b{font-family:'Bricolage Grotesque',sans-serif;white-space:nowrap}
+.seg{display:flex;background:var(--tint);border-radius:12px;padding:3px}
+.seg button{flex:1;min-height:44px;border-radius:10px;text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:14px;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(11,26,46,.15)}
+.seg button[disabled]{opacity:.5}
+.lb{display:flex;align-items:center;gap:12px;min-height:48px;border-bottom:1px solid var(--line)}
+.rk{width:20px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;color:var(--mute)}
+.av{width:38px;height:38px;border-radius:50%;background:var(--tint);display:grid;place-items:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;color:var(--blue);flex:none}
+
+/* find + flow */
+.mapbox{border-radius:18px;overflow:hidden;background:var(--map)}
+.mapbox svg{display:block;width:100%;height:clamp(96px,19cqh,210px)}
+.bigpin{width:104px;height:104px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;margin:0 auto}
+.say-q{background:var(--ink);color:var(--paper);border-radius:20px;padding:22px}
+.say-q p{font-family:'Cormorant',serif;font-weight:600;font-size:28px;line-height:1.15;margin:0}
+@supports (height:1cqh){.say-q p{font-size:clamp(23px,4.3cqh,35px)}}
+.fact{display:flex;gap:14px;align-items:flex-start;font-size:19px;line-height:1.3;font-weight:500}
+.fact .dot{margin-top:7px}
+.sl input[type=range]{width:100%;height:48px;margin:0;accent-color:var(--blue)}
+.plan{width:100%;display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:16px;border:1.5px solid var(--ink);background:var(--card);min-height:70px}
+.spin{width:44px;height:44px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--blue);animation:spin 1s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.qr{width:clamp(150px,30cqh,250px);height:auto;margin:0 auto;display:block;background:#fff;padding:12px;border-radius:16px;border:1px solid var(--line)}
+
+/* leads */
+.ld{display:flex;gap:12px;width:100%;min-height:72px;border-bottom:1px solid var(--line);align-items:center}
+.tl{display:flex;flex-direction:column}
+.ti{display:flex;gap:14px;position:relative;padding-bottom:clamp(8px,1.8cqh,16px)}
+.ti:not(:last-child)::before{content:"";position:absolute;left:13px;top:30px;bottom:-2px;width:2px;background:var(--line)}
+.tdot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;background:var(--paper);flex:none;z-index:1;color:#fff}
+.tdot.done{background:var(--blue);border-color:var(--blue)}
+.tdot.now{border-color:var(--blue)}
+
+/* messages */
+.th{display:flex;gap:12px;width:100%;min-height:72px;border-bottom:1px solid var(--line);align-items:center}
+.bubs{display:flex;flex-direction:column;gap:8px;justify-content:flex-end;min-height:0;overflow:hidden}
+.bub{max-width:84%;padding:12px 16px;border-radius:20px;font-size:17px;line-height:1.35}
+.bub.me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:6px}
+.bub.them{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}
+.meta{font-size:13px;color:var(--mute);margin:0 4px}
+.meta.me{align-self:flex-end}
+.reply{width:100%;padding:14px 16px;border-radius:16px;border:1.5px solid var(--blue);color:var(--blue);background:var(--card);font-size:16px;line-height:1.3;font-weight:500}
+
+.rlist{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.rrow{display:flex;align-items:center;gap:12px;min-height:54px;border-bottom:1px solid var(--line)}
+.rrow.you{background:var(--tint);border-radius:12px;padding:0 8px;border-bottom:0}
+.youbar{flex:none;display:flex;align-items:center;gap:12px;min-height:54px;background:var(--ink);color:var(--paper);border-radius:14px;padding:0 14px}
+.lvl{width:100%;flex:none;display:flex;flex-direction:column;gap:6px;padding:10px 14px;border-radius:14px;background:var(--tint)}
+.lvlbar{height:8px;border-radius:4px;background:#fff;overflow:hidden}
+.lvlbar i{display:block;height:100%;background:var(--blue)}
+.mid.board .us{height:clamp(70px,11cqh,140px)}
+.frow{display:flex;align-items:center;gap:10px;min-height:34px;font-size:15px;border-bottom:1px solid var(--line)}
+.frow:last-child{border-bottom:0}
+.fic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:700;color:#fff;flex:none;line-height:1}
+.fic.y{background:var(--blue)}
+.fic.n{background:var(--coral);color:var(--ink)}
+.fic.q{border:2px solid var(--mute);color:var(--mute);font-size:12px}
+.prz{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+.prz.cur{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue)}
+.segs{display:flex;gap:4px}
+.segs i{flex:1;height:18px;border-radius:4px;background:var(--line)}
+.segs i.on{background:var(--blue)}
+.check{display:flex;gap:12px;align-items:flex-start;min-height:44px}
+.check input{width:24px;height:24px;margin:2px 0 0;accent-color:var(--blue);flex:none}
+.field{display:block;width:100%;min-height:60px;padding:0 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:20px;color:var(--ink)}
+.field.sm{min-height:54px;font-size:18px}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat3 div{background:var(--tint);border-radius:14px;padding:12px 8px;text-align:center}
+.stat3 b{display:block;font-family:'Cormorant',serif;font-size:36px;line-height:1}
+.stat3 span{font-size:12px;color:var(--mute)}
+.ps{aspect-ratio:9/19;border-radius:14px;padding:9px 7px 7px;display:flex;flex-direction:column;gap:7px;overflow:hidden;min-width:0}
+.ps-h{font-family:'Cormorant',serif;font-weight:700;font-size:15px;line-height:1.04}
+.ps-ui{flex:1;min-height:0;background:var(--paper);color:var(--ink);border-radius:9px;padding:6px;display:flex;flex-direction:column;gap:5px;font-size:8px;line-height:1.2;overflow:hidden}
+.ps-fn{font-size:7px;opacity:.85;text-align:center}
+.m-lbl{color:var(--mute)}
+.m-big{font-family:'Cormorant',serif;font-weight:700;font-size:22px;line-height:1;color:var(--blue)}
+.m-pill{background:var(--blue);color:#fff;border-radius:8px;padding:4px 5px;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;text-align:center}
+.m-say{background:var(--ink);color:var(--paper);border-radius:7px;padding:5px;font-family:'Cormorant',serif;font-weight:600;font-size:10px;line-height:1.1}
+.m-row{display:flex;align-items:center;gap:4px;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:3px}
+.m-d{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:2px;flex:none}
+.m-d.y{background:var(--blue)}
+.m-d.n{background:var(--coral)}
+.m-tag{background:var(--tint);color:var(--blue);border-radius:6px;padding:1px 3px;font-weight:600;font-size:7px;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:var(--card);font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:14px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.m-row b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toast{position:absolute;left:16px;right:16px;bottom:96px;background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:14px;font-size:15px;line-height:1.4;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header class="topbar"><b>Registry Scout prototype</b><button class="pill" data-act="chapters">Steps</button></header>
+<div class="stage">
+  <aside class="rail" id="rail"></aside>
+  <div class="device"><span class="hw hw-a"></span><span class="hw hw-v1"></span><span class="hw hw-v2"></span><span class="hw hw-p"></span>
+    <main class="phone" id="phone"><div class="host" id="host"></div>
+      <div class="sb" aria-hidden="true"><span class="sb-t">9:41</span><span class="sb-r"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.2a10 10 0 0 1 14 0"/><path d="M4 7a6.4 6.4 0 0 1 9 0"/><circle cx="8.5" cy="10" r="1.3" fill="currentColor" stroke="none"/></svg><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="18" height="9" rx="2" fill="currentColor"/><rect x="25" y="4.5" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg></span></div>
+      <div class="island" aria-hidden="true"></div><div class="hb" aria-hidden="true"></div>
+      <div id="toast" role="status" aria-live="polite"></div></main></div>
+</div>
+<div class="sheet-back" id="sheetback" data-act="closechapters"><div class="sheet" id="sheet"></div></div>
+
+<script>
+(function(){
+'use strict';
+var IC={
+ board:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
+ pin:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+ leads:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5.5M18 14.5c2 .6 3.5 2.6 3.5 5.5"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+ wallet:'<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-3v3"/><circle cx="16.5" cy="13.5" r="1.2"/>',
+ back:'<path d="M15 5l-7 7 7 7"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+ id:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.5 16c.7-1.6 2-2.4 3.5-2.4s2.8.8 3.5 2.4M14 10h4M14 13h3"/>',
+ bank:'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>'
+};
+function ic(n,s){s=s||24;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>';}
+function usd(n){var r=Math.round(n*100)/100;return '$'+r.toLocaleString('en-US',{minimumFractionDigits:(r%1?2:0),maximumFractionDigits:2});}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+
+/* sample data for the prototype */
+var PLANS=[{n:'Basic',p:420,s:'$14 a day'},{n:'Standard',p:1500,s:''},{n:'Premium',p:3000,s:''}];
+var BIZ=[
+ {id:'marlow',owner:'Dr. Priya Raman',phone:'(949) 555-0188',email:'priya@marlowmedspa.com',name:'Marlow Med Spa',dist:'0.4 mi',walk:'8 min walk',d:[250,120],vert:'med spa',comp:'Aurelle Skin',f:[['y','Open until 7 pm'],['y','Correct'],['y','Correct'],['n','Misses lip filler'],['n','Lists Dr. Kim, who left'],['q','No price info'],['n','Photos from 2019'],['n','Shows an old rating']]},
+ {id:'aperture',owner:'Dr. Sam Whitfield',phone:'(949) 555-0121',email:'office@apertureplastics.com',name:'Aperture Plastic Surgery',dist:'0.5 mi',walk:'2 doors down',d:[110,70],vert:'plastic surgeon',comp:'Lumen Plastic Surgery',near:'marlow',f:[['n','No hours found'],['y','Correct'],['n','Shows an old number'],['y','Correct'],['n','Lists a retired surgeon'],['q','No price info'],['n','Photos from 2018'],['q','No review info']]},
+ {id:'verdant',owner:'Rae Okafor',phone:'(949) 555-0176',email:'rae@verdantdispensary.com',name:'Verdant Dispensary',dist:'1.4 mi',walk:'6 min drive',d:[290,170],vert:'dispensary',comp:'Evergreen Collective',f:[['y','Open until 9 pm'],['n','Shows the old address'],['y','Correct'],['y','Correct'],['q','No staff info'],['n','Old menu prices'],['n','Old storefront photo'],['y','Correct']]}
+];
+var LEVELS=[{n:'Bronze',need:0,prize:'You are licensed'},{n:'Silver',need:1,prize:'$100 bonus'},{n:'Gold',need:5,prize:'A new iPhone'},{n:'Platinum',need:15,prize:'A trip to the quarterly conference'},{n:'Diamond',need:30,prize:'A car'}];
+var FN=['Danielle','Marcus','Priya','Jonah','Lena','Andre','Camille','Tomas','Mei','Rafael','Hannah','Dev','Sofia','Malik','Grace','Owen','Nadia','Luis','Tara','Eli','Ruth','Kenji','Alma','Theo','Zara','Cole','Imani','Noah','Leah','Omar'];
+var LN=['R','T','N','K','W','V','B','G','L','M','H','S','P','D','C'];
+var CITY=['Austin, TX','Miami, FL','Scottsdale, AZ','San Diego, CA','Chicago, IL','Irvine, CA','Long Beach, CA','Riverside, CA','Pasadena, CA','Dallas, TX','Atlanta, GA','Denver, CO','Seattle, WA','Phoenix, AZ','Tampa, FL','Boston, MA','Nashville, TN','Charlotte, NC','Las Vegas, NV','Portland, OR','Orlando, FL','Houston, TX','Brooklyn, NY','Columbus, OH','Raleigh, NC','Minneapolis, MN','San Jose, CA','Sacramento, CA','Salt Lake City, UT','Boca Raton, FL'];
+var TOP=[['Danielle R.','Austin, TX',4860],['Marcus T.','Miami, FL',4215],['Priya N.','Scottsdale, AZ',3980],['Jonah K.','San Diego, CA',3540],['Lena W.','Chicago, IL',3110]];
+function reps(){
+ var out=[];
+ for(var i=0;i<60;i++){
+  var e=i<5?TOP[i][2]:Math.round(3110*Math.pow(0.955,i-4));
+  out.push({name:i<5?TOP[i][0]:FN[i%FN.length]+' '+LN[(i*7)%LN.length]+'.',city:i<5?TOP[i][1]:CITY[i%CITY.length],earn:e,cust:Math.max(1,Math.round(e/143))});
+ }
+ return out;
+}
+var FEED=[['Danielle R.','Austin, TX','a lead became a customer','+$214/mo'],['Marcus T.','Miami, FL','a business claimed its page','Claimed'],['Priya N.','Scottsdale, AZ','a meeting was booked','Booked'],['Jonah K.','San Diego, CA','a lead became a customer','+$71/mo'],['Lena W.','Chicago, IL','a business claimed its page','Claimed']];
+var CITIES=[[26,22],[14,62],[30,98],[52,108],[112,70],[128,140],[188,42],[222,102],[240,52],[243,160]];
+var QUIZ=[
+ {q:'What does it cost a business to claim its page?',o:['Free','$14 a day','$500 a month'],ok:0,fix:'Claiming is free. No credit card.'},
+ {q:'What do you say at the door?',o:['"Hey, I checked what ChatGPT knows about you. It gets 3 of 8 facts right. Want to fix it free?"','"I work for Local AI Registry and I am here to sell you a plan."','"You need to pay $1,500 today."'],ok:0,fix:'You are a customer who noticed a problem. Offer the free fix, not a sale.'}
+];
+var S={screen:'appstore',install:0,prog:0,name:'Sam Ramirez',bi:0,value:450,plan:1,scope:'national',feed:0,thread:'marlow',weekly:2,tab:'board',lead:'marlow',leads:[],threads:[],contact:{name:'',phone:'',email:'',role:'Owner',ok:false},session:{mins:60,total:4,done:0,claims:0,cards:0,active:false},time:60};
+var feedTimer=null,toastTimer=null;
+
+/* flow groups: each shows a progress bar and a back arrow */
+var GROUPS={learn:['o1','o2','o3','o4','o5','o6','o7'],license:['id','q1','q2','card','payout','perm'],claim:['there','look','say','reply','qr','claimwait','claimed'],demo:['dshow','dworth','dplan','dclose']};
+var GBACK={claim:'find',demo:'lead'};
+var NOBACK={o1:1,id:1,claimed:1};
+function groupOf(s){for(var g in GROUPS){if(GROUPS[g].indexOf(s)>-1)return g;}return null;}
+
+function biz(){return BIZ[S.bi%BIZ.length];}
+function plan(){return PLANS[S.plan];}
+function leg(l){return PLANS[l.plan].p*0.95*0.05;}
+function legs(l){return 1+(l.stage>=3?1:0)+(l.closer==='me'?1:0);}
+function earn(l){return l.stage===4?leg(l)*legs(l):0;}
+function potential(l){return PLANS[1].p*0.95*0.05*(2+(l.closer==='me'?1:0));}
+function lead(id){return S.leads.filter(function(l){return l.id===id;})[0];}
+function winMonthly(){return 900*0.03*S.value*0.10;}
+function months(p){var w=winMonthly();if(w<p)return null;var m=p/w;return m<1?'under a month':(Math.round(m*10)/10)+' months';}
+function toast(msg){var el=document.getElementById('toast');el.innerHTML='<div class="toast">'+msg+'</div>';clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.innerHTML='';},3600);}
+function thread(id){return S.threads.filter(function(t){return t.id===id;})[0];}
+function addMarlow(stage){
+ var l=lead('marlow');
+ if(!l){l={id:'marlow',name:'Marlow Med Spa',stage:stage,when:'',closer:'me',plan:1,contact:{name:'Dr. Priya Raman',role:'Owner',phone:'(949) 555-0188'}};S.leads.unshift(l);}
+ l.stage=stage;if(stage>=2)l.when='Thu 10:30 am';
+ if(stage===4)l.plan=S.plan;
+ if(!thread('marlow')){S.threads.unshift({id:'marlow',name:'Marlow Med Spa',unread:0,claimmsg:1,msgs:[['me','Thanks for claiming your page, Dr. Raman. Want a free 15 minute look at how AI sees Marlow? Pick a time here.','Sent by the app for you. Opened 2 times']],auto:'Next reminder in 2 days',sug:[]});}
+ var t=thread('marlow');
+ if(stage>=2&&!t.booked){t.booked=1;t.msgs.push(['them','Thursday at 10:30 works.']);t.msgs.push(['me','Booked. You will get a reminder the day before.','Sent by the app for you']);t.auto='Reminder text Wed 4:00 pm';}
+}
+var TIMES=[[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours']];
+function tlabel(m){var r=TIMES.filter(function(t){return t[0]===m;})[0];return r?r[1]:m+' min';}
+function est(mins){
+ var stops=Math.max(1,Math.round(mins/60*4)),leg1=PLANS[1].p*0.95*0.05,per=stops*4.33*0.025;
+ return {stops:stops,lo:stops*0.025*leg1*2,hi:stops*0.025*leg1*3,sixLo:per*leg1*2*5.3,sixHi:per*leg1*3*5.3};
+}
+function bizOf(id){return BIZ.filter(function(b){return b.id===id;})[0];}
+function claimLead(b,contact){
+ var l=lead(b.id);
+ if(!l){l={id:b.id,name:b.name,stage:1,when:'',closer:'me',plan:1,contact:contact};S.leads.unshift(l);}
+ else{if(l.stage<1)l.stage=1;if(!l.contact)l.contact=contact;}
+ var t=thread(b.id);
+ if(!t){S.threads.unshift({id:b.id,name:b.name,unread:0,msgs:[],auto:'Next reminder in 2 days',sug:[]});t=thread(b.id);}
+ if(!t.claimmsg){t.claimmsg=1;t.msgs.push(['me','Thanks for claiming your page, '+(l.contact?l.contact.name:'')+'. Want a free 15 minute look at how AI sees '+b.name+'? Pick a time here.','Sent by the app for you']);}
+ S.lead=b.id;
+}
+function addCardLead(b,c){
+ var l=lead(b.id);
+ if(!l){l={id:b.id,name:b.name,stage:0,when:'',closer:'me',plan:1,contact:{name:c.name,role:c.role,phone:c.phone,email:c.email}};S.leads.unshift(l);}
+ if(!thread(b.id)){S.threads.unshift({id:b.id,name:b.name,unread:0,msgs:[['me','Hi '+c.name+', here is the AI report card for '+b.name+'. AI gets '+right(b)+' of 8 facts right. You can fix it free in about 2 minutes.','Sent by the app for you']],auto:c.email?'Next: email with the claim link in 2 days':'Next: second text in 2 days',sug:[]});}
+}
+function syncSend(){var b=document.getElementById('sendbtn'),c=S.contact;if(!b)return;if(c.ok&&c.name.trim()&&c.phone.trim())b.removeAttribute('disabled');else b.setAttribute('disabled','');}
+function seed(){
+ if(!lead('tide'))S.leads.push({id:'tide',name:'Tidewater Eye Care',stage:2,when:'Fri 2:00 pm',closer:'team',plan:1,contact:{name:'Dr. Alan Pierce',role:'Owner',phone:'(949) 555-0147'}});
+ if(!lead('golden'))S.leads.push({id:'golden',name:'Golden State Dermatology',stage:4,when:'',closer:'team',plan:0,contact:{name:'Dr. Mina Castillo',role:'Owner',phone:'(949) 555-0163'}});
+ if(!thread('tide'))S.threads.push({id:'tide',name:'Tidewater Eye Care',unread:0,msgs:[['me','Thanks for claiming your page, Dr. Pierce. Want a free 15 minute look at how AI sees Tidewater?','Sent by the app for you. Opened 3 times'],['them','Friday at 2 works.']],auto:'Reminder text Thu 4:00 pm',sug:[]});
+ if(!thread('golden'))S.threads.push({id:'golden',name:'Golden State Dermatology',unread:1,msgs:[['them','Do you also handle Google posts?']],auto:'',sug:['Yes. Posts and review replies are included.','Yes, and I can show you how it works.']});
+}
+
+function tabbar(){
+ var unread=S.threads.reduce(function(a,t){return a+t.unread;},0);
+ function t(id,icn,label,x){return '<button class="tab" data-act="tab" data-arg="'+id+'" '+(S.tab===id?'aria-current="page"':'')+'>'+ic(icn,22)+label+(x||'')+'</button>';}
+ return '<nav class="tabbar" aria-label="Main">'+t('board','board','Board')+t('find','pin','Find')+t('leads','leads','Leads')+t('inbox','chat','Messages',unread?'<span class="badge" aria-label="'+unread+' unread">'+unread+'</span>':'')+t('money','wallet','Money')+'</nav>';
+}
+function flowTop(back){
+ var s=S.screen,g=groupOf(s);
+ if(!g)return '<div class="top">'+(back?'<button class="iconbtn" data-act="go" data-arg="'+back+'" aria-label="Back">'+ic('back',26)+'</button>':'')+'</div>';
+ var arr=GROUPS[g],i=arr.indexOf(s);
+ var btn=NOBACK[s]?'<span style="width:34px"></span>':'<button class="iconbtn" data-act="flowback" aria-label="Back">'+ic('back',26)+'</button>';
+ return '<div class="top">'+btn+'<div class="dots" aria-label="Step '+(i+1)+' of '+arr.length+'">'+arr.map(function(_,k){return '<i class="'+(k<=i?'on':'')+'"></i>';}).join('')+'</div></div>';
+}
+function chapterOf(){
+ var s=S.screen;
+ if(s==='appstore')return 1;
+ if(GROUPS.learn.indexOf(s)>-1)return 2;
+ if(GROUPS.license.indexOf(s)>-1)return 3;
+ if(s==='board'||s==='prizes')return 4;
+ if(s==='find'||s==='time'||s==='summary')return 5;
+ if(GROUPS.claim.indexOf(s)>-1||s==='contact'||s==='cardsent')return 6;
+ if(s==='leads'||s==='lead')return 7;
+ if(GROUPS.demo.indexOf(s)>-1||s==='dsend'||s==='followup')return 8;
+ if(s==='won'||s==='money')return 9;
+ if(s==='inbox'||s==='thread')return 10;
+ return 0;
+}
+var CHAPS=['See it in the App Store','Learn how AI search works','Get licensed','See who is earning and the prizes','Pick your time and find a business','Get them to claim','Track your leads','Run the demo and close','Get paid','Messages'];
+
+/* US dot map */
+var POLY=[[8,22],[40,16],[80,15],[110,16],[140,14],[150,18],[165,25],[180,22],[195,26],[210,20],[230,18],[245,14],[262,6],[270,14],[262,24],[250,34],[255,42],[245,52],[250,62],[240,78],[236,92],[240,104],[248,118],[252,134],[246,150],[252,168],[244,172],[236,158],[228,140],[214,138],[196,142],[176,148],[160,152],[146,160],[136,172],[124,168],[116,150],[100,140],[90,130],[70,126],[50,120],[40,112],[26,100],[16,84],[10,66],[8,48]];
+function inPoly(x,y){var c=false;for(var i=0,j=POLY.length-1;i<POLY.length;j=i++){var xi=POLY[i][0],yi=POLY[i][1],xj=POLY[j][0],yj=POLY[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;}
+var usCache='';
+function usMap(){
+ if(usCache)return usCache;
+ var d='',c='';
+ for(var y=8;y<178;y+=6)for(var x=6;x<274;x+=6){if(inPoly(x,y))d+='<circle cx="'+x+'" cy="'+y+'" r="1.5" fill="#F4F1EA" opacity=".34"/>';}
+ CITIES.forEach(function(p,i){c+='<circle class="pulse" cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="#FF5A3C" style="animation-delay:'+(i*0.35)+'s"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.6" fill="#FF5A3C"/>';});
+ usCache='<svg class="us" viewBox="0 0 280 180" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of the United States with cities where people are earning right now">'+d+c+'</svg>';
+ return usCache;
+}
+function qrSvg(){
+ var n=25,seed=7,out='';
+ function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+ function finder(x,y){return '<rect x="'+x+'" y="'+y+'" width="7" height="7" fill="#0B1A2E"/><rect x="'+(x+1)+'" y="'+(y+1)+'" width="5" height="5" fill="#fff"/><rect x="'+(x+2)+'" y="'+(y+2)+'" width="3" height="3" fill="#0B1A2E"/>';}
+ for(var y=0;y<n;y++)for(var x=0;x<n;x++){
+  var inF=(x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9);
+  if(!inF&&rnd()>0.52)out+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#0B1A2E"/>';
+ }
+ return '<svg class="qr" viewBox="0 0 '+n+' '+n+'" shape-rendering="crispEdges" role="img" aria-label="Example QR code for the claim link">'+out+finder(0,0)+finder(n-7,0)+finder(0,n-7)+'</svg>';
+}
+
+/* ---------- screens ---------- */
+function custCount(){return S.leads.filter(function(l){return l.stage===4;}).length;}
+function levelOf(c){var k=0;LEVELS.forEach(function(L,i){if(c>=L.need)k=i;});return k;}
+var FACTS=['Hours','Address','Phone','Services','People','Prices','Photos','Reviews'];
+function right(b){return b.f.filter(function(x){return x[0]==='y';}).length;}
+function factsHtml(b){return b.f.map(function(x,i){var m=x[0]==='y'?ic('check',14):(x[0]==='n'?'\u00d7':'?');return '<div class="frow"><span class="fic '+x[0]+'">'+m+'</span><b class="bf" style="width:64px;font-weight:600">'+FACTS[i]+'</b><span class="mute grow" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+x[1]+'</span></div>';}).join('');}
+function segs(n){var o='';for(var i=0;i<8;i++)o+='<i class="'+(i<n?'on':'')+'"></i>';return '<div class="segs">'+o+'</div>';}
+function sayLine(b){var s='Hey, I checked what ChatGPT knows about you. It gets '+right(b)+' of 8 facts right and sends people to '+b.comp+'.';if(b.near&&lead('marlow'))s+=' Marlow next door just fixed theirs.';return s+' You can fix yours for free. Want to see?';}
+function lcFirst(s){return s.charAt(0).toLowerCase()+s.slice(1);}
+function scAppstore(){
+ var btn=S.install===0?'<button class="get" data-act="install" aria-label="Get Registry Scout">Get</button>':
+  S.install===1?'<div class="prog" style="--p:'+S.prog+'" role="progressbar" aria-valuenow="'+S.prog+'" aria-valuemin="0" aria-valuemax="100" aria-label="Downloading"></div>':
+  '<button class="get" data-act="open" aria-label="Open Registry Scout">Open</button>';
+ var s1='<div class="ps" style="background:var(--blue);color:#fff"><div class="ps-h">Earn every month, an hour at a time</div><div class="ps-ui"><div class="m-lbl">One shop pays you</div><div class="m-big">$213.75</div><div>a month, while they stay</div><div class="m-pill">1 hour = 4 shops</div><div class="m-pill" style="background:var(--tint);color:var(--blue)">Support local</div></div><div class="ps-fn">Example. Not guaranteed.</div></div>';
+ var s2='<div class="ps" style="background:var(--ink);color:var(--paper)"><div class="ps-h">We tell you what to say</div><div class="ps-ui"><div class="m-say">"Hey, I checked what ChatGPT knows about you. It gets 3 of 8 facts right."</div><div class="m-row"><span class="m-d y"></span>Hours</div><div class="m-row"><span class="m-d n"></span>Services</div><div class="m-row"><span class="m-d n"></span>People</div><div class="m-row"><span class="m-d y"></span>Phone</div></div></div>';
+ var s3='<div class="ps" style="background:var(--tint);color:var(--ink)"><div class="ps-h">Track every lead and dollar</div><div class="ps-ui"><div class="m-row"><b>Marlow</b><span class="m-tag">Booked</span></div><div class="m-row"><b>Aperture</b><span class="m-tag">Claimed</span></div><div class="m-row"><b>Golden St.</b><span class="m-tag">Customer</span></div><div class="m-pill" style="margin-top:auto">Level: Gold</div></div></div>';
+ return '<div class="scr"><div class="mid" style="justify-content:flex-start;gap:clamp(8px,1.8cqh,16px);padding-top:6px">'+
+ '<div class="row" style="gap:16px"><div class="appicon" aria-hidden="true">'+ic('pin',50)+'</div><div class="grow"><h1 class="t2" style="font-size:23px">Registry Scout</h1><div class="mute" style="font-size:14px;margin:2px 0 10px">Earn every month by helping local shops get found.</div><div class="row between">'+btn+'<span class="mute" style="font-size:12px">Free</span></div></div></div>'+
+ '<div class="facts"><div>Ratings<b>New</b></div><div>Age<b>18+</b></div><div>Category<b>Business</b></div><div>Language<b>EN</b></div></div>'+
+ '<div><div class="t2" style="margin-bottom:8px">Preview</div><div class="shots">'+s1+s2+s3+'</div></div>'+
+ '<div><p class="p" style="font-size:14px">Visit the mom and pop shops around you. See what AI says about them, help them fix it for free, and earn every month they stay a customer. Work an hour here and there, whenever you like.</p><p class="mute" style="font-size:11px;margin:6px 0 0">Example: one customer on a $1,500 plan pays you $213.75 a month. Earnings vary and are not guaranteed.</p></div>'+
+ '</div></div>';
+}
+function scObs(id){
+ var C={
+ o1:{dark:1,h:'Local businesses are invisible to AI. You can fix that and get paid.',p:'Free to join. Work an hour here and there, whenever you like.',b:'Show me how',n:'o2'},
+ o2:{h:'Customers now ask AI where to go',n:'o3',b:'Next',mid:'<div class="cbars"><div class="cbar"><b>5%</b><i style="height:11%;background:#9FB0CC"></i><span class="lbl">June 2025</span></div><div class="cbar"><b>47%</b><i style="height:100%"></i><span class="lbl">July 2026</span></div></div><p class="p mute" style="text-align:center">of Americans use AI to find a local business.</p>'},
+ o3:{h:'AI is guessing about local businesses',n:'o4',b:'Next',mid:'<div class="card" style="padding:4px 14px">'+factsHtml(BIZ[0])+'</div><p class="p"><b>AI gets 3 of 8 facts right about this med spa.</b> Most local businesses look like this. The customer goes somewhere else.</p>'},
+ o4:{h:'The more AI can verify, the more it trusts you',n:'o5',b:'Next',mid:'<div style="display:flex;flex-direction:column;gap:8px"><div class="row between"><span class="p">Before they claim</span><b class="bf">3 of 8 verified</b></div>'+segs(3)+'</div><div style="display:flex;flex-direction:column;gap:8px"><div class="row between"><span class="p">After they claim</span><b class="bf">7 of 8 verified</b></div>'+segs(7)+'</div><p class="p">Every fact a business corrects and verifies is one less thing AI has to guess. That is how a business gets into AI answers.</p>'},
+ o5:{h:'Free fixes it. Paid makes it faster',n:'o6',b:'Next',mid:'<div class="leg3"><div class="r"><span class="num">1</span><div class="grow"><b class="bf">Claim and verify</b><div class="mute" style="font-size:14px">Correct the facts. AI picks them up over time.</div></div><b class="money" style="font-size:24px">$0</b></div><div class="r"><span class="num">2</span><div class="grow"><b class="bf">Speed it up</b><div class="mute" style="font-size:14px">We get the verified facts into AI faster and push AI to recommend them.</div></div><b class="money" style="font-size:20px">$14/day</b></div></div><p class="p">You help with step 1. Businesses that want results sooner choose step 2.</p>'},
+ o6:{h:'How you get paid',n:'o7',b:'Next',mid:'<div class="leg3"><div class="r"><span class="num">1</span><div class="grow"><b class="bf">They claim their page</b><div class="mute" style="font-size:14px">You are their lead</div></div><b class="money" style="font-size:26px">5%</b></div><div class="r"><span class="num">2</span><div class="grow"><b class="bf">They hold a meeting</b><div class="mute" style="font-size:14px">The app books it for you</div></div><b class="money" style="font-size:26px">5%</b></div><div class="r"><span class="num">3</span><div class="grow"><b class="bf">They become a customer</b><div class="mute" style="font-size:14px">Close it yourself or hand it off</div></div><b class="money" style="font-size:26px">5%</b></div></div><p class="p">On a $1,500 plan that is up to <b>$213.75 a month</b>, every month they stay. You get paid only when the customer pays.</p>'},
+ o7:{h:'It is a numbers game',n:'id',b:'Get licensed',mid:'<div class="funnel"><div class="f" style="background:var(--ink)"><span>Visit businesses</span><b>40</b></div><div class="f" style="background:#1B3A8F"><span>Claim their page</span><b>8</b></div><div class="f" style="background:#2A55D0"><span>Book a meeting</span><b>2</b></div><div class="f" style="background:var(--blue)"><span>Become a customer</span><b>1</b></div></div><p class="p">At 4 shops an hour, 40 visits is about 10 hours, spread out however you like. One customer pays you up to <b>$213.75 a month</b>. One no is just part of the count.</p><p class="mute" style="font-size:12px;margin:0">Starter ratios. Yours replace them after your first 20 businesses.</p>'}
+ }[id];
+ if(C.dark){
+  return '<div class="scr dark"><div class="top"></div><div class="mid" style="gap:18px"><div class="appicon" style="width:64px;height:64px;border-radius:16px" aria-hidden="true">'+ic('pin',34)+'</div><h1 class="t1" style="font-size:clamp(30px,5.8cqh,46px)">'+C.h+'</h1><p class="p" style="color:#C9D3E4">'+C.p+'</p></div><div class="bot"><button class="btn btn-paper" data-act="go" data-arg="'+C.n+'">'+C.b+'</button></div></div>';
+ }
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">'+C.h+'</h1>'+C.mid+'</div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="'+C.n+'">'+C.b+'</button></div></div>';
+}
+function scId(){
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">Verify who you are</h1><div class="idcard"><span style="color:var(--blue)">'+ic('id',56)+'</span><b class="bf" style="font-size:18px">Driver license or ID</b><span class="mute" style="font-size:14px">Then a quick selfie. About 2 minutes.</span></div><p class="p mute">Like any ride app, we check who you are before you start.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="q1">Scan my ID</button></div></div>';
+}
+function scQuiz(i){
+ var q=QUIZ[i];
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:12px"><div class="lbl">Quick quiz, '+(i+1)+' of 2</div><h1 class="t1" style="font-size:clamp(24px,4.4cqh,36px)">'+q.q+'</h1>'+q.o.map(function(o,k){return '<button class="opt" data-act="answer" data-arg="'+i+','+k+'">'+o+'</button>';}).join('')+'</div></div>';
+}
+function scCard(){
+ var ini=S.name.split(' ').map(function(x){return x[0];}).join('');
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">You are licensed</h1><div class="lic"><div class="row"><div class="av2" aria-hidden="true">'+ini+'</div><div><div class="bf" style="font-weight:700;font-size:20px">'+esc(S.name)+'</div><div style="font-size:13px;color:#9FB0CC">Registry Scout</div></div></div><div class="row between"><div><div style="font-size:12px;color:#9FB0CC">License</div><b class="bf">SC-48216</b></div><div><div style="font-size:12px;color:#9FB0CC">Level</div><b class="bf">1</b></div><div><div style="font-size:12px;color:#9FB0CC">Status</div><b class="bf">Active</b></div></div></div><p class="p mute">Level up as your leads become customers.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="payout">Set up payouts</button></div></div>';
+}
+function scPayout(){
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">Where do we send your money?</h1><div class="idcard" style="border-style:solid;border-width:1.5px;border-color:var(--line)"><span style="color:var(--blue)">'+ic('bank',50)+'</span><b class="bf" style="font-size:18px">Bank account and tax info</b><span class="mute" style="font-size:14px">Paid monthly, after the customer pays.</span></div></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="perm">Add bank and tax info</button></div></div>';
+}
+function scPerm(){
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="text-align:center"><div class="bigpin" aria-hidden="true">'+ic('pin',52)+'</div><h1 class="t1">Turn on location</h1><p class="p mute">We use it to find businesses near you that need their page fixed.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="board">Allow while using the app</button></div></div>';
+}
+function feedLine(){var f=FEED[S.feed%FEED.length];return '<span><b>'+f[0]+'</b>, '+f[1]+': '+f[2]+'</span><b>'+f[3]+'</b>';}
+function repRow(rank,r){
+ var ini=r.name.split(' ').map(function(x){return x[0];}).join('');
+ var lv=levelOf(r.cust),tag='<span class="tag" style="margin-left:6px">'+LEVELS[lv].n+'</span>';
+ return '<div class="rrow'+(r.you?' you':'')+'"><span class="rk">'+rank+'</span><span class="av" '+(r.you?'style="background:var(--ink);color:var(--paper)" ':'')+'aria-hidden="true">'+(r.you?'You':ini)+'</span><div class="grow"><b class="bf">'+(r.you?'You':r.name)+'</b>'+tag+'<div class="mute" style="font-size:13px">'+(r.you?'':r.city+', ')+r.cust+' customer'+(r.cust>1?'s':'')+'</div></div><div style="text-align:right"><div class="money" style="font-size:22px">'+usd(r.earn)+'</div><div class="mute" style="font-size:12px">a month</div></div></div>';
+}
+function scBoard(){
+ var c=custCount(),mine=S.leads.reduce(function(a,l){return a+earn(l);},0),li=levelOf(c),L=LEVELS[li],N=LEVELS[li+1];
+ var list=reps();if(c>0)list.push({name:S.name,city:'',earn:mine,cust:c,you:1});
+ list.sort(function(a,b){return b.earn-a.earn;});
+ var rows=list.map(function(r,i){return repRow(i+1,r);}).join('');
+ var lv='<button class="lvl" data-act="go" data-arg="prizes"><div class="row between"><b class="bf">Level '+(li+1)+' of 5: '+L.n+'</b><span class="tag">See prizes</span></div>'+(N?'<div class="lvlbar"><i style="width:'+Math.round(Math.min(1,c/N.need)*100)+'%"></i></div><div class="mute" style="font-size:13px">'+(N.need-c)+' more customer'+(N.need-c>1?'s':'')+' to reach '+N.n+' and win '+lcFirst(N.prize)+'</div>':'<div class="mute" style="font-size:13px">Top level</div>')+'</button>';
+ var you=c===0?'<div class="youbar"><span class="av" style="background:var(--paper);color:var(--ink)" aria-hidden="true">You</span><div class="grow"><b class="bf">You</b><div style="font-size:13px;color:#9FB0CC">Unranked until your first customer</div></div></div>':'';
+ return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:28px">Who is earning</h1></div><div class="mid board" style="justify-content:flex-start;gap:8px;padding-top:2px"><div class="inkcard">'+usMap()+'<div class="tick" id="tick">'+feedLine()+'</div></div>'+lv+'<div class="rlist">'+rows+'</div>'+you+'</div><div class="bot" style="padding-top:8px"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business near me</button></div></div>'+tabbar();
+}
+function scPrizes(){
+ var li=levelOf(custCount());
+ var rows=LEVELS.map(function(L,i){return '<div class="prz'+(i===li?' cur':'')+'"><span class="tdot '+(i<=li?'done':'')+'">'+(i<=li?ic('check',16):'')+'</span><div class="grow"><b class="bf">'+L.n+'</b><div class="mute" style="font-size:13px">'+(L.need?L.need+' customer'+(L.need>1?'s':''):'Get licensed')+'</div></div><b class="bf" style="text-align:right;max-width:48%;font-size:15px">'+L.prize+'</b></div>';}).join('');
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="board" aria-label="Back to the board">'+ic('back',26)+'</button></div><div class="mid" style="gap:8px"><h1 class="t1">Prizes</h1>'+rows+'<div class="card" style="padding:10px 14px"><b class="bf">Weekly quest</b><div class="mute" style="font-size:14px">Claim 3 pages this week, earn a $50 bonus.</div></div><p class="mute" style="font-size:13px;margin:0">Your level renews each quarter based on your active customers. The top 3 reps each quarter also win a trip.</p></div></div>';
+}
+function mapSvg(){
+ var b=biz(),x=b.d[0],y=b.d[1];
+ return '<svg viewBox="0 0 360 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="360" height="220" fill="#E6E1D3"/><rect x="262" y="150" width="80" height="50" rx="8" fill="#D6DDEA"/><rect x="14" y="150" width="70" height="46" rx="8" fill="#D6DDEA"/>'+
+ '<g stroke="#FBFAF6" stroke-linecap="round" fill="none"><path d="M0 90H360M0 160H360M0 30H360" stroke-width="7"/><path d="M80 0V220M200 0V220M300 0V220" stroke-width="7"/><path d="M0 125H360M0 60H360M140 0V220M250 0V220" stroke-width="3"/></g>'+
+ '<path d="M110 150L'+x+' '+y+'" stroke="#1F4FE0" stroke-width="4" stroke-dasharray="2 8" stroke-linecap="round" fill="none"/>'+
+ '<circle cx="110" cy="150" r="22" fill="#1F4FE0" opacity=".16"/><circle cx="110" cy="150" r="9" fill="#1F4FE0" stroke="#fff" stroke-width="3"/>'+
+ '<circle cx="'+x+'" cy="'+y+'" r="15" fill="#0B1A2E"/><circle cx="'+x+'" cy="'+y+'" r="5" fill="#fff"/></svg>';
+}
+function scTime(){
+ var e=est(S.time);
+ var chips=TIMES.map(function(t){return '<button class="chip" data-act="settime" data-arg="'+t[0]+'" aria-pressed="'+(S.time===t[0])+'">'+t[1]+'</button>';}).join('');
+ return '<div class="scr"><div class="mid" style="gap:clamp(8px,1.8cqh,16px)"><h1 class="t1">How much time do you have?</h1><div class="row" style="gap:8px;flex-wrap:wrap">'+chips+'</div>'+
+ '<div class="inkcard" style="padding:16px 18px;display:flex;flex-direction:column;gap:10px"><div><div class="lbl" style="color:#9FB0CC">You can visit about</div><div class="money" style="font-size:38px;line-height:1">'+e.stops+' businesses</div></div>'+
+ '<div><div class="lbl" style="color:#9FB0CC">This session adds about</div><div class="money" style="font-size:32px;line-height:1.05">'+usd(Math.round(e.lo))+' to '+usd(Math.round(e.hi))+'</div><div style="font-size:14px;color:#C9D3E4">a month, every month they stay</div></div>'+
+ '<div style="border-top:1px solid #22304A;padding-top:10px"><div style="font-size:14px;color:#C9D3E4">Every week for 6 months</div><div class="money" style="font-size:28px;line-height:1.1">about '+usd(Math.round(e.sixLo))+' to '+usd(Math.round(e.sixHi))+' a month</div></div></div>'+
+ '<p class="mute" style="font-size:12px;margin:0">Estimates use starter ratios: about 1 in 40 visits becomes a customer. Not a guarantee. Yours replace them as you go.</p></div>'+
+ '<div class="bot"><button class="btn btn-blue" data-act="starttime">Start</button></div></div>'+tabbar();
+}
+function scFind(){
+ var b=biz(),ss=S.session,finished=ss.done>=ss.total,stopN=Math.min(ss.done+1,ss.total),near=(b.near&&lead('marlow'))?'<span class="tag">Marlow next door claimed today</span>':'';
+ var bar='<div><div class="row between"><span class="lbl">Your '+tlabel(ss.mins)+'</span><b class="bf">'+(finished?'Time is up':'Stop '+stopN+' of '+ss.total)+'</b></div><div class="lvlbar" style="margin-top:6px"><i style="width:'+Math.round(Math.min(1,ss.done/ss.total)*100)+'%"></i></div></div>';
+ var bot=finished?'<button class="btn btn-blue" data-act="done">See today\'s summary</button><button class="btn btn-text" data-act="go" data-arg="there">Keep going</button>':'<button class="btn btn-blue" data-act="go" data-arg="there">Go there</button><div class="row" style="gap:0"><button class="btn btn-text" data-act="skip" style="text-align:center">Skip this one</button><button class="btn btn-text" data-act="done" style="text-align:center">Done for today</button></div>';
+ return '<div class="scr"><div class="mid" style="gap:clamp(8px,1.6cqh,14px)">'+bar+'<div class="mapbox">'+mapSvg()+'</div><div><div class="row" style="gap:8px;flex-wrap:wrap"><span class="tag warn">AI gets '+right(b)+' of 8 facts right</span>'+near+'</div><h1 class="t1" style="margin-top:6px">'+b.name+'</h1><p class="p mute" style="margin-top:4px">'+b.dist+', '+b.walk+'. ChatGPT sends people to '+b.comp+' instead.</p></div>'+
+ '<div class="card" style="display:flex;flex-direction:column;gap:4px;padding:10px 14px"><div class="p" style="font-size:15px"><b>Today</b> You walk in and show the AI check.</div><div class="p" style="font-size:15px"><b>Tonight</b> The app texts their report card.</div><div class="p" style="font-size:15px"><b>Day 2</b> The app sends the claim link.</div></div></div>'+
+ '<div class="bot">'+bot+'</div></div>'+tabbar();
+}
+function scSummary(){
+ var ss=S.session,wait=S.leads.filter(function(l){return l.stage<4;}).reduce(function(a,l){return a+potential(l);},0);
+ return '<div class="scr"><div class="top"></div><div class="mid" style="gap:14px"><h1 class="t1">Done for today</h1><p class="p mute">You gave '+tlabel(ss.mins)+'. Here is what it did.</p><div class="stat3"><div><b>'+ss.done+'</b><span>Businesses</span></div><div><b>'+ss.claims+'</b><span>Claims</span></div><div><b>'+ss.cards+'</b><span>Report cards</span></div></div>'+
+ (wait>0?'<div class="inkcard" style="padding:16px 18px"><div class="lbl" style="color:#9FB0CC">Your open leads could earn up to</div><div class="money" style="font-size:40px;line-height:1.05">'+usd(wait)+' a month</div><div style="font-size:14px;color:#C9D3E4">if they become customers. The app keeps following up for you.</div></div>':'<p class="p">Your leads show up here as businesses claim their pages. The app keeps following up for you.</p>')+'</div><div class="bot"><button class="btn btn-blue" data-act="endsession" data-arg="leads">See my leads</button><button class="btn btn-text" data-act="endsession" data-arg="board">Back to the board</button></div></div>';
+}
+function scThere(){
+ var b=biz();
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="text-align:center"><div class="bigpin" aria-hidden="true">'+ic('pin',52)+'</div><h1 class="t1">You are here</h1><p class="p mute">'+b.name+'</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="look">Look it up</button></div></div>';
+}
+function scLook(){
+ var b=biz();
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:10px"><h1 class="t1">What AI knows about them</h1><div class="card" style="padding:4px 14px">'+factsHtml(b)+'</div><div class="inkcard" style="padding:14px 16px"><b class="bf" style="font-size:17px">AI gets '+right(b)+' of 8 facts right.</b><div style="font-size:14px;color:#C9D3E4;margin-top:2px">It sends people to '+b.comp+' instead.</div></div><p class="mute" style="font-size:12px;margin:0">Example result. The app runs the real check for you.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="say">Next</button></div></div>';
+}
+function scSay(){
+ var b=biz();
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">Say this</h1><div class="say-q"><p>"'+sayLine(b)+'"</p></div><p class="p mute">Say it your way. Show them the check.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="reply">I said it</button></div></div>';
+}
+function scReply(){
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">What did they say?</h1></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="qr">They want to fix it</button><button class="btn btn-line" data-act="tocontact">Not now. Send them the report card</button></div></div>';
+}
+function scContact(){
+ var c=S.contact;
+ var chips=['Owner','Manager','Front desk'].map(function(r){return '<button class="chip" data-act="role" data-arg="'+r+'" aria-pressed="'+(c.role===r)+'">'+r+'</button>';}).join('');
+ return '<div class="scr">'+flowTop('reply')+'<div class="mid" style="gap:8px"><h1 class="t1">Who gets the report card?</h1><p class="p mute">Ask: "Who should I send it to, and what is the best number?"</p>'+
+ '<label class="sr" for="cn">Name</label><input class="field sm" id="cn" placeholder="Name" value="'+esc(c.name)+'" data-in="cname" autocomplete="off">'+
+ '<label class="sr" for="cp">Mobile number</label><input class="field sm" id="cp" inputmode="tel" placeholder="Mobile number" value="'+esc(c.phone)+'" data-in="cphone" autocomplete="off">'+
+ '<label class="sr" for="ce">Email, optional</label><input class="field sm" id="ce" inputmode="email" placeholder="Email (optional)" value="'+esc(c.email)+'" data-in="cemail" autocomplete="off">'+
+ '<div class="row" style="gap:8px;flex-wrap:wrap">'+chips+'</div>'+
+ '<label class="check"><input type="checkbox" data-in="cok" '+(c.ok?'checked':'')+'><span class="p" style="font-size:15px">They said yes to getting a text.</span></label></div>'+
+ '<div class="bot"><button class="btn btn-blue" id="sendbtn" data-act="sendcard" '+(c.ok&&c.name.trim()&&c.phone.trim()?'':'disabled')+'>Send the report card</button></div></div>';
+}
+function scCardsent(){
+ var b=biz(),c=S.contact;
+ var rows=[['Now','Text with their report card'],['Day 2',c.email?'Email with the claim link':'Second text with the claim link'],['Day 5','We tell them when a neighbor claims']].map(function(r){return '<div class="row card" style="padding:10px 14px"><b class="bf" style="width:52px">'+r[0]+'</b><span class="p" style="font-size:15px">'+r[1]+'</span></div>';}).join('');
+ return '<div class="scr"><div class="top"></div><div class="mid" style="gap:10px"><h1 class="t1">Report card sent</h1><p class="p mute">To '+esc(c.name)+', '+c.role.toLowerCase()+', '+esc(c.phone)+'.</p><div class="bub me" style="align-self:stretch;max-width:100%">Hi '+esc(c.name)+', here is the AI report card for '+b.name+'. AI gets '+right(b)+' of 8 facts right. You can fix it free in about 2 minutes.</div>'+rows+'<p class="p" style="font-size:15px">If they claim through the link, you are their lead and earn 5% if they become a customer.</p></div><div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="leads">See my lead</button><button class="btn btn-text" data-act="nextbiz">Find the next business</button></div></div>';
+}
+function scQr(){
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="text-align:center;gap:clamp(8px,1.8cqh,16px)"><h1 class="t1">Have them scan this</h1>'+qrSvg()+'<p class="p mute">Takes about 2 minutes. Your code is attached, so the claim counts for you.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="claimwait">They scanned it</button><button class="btn btn-text" data-act="toast" data-arg="Text sent. The link carries your code.">Text them the link instead</button></div></div>';
+}
+function scClaimwait(){
+ var b=biz();
+ var rows=[['Owner name and mobile',b.owner+', '+b.phone],['Email',b.email],['Hours, address and services','Being corrected']].map(function(r){return '<div class="row card" style="padding:10px 14px"><span class="fic y">'+ic('check',14)+'</span><div class="grow"><b class="bf">'+r[0]+'</b><div class="mute" style="font-size:13px;overflow:hidden;text-overflow:ellipsis">'+r[1]+'</div></div></div>';}).join('');
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:10px"><div class="spin" aria-hidden="true"></div><h1 class="t1" style="text-align:center">'+b.name+' is claiming their page</h1><p class="p mute" style="text-align:center">The claim form collects their details and verifies their phone.</p>'+rows+'</div><div class="bot"><button class="btn btn-blue" data-act="claimed">Prototype: they claimed</button></div></div>';
+}
+function scClaimed(){
+ var b=biz(),nb=BIZ[1];
+ return '<div class="scr dark"><div class="top"></div><div class="mid" style="gap:12px"><div class="lbl" style="color:#9FB0CC">'+b.name+' claimed their page</div><h1 class="t1" style="font-size:clamp(30px,5.4cqh,44px)">You are their lead</h1><div class="money" style="font-size:clamp(60px,9.5cqh,88px);line-height:1">5%</div><p class="p" style="color:#C9D3E4">If they become a customer, you earn 5% of what they pay, every month.</p><div class="card" style="background:#13233A;border-color:#22304A;color:var(--paper)"><div class="p" style="font-size:15px"><b>Contact saved: '+b.owner+'.</b> Verified facts: 3 of 8 to 7 of 8. The app is texting them now to book a free 15 minute meeting.</div></div></div><div class="bot"><button class="btn btn-paper" data-act="tab" data-arg="leads">See my lead</button><button class="btn btn-text" style="color:#9FB0CC" data-act="nextdoor">Next door: '+nb.name+'</button></div></div>';
+}
+var STAGE=['Report card sent. Waiting for them to claim','Claimed. Waiting for them to book','Meeting booked','Meeting held','Customer'];
+function scLeads(){
+ var rows=S.leads.map(function(l){
+  var st=l.stage===2&&l.when?'Meeting booked, '+l.when:STAGE[l.stage];
+  var right=l.stage===4?'<div style="text-align:right"><div class="money" style="font-size:22px">'+usd(earn(l))+'</div><div class="mute" style="font-size:12px">a month</div></div>':'<div style="text-align:right"><div class="mute" style="font-size:12px">Could earn</div><b class="bf">'+usd(potential(l))+'</b></div>';
+  return '<button class="ld" data-act="lead" data-arg="'+l.id+'"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><b class="bf">'+l.name+'</b><div class="mute" style="font-size:14px">'+st+'</div></div>'+right+'</button>';
+ }).join('');
+ var body=S.leads.length?rows:'<p class="p mute" style="text-align:center">No leads yet. When a business claims its page through you, it shows up here with its status.</p>';
+ return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="justify-content:'+(S.leads.length?'flex-start':'center')+';gap:0;padding-top:8px">'+body+'</div>'+(S.leads.length?'':'<div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business</button></div>')+'</div>'+tabbar();
+}
+function scLead(){
+ var l=lead(S.lead);if(!l)return scLeads();
+ var steps=[['Claimed their page',l.stage>=1?'You are the lead. 5%':'The app follows up until they claim'],['Booked a meeting',l.stage>=2&&l.when?l.when:'The app asks them to book'],['Meeting held','Shows them the audit. 5%'],['Customer','5% if you close it']];
+ var tl=steps.map(function(s,i){var n=i+1,cls=l.stage>=n?'done':(l.stage+1===n?'now':'');return '<div class="ti"><span class="tdot '+cls+'">'+(l.stage>=n?ic('check',16):'')+'</span><div><b class="bf">'+s[0]+'</b><div class="mute" style="font-size:14px">'+s[1]+'</div></div></div>';}).join('');
+ var can=l.stage>=2&&l.stage<4;
+ var btn='';
+ if(l.stage===0)btn='<button class="btn btn-blue" data-act="protoclaim">Prototype: they claimed</button>';
+ else if(l.stage===1)btn='<button class="btn btn-blue" data-act="protobook">Prototype: they booked a meeting</button>';
+ else if(l.stage===2&&l.closer==='me')btn='<button class="btn btn-blue" data-act="go" data-arg="dshow">Start the demo</button>';
+ else if(l.stage===2)btn='<button class="btn btn-blue" data-act="teamclose">Prototype: the team closed it</button>';
+ else if(l.stage===3)btn='<button class="btn btn-blue" data-act="go" data-arg="dclose">Send the payment link</button>';
+ else btn='<p class="p" style="text-align:center">Customer. You earn <b>'+usd(earn(l))+'</b> a month.</p>';
+ var ct=l.contact?'<div class="mute" style="font-size:14px">'+esc(l.contact.name)+', '+esc(l.contact.role.toLowerCase())+', '+esc(l.contact.phone)+'</div>':'';
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="leads" aria-label="Back to leads">'+ic('back',26)+'</button><div><h1 class="t2" style="font-size:20px">'+l.name+'</h1>'+ct+'</div></div><div class="mid" style="justify-content:flex-start;gap:clamp(10px,2cqh,18px);padding-top:8px"><div class="tl">'+tl+'</div>'+
+ '<div><div class="lbl" style="margin-bottom:6px">Who closes it?</div><div class="seg" role="group" aria-label="Who closes"><button data-act="closer" data-arg="me" aria-pressed="'+(l.closer==='me')+'"'+(can?'':' disabled')+'>I will</button><button data-act="closer" data-arg="team" aria-pressed="'+(l.closer==='team')+'"'+(can?'':' disabled')+'>Let the team</button></div><p class="mute" style="font-size:13px;margin:6px 0 0">'+(can?(l.closer==='me'?'You earn all three: 15%.':'You earn 10%. The team earns the close.'):(l.stage<2?'You choose once they book.':''))+'</p></div></div><div class="bot">'+btn+'</div></div>';
+}
+function scDemo(id){
+ var b=lead(S.lead)?lead(S.lead).name:'Marlow Med Spa';
+ if(id==='dshow'){
+  return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:22px"><h1 class="t1">Show them this</h1><div class="fact"><span class="dot dot-ok"></span><span>7 of 8 facts are now verified. That was step 1.</span></div><div class="fact"><span class="dot"></span><span>ChatGPT still sends people to '+(bizOf(S.lead)?bizOf(S.lead).comp:'Aurelle Skin')+'.</span></div><div class="fact"><span class="dot dot-ok"></span><span>Step 2 gets your verified facts into AI faster.</span></div></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dworth">Next</button></div></div>';
+ }
+ if(id==='dworth'){
+  return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">What is one new patient worth to you?</h1><label class="sl"><span class="row between"><span class="p mute">Ask them</span><b id="o-value" class="bf" style="font-size:22px">'+usd(S.value)+'</b></span><input type="range" min="100" max="2000" step="50" value="'+S.value+'" data-in="value" aria-label="Value of one new patient"></label>'+
+  '<div class="inkcard" style="padding:20px"><div class="lbl" style="color:#9FB0CC">AI could bring them about</div><div class="money" style="font-size:clamp(44px,7.4cqh,60px);line-height:1.05" id="o-win">'+usd(winMonthly())+'</div><div style="font-size:15px;color:#C9D3E4">a month</div></div><p class="mute" style="font-size:13px;margin:0">An estimate, not a promise. Based on 900 searches a month, 3% booking, 10% won.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dplan">Next</button></div></div>';
+ }
+ if(id==='dplan'){
+  var btns=PLANS.map(function(p,i){var m=months(p.p);return '<button class="plan" data-act="pickplan" data-arg="'+i+'"><div class="grow"><b class="bf" style="font-size:19px">'+p.n+'</b><div class="mute" style="font-size:14px">'+(m?'Pays for itself in '+m:'Needs more than '+usd(p.p)+' a month in wins')+'</div></div><div style="text-align:right"><div class="money" style="font-size:26px">'+usd(p.p)+'</div><div class="mute" style="font-size:12px">'+(p.s||'a month')+'</div></div></button>';}).join('');
+  return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:10px"><h1 class="t1">Pick one</h1>'+btns+'<p class="mute" style="font-size:13px;margin:0">Month to month. No contract. Sample plans and prices.</p></div></div>';
+ }
+ return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">Say this</h1><div class="say-q"><p>"When do you want to start?"</p></div><p class="p mute">'+plan().n+', '+usd(plan().p*0.95)+' a month with your code.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dsend">Send the payment link</button><button class="btn btn-text" data-act="go" data-arg="followup">They need time</button></div></div>';
+}
+function scDsend(){
+ return '<div class="scr">'+flowTop('dclose')+'<div class="mid" style="text-align:center"><div class="spin" aria-hidden="true"></div><h1 class="t1">Waiting for them to pay</h1><p class="p mute">The link is on its way.</p></div><div class="bot"><button class="btn btn-blue" data-act="paid">Prototype: they paid</button></div></div>';
+}
+function scFollowup(){
+ var rows=[['Today','Recap text with their audit page'],['Day 2','Email with plan options'],['Day 5','Reminder text'],['Day 9','Offer to answer questions']].map(function(r){return '<div class="row card" style="padding:12px 16px"><b class="bf" style="width:56px">'+r[0]+'</b><span class="p" style="font-size:15px">'+r[1]+'</span></div>';}).join('');
+ return '<div class="scr">'+flowTop('dclose')+'<div class="mid" style="gap:10px"><h1 class="t1">We follow up for you</h1>'+rows+'<p class="mute" style="font-size:13px;margin:0">You do not have to remember. You earn when they pay.</p></div><div class="bot"><button class="btn btn-blue" data-act="paid">Prototype: they paid</button></div></div>';
+}
+function scWon(){
+ var l=lead(S.lead)||lead('marlow')||{name:'Marlow Med Spa',plan:S.plan,stage:4,closer:'me'},c=custCount(),li=levelOf(c),L=LEVELS[li],N=LEVELS[li+1];
+ var lvl='<div class="card" style="background:#13233A;border-color:#22304A;color:var(--paper)"><b class="bf">Level '+(li+1)+': '+L.n+'</b><div style="font-size:14px;color:#C9D3E4">'+(L.need?L.prize+' on the way. ':'')+(N?(N.need-c)+' more customer'+(N.need-c>1?'s':'')+' to win '+lcFirst(N.prize)+'.':'')+'</div></div>';
+ return '<div class="scr dark"><div class="top"></div><div class="mid" style="gap:10px"><div class="lbl" style="color:#9FB0CC">'+l.name+' is a customer</div><h1 class="t1" style="font-size:clamp(30px,5.4cqh,44px)">You earn</h1><div class="money" style="font-size:clamp(56px,9.5cqh,84px);line-height:1">+'+usd(earn(l))+'</div><p class="p" style="color:#C9D3E4">every month while they stay. You found it, booked it and closed it.</p>'+lvl+'</div><div class="bot"><button class="btn btn-paper" data-act="tab" data-arg="money">See my money</button><button class="btn btn-text" style="color:#9FB0CC" data-act="tab" data-arg="find">Find the next business</button></div></div>';
+}
+function proj(){
+ var closes=S.weekly*4*4.33*0.025,nm=closes*PLANS[1].p*0.95*0.05*3,m=0;
+ for(var i=0;i<6;i++)m=m*0.95+nm;
+ return m;
+}
+function scMoney(){
+ var total=S.leads.reduce(function(a,l){return a+earn(l);},0);
+ var cust=S.leads.filter(function(l){return l.stage===4;}),open=S.leads.filter(function(l){return l.stage<4;});
+ var wait=open.reduce(function(a,l){return a+potential(l);},0);
+ var rows=cust.slice(0,2).map(function(l){return '<div class="row card" style="padding:10px 14px"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><b class="bf">'+l.name+'</b><div class="row" style="gap:6px;margin-top:3px"><span class="tag">Claim</span><span class="tag">Meeting</span>'+(l.closer==='me'?'<span class="tag">Close</span>':'')+'</div></div><b class="money" style="font-size:22px">'+usd(earn(l))+'</b></div>';}).join('');
+ return '<div class="scr"><div class="mid" style="justify-content:flex-start;gap:clamp(8px,1.8cqh,14px);padding-top:6px"><div class="inkcard" style="padding:18px"><div class="lbl" style="color:#9FB0CC">Every month</div><div class="money" style="font-size:clamp(46px,8cqh,64px);line-height:1.05">'+usd(total)+'</div><div style="font-size:14px;color:#C9D3E4">'+(cust.length?cust.length+' customer'+(cust.length>1?'s':'')+'. Paid monthly after they pay.':'Close your first customer to start.')+(open.length?' '+usd(wait)+' more if your '+open.length+' open lead'+(open.length>1?'s':'')+' close.':'')+'</div></div>'+rows+
+ '<div class="card"><label class="sl"><span class="row between"><span class="p" style="font-size:15px">Hours you have each week</span><b id="o-weekly" class="bf" style="font-size:20px">'+S.weekly+' hr</b></span><input type="range" min="0" max="10" step="1" value="'+S.weekly+'" data-in="weekly" aria-label="Hours you have each week"></label><div class="row between"><span class="mute" style="font-size:14px">After 6 months</span><b class="money" style="font-size:24px" id="o-proj">'+usd(proj())+' a month</b></div><p class="mute" style="font-size:12px;margin:4px 0 0">An illustration, not a promise.</p></div></div></div>'+tabbar();
+}
+function scInbox(){
+ var rows=S.threads.map(function(t){var l=t.msgs[t.msgs.length-1];return '<button class="th" data-act="thread" data-arg="'+t.id+'"><span class="av" aria-hidden="true">'+t.name[0]+'</span><div class="grow"><b class="bf">'+t.name+'</b><div class="mute" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(l[1])+'</div></div>'+(t.unread?'<span class="dot"></span>':'')+'</button>';}).join('');
+ var body=S.threads.length?rows+'<p class="mute" style="font-size:13px;margin:14px 0 0">The app messages your leads for you, from a number it gives you, not your own.</p>':'<p class="p mute" style="text-align:center">No messages yet. When a business claims its page, the app texts them to book a meeting.</p>';
+ return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Messages</h1></div><div class="mid" style="justify-content:'+(S.threads.length?'flex-start':'center')+';gap:0;padding-top:8px">'+body+'</div></div>'+tabbar();
+}
+function scThread(){
+ var t=thread(S.thread);if(!t)return scInbox();
+ var msgs=t.msgs.slice(-3).map(function(m){return '<div class="bub '+m[0]+'">'+esc(m[1])+'</div>'+(m[2]?'<div class="meta '+m[0]+'">'+esc(m[2])+'</div>':'');}).join('');
+ var sug=t.sug.length?t.sug.map(function(s,i){return '<button class="reply" data-act="sendreply" data-arg="'+i+'">'+esc(s)+'</button>';}).join(''):(t.auto?'<p class="mute" style="font-size:14px;margin:0;text-align:center">'+t.auto+'</p>':'');
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="inbox" aria-label="Back to messages">'+ic('back',26)+'</button><b class="bf" style="font-size:18px">'+t.name+'</b></div><div class="mid bubs" style="justify-content:flex-end">'+msgs+'</div><div class="bot" style="gap:10px">'+(t.sug.length?'<div class="lbl">Tap to reply</div>':'')+sug+'</div></div>';
+}
+var SCREENS={appstore:scAppstore,o1:function(){return scObs('o1');},o2:function(){return scObs('o2');},o3:function(){return scObs('o3');},o4:function(){return scObs('o4');},o5:function(){return scObs('o5');},o6:function(){return scObs('o6');},o7:function(){return scObs('o7');},
+ id:scId,q1:function(){return scQuiz(0);},q2:function(){return scQuiz(1);},card:scCard,payout:scPayout,perm:scPerm,board:scBoard,prizes:scPrizes,contact:scContact,cardsent:scCardsent,time:scTime,summary:scSummary,find:scFind,there:scThere,look:scLook,say:scSay,reply:scReply,qr:scQr,claimwait:scClaimwait,claimed:scClaimed,
+ leads:scLeads,lead:scLead,dshow:function(){return scDemo('dshow');},dworth:function(){return scDemo('dworth');},dplan:function(){return scDemo('dplan');},dclose:function(){return scDemo('dclose');},dsend:scDsend,followup:scFollowup,won:scWon,money:scMoney,inbox:scInbox,thread:scThread};
+
+function render(){
+ var hostEl=document.getElementById('host');hostEl.innerHTML=SCREENS[S.screen]();document.getElementById('phone').classList.toggle('dk',!!hostEl.querySelector('.scr.dark'));
+ if(S.screen==='board')startFeed();else stopFeed();
+ renderChaps();
+}
+function startFeed(){stopFeed();feedTimer=setInterval(function(){S.feed=(S.feed+1)%FEED.length;var t=document.getElementById('tick');if(t)t.innerHTML=feedLine();},3200);}
+function stopFeed(){if(feedTimer){clearInterval(feedTimer);feedTimer=null;}}
+function renderChaps(){
+ var cur=chapterOf();
+ var list='<ol class="chap">'+CHAPS.map(function(c,i){return '<li><button data-act="chap" data-arg="'+(i+1)+'" '+(cur===i+1?'aria-current="true"':'')+'><i>'+(i+1)+'</i>'+c+'</button></li>';}).join('')+'</ol>';
+ document.getElementById('rail').innerHTML='<h1>Registry Scout</h1><p>One screen at a time. One button. Tap through it or jump to any step.</p>'+list+'<p class="note">Names, earnings, the leaderboard and plan prices are sample data. Screens marked Prototype stand in for things that happen on the customer\'s side.</p>';
+ document.getElementById('sheet').innerHTML='<h2>Jump to a step</h2>'+list;
+}
+function jump(n){
+ document.getElementById('sheetback').classList.remove('open');
+ S.leads=[];S.threads=[];S.bi=0;S.plan=1;S.lead='marlow';S.session={mins:60,total:4,done:0,claims:0,cards:0,active:false};
+ if(n===1){S.screen='appstore';S.install=0;}
+ else if(n===2){S.screen='o1';}
+ else if(n===3){S.screen='id';}
+ else if(n===4){S.screen='board';S.tab='board';}
+ else if(n===5){S.screen='time';S.tab='find';}
+ else if(n===6){S.session.active=true;S.screen='there';}
+ else if(n===7){seed();addMarlow(1);S.screen='leads';S.tab='leads';}
+ else if(n===8){seed();addMarlow(2);S.screen='dshow';}
+ else if(n===9){seed();addMarlow(4);S.screen='won';S.tab='money';}
+ else if(n===10){seed();addMarlow(2);S.screen='inbox';S.tab='inbox';}
+ render();
+}
+function act(a,arg,el){
+ switch(a){
+  case 'chapters':document.getElementById('sheetback').classList.add('open');break;
+  case 'closechapters':if(el===document.getElementById('sheetback'))document.getElementById('sheetback').classList.remove('open');break;
+  case 'chap':jump(+arg);break;
+  case 'install':S.install=1;S.prog=0;render();var t=setInterval(function(){S.prog+=10;if(S.prog>=100){clearInterval(t);S.install=2;}if(S.screen==='appstore')render();},130);break;
+  case 'open':S.screen='o1';render();break;
+  case 'go':S.screen=arg;render();break;
+  case 'flowback':var g=groupOf(S.screen),arr=GROUPS[g],i=arr.indexOf(S.screen);S.screen=i>0?arr[i-1]:(GBACK[g]||arr[0]);if(S.screen==='find')S.tab='find';render();break;
+  case 'answer':var p=arg.split(','),qi=+p[0],ai=+p[1];if(ai===QUIZ[qi].ok){S.screen=qi===0?'q2':'card';render();}else{toast('Not quite. '+QUIZ[qi].fix);}break;
+  case 'tab':S.tab=arg;S.screen=(arg==='find'&&!S.session.active)?'time':arg;render();break;
+  case 'skip':S.bi=(S.bi+1)%BIZ.length;render();break;
+  case 'tocontact':var tb=biz();S.contact={name:tb.owner,phone:tb.phone,email:'',role:'Owner',ok:false};S.screen='contact';render();break;
+  case 'role':S.contact.role=arg;render();break;
+  case 'sendcard':var cb=biz();addCardLead(cb,S.contact);S.lead=cb.id;S.session.cards++;S.session.done++;S.screen='cardsent';render();break;
+  case 'settime':S.time=+arg;render();break;
+  case 'starttime':S.session={mins:S.time,total:Math.max(1,Math.round(S.time/60*4)),done:0,claims:0,cards:0,active:true};S.bi=0;S.screen='find';S.tab='find';render();break;
+  case 'done':S.screen='summary';render();break;
+  case 'endsession':S.session={mins:S.time,total:Math.max(1,Math.round(S.time/60*4)),done:0,claims:0,cards:0,active:false};S.tab=arg;S.screen=arg;render();break;
+  case 'nextbiz':S.bi=(S.bi+1)%BIZ.length;S.screen='find';S.tab='find';render();break;
+  case 'protoclaim':var pc=lead(S.lead);claimLead(bizOf(pc.id)||biz(),pc.contact);pc.stage=1;render();toast('They claimed. The app is texting them to book a meeting.');break;
+  case 'nextdoor':S.bi=1;S.screen='find';S.tab='find';render();break;
+  case 'claimed':claimLead(biz(),{name:biz().owner,role:'Owner',phone:biz().phone});S.session.claims++;S.session.done++;S.screen='claimed';render();break;
+  case 'lead':S.lead=arg;S.screen='lead';render();break;
+  case 'closer':var l=lead(S.lead);if(l){l.closer=arg;}render();break;
+  case 'protobook':var pl=lead(S.lead);pl.stage=2;pl.when='Thu 10:30 am';var pt=thread(pl.id);if(pt&&!pt.booked){pt.booked=1;pt.msgs.push(['them','Thursday at 10:30 works.']);pt.msgs.push(['me','Booked. You will get a reminder the day before.','Sent by the app for you']);pt.auto='Reminder text Wed 4:00 pm';}render();toast('They booked Thu 10:30 am. Choose who closes it.');break;
+  case 'teamclose':var tl=lead(S.lead);tl.stage=4;render();break;
+  case 'pickplan':S.plan=+arg;S.screen='dclose';render();break;
+  case 'paid':var pd=lead(S.lead);if(!pd){addMarlow(4);pd=lead('marlow');S.lead='marlow';}pd.stage=4;pd.plan=S.plan;if(!pd.closer)pd.closer='me';S.screen='won';render();break;
+  case 'toast':toast(arg);break;
+  case 'thread':S.thread=arg;thread(arg).unread=0;S.screen='thread';render();break;
+  case 'sendreply':var th=thread(S.thread);th.msgs.push(['me',th.sug[+arg],'Sent from your app number']);th.sug=[];th.auto='Next follow-up: tomorrow 9:00 am';render();break;
+ }
+}
+document.addEventListener('click',function(e){var el=e.target.closest('[data-act]');if(!el||el.disabled)return;act(el.getAttribute('data-act'),el.getAttribute('data-arg'),el);});
+document.addEventListener('input',function(e){
+ var el=e.target,k=el.getAttribute('data-in');if(!k)return;
+ if(k==='cname'||k==='cphone'||k==='cemail'){S.contact[k==='cname'?'name':(k==='cphone'?'phone':'email')]=el.value;syncSend();}
+ else if(k==='cok'){S.contact.ok=el.checked;syncSend();}
+ else if(k==='value'){S.value=+el.value;document.getElementById('o-value').textContent=usd(S.value);document.getElementById('o-win').textContent=usd(winMonthly());}
+ else if(k==='weekly'){S.weekly=+el.value;document.getElementById('o-weekly').textContent=S.weekly+' hr';document.getElementById('o-proj').textContent=usd(proj())+' a month';}
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('sheetback').classList.remove('open');});
+render();
+})();
+</script>
+</body>
+</html>
