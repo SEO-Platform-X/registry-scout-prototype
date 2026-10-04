@@ -314,13 +314,13 @@ var FEED=[['Danielle R.','Austin, TX','a lead became a customer','+$214/mo'],['M
 var CITIES=[[26,22],[14,62],[30,98],[52,108],[112,70],[128,140],[188,42],[222,102],[240,52],[243,160]];
 var QUIZ=[
  {q:'What does it cost a business to claim its page?',o:['Free','$14 a day','$500 a month'],ok:0,fix:'Claiming is free. No credit card.'},
- {q:'What do you say at the door?',o:['"People are asking ChatGPT for a med spa near you right now. Want to see if you come up, and if what it says about you is even right? Free, takes 2 minutes."','"I work for Local AI Registry and I am here to sell you a plan."','"You need to pay $1,500 today."'],ok:0,fix:'Do not sell audits, consultations or AI. Ask for one free signup.'}
+ {q:'What do you say at the door?',o:['"Hey, I checked what ChatGPT knows about you. It gets 3 of 8 facts right. Want to fix it free?"','"I work for Local AI Registry and I am here to sell you a plan."','"You need to pay $1,500 today."'],ok:0,fix:'You are a customer who noticed a problem. Offer the free fix, not a sale.'}
 ];
 var S={screen:'appstore',install:0,prog:0,name:'Sam Ramirez',bi:0,value:450,plan:1,scope:'national',feed:0,thread:'marlow',weekly:2,tab:'board',lead:'marlow',leads:[],threads:[],contact:{name:'',phone:'',email:'',role:'Owner',ok:false},session:{mins:60,total:4,done:0,claims:0,cards:0,active:false},time:60,queue:freshQueue(),who:'owner'};
 var feedTimer=null,toastTimer=null;
 
 /* flow groups: each shows a progress bar and a back arrow */
-var GROUPS={learn:['o1','o2','o3','o4','o5','oj','o6','o7'],license:['id','q1','q2','prac','card','payout','perm'],claim:['know','there','look','say','reply','qr','claimwait','claimed'],demo:['dask','dshow','dworth','dplan','dclose']};
+var GROUPS={learn:['o1','o2','o3','o4','o5','o6','o7'],license:['id','q1','q2','prac','card','payout','perm'],claim:['know','there','look','say','reply','qr','claimwait','claimed'],demo:['dask','dshow','dworth','dplan','dclose']};
 var GBACK={claim:'find',demo:'lead'};
 var NOBACK={o1:1,id:1,claimed:1};
 function groupOf(s){for(var g in GROUPS){if(GROUPS[g].indexOf(s)>-1)return g;}return null;}
@@ -364,8 +364,8 @@ function addMarlow(stage){
 var TIMES=[[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours']];
 function tlabel(m){var r=TIMES.filter(function(t){return t[0]===m;})[0];return r?r[1]:m+' min';}
 function est(mins){
- var stops=Math.max(1,Math.round(mins/60*4)),leg1=PLANS[1].p*0.95*0.05,per=stops*4.33*0.01;
- return {stops:stops,lo:stops*0.01*leg1*2,hi:stops*0.01*leg1*3,sixLo:per*leg1*2*5.3,sixHi:per*leg1*3*5.3};
+ var stops=Math.max(1,Math.round(mins/60*4)),leg1=PLANS[1].p*0.95*0.05,per=stops*4.33*0.025;
+ return {stops:stops,lo:stops*0.025*leg1*2,hi:stops*0.025*leg1*3,sixLo:per*leg1*2*5.3,sixHi:per*leg1*3*5.3};
 }
 function bizOf(id){return BIZ.filter(function(b){return b.id===id;})[0];}
 function claimLead(b,contact){
@@ -449,7 +449,7 @@ var FACTS=['Hours','Address','Phone','Services','People','Prices','Photos','Revi
 function right(b){return b.f.filter(function(x){return x[0]==='y';}).length;}
 function factsHtml(b){return b.f.map(function(x,i){var m=x[0]==='y'?ic('check',14):(x[0]==='n'?'\u00d7':'?');return '<div class="frow"><span class="fic '+x[0]+'">'+m+'</span><b class="bf" style="width:64px;font-weight:600">'+FACTS[i]+'</b><span class="mute grow" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+x[1]+'</span></div>';}).join('');}
 function segs(n){var o='';for(var i=0;i<8;i++)o+='<i class="'+(i<n?'on':'')+'"></i>';return '<div class="segs">'+o+'</div>';}
-function sayLine(b){return 'People are asking ChatGPT for a '+b.vert+' near you right now. Want to see if you come up, and if what it says about you is even right? Free, takes 2 minutes.';}
+function sayLine(b){var t='Hey, I checked what ChatGPT knows about you. It gets '+right(b)+' of 8 facts right and sends people to '+b.comp+'.';if(b.near&&lead('marlow'))t+=' Marlow next door just fixed theirs.';return t+' You can fix yours for free. Want to see?';}
 function fdLine(b){return 'I want to make sure the right information is reaching your clients. '+b.name+' is not showing correctly in AI. I can send you the link to check it. It takes 2 minutes.';}
 function lcFirst(s){return s.charAt(0).toLowerCase()+s.slice(1);}
 function scAppstore(){
@@ -472,10 +472,9 @@ function scObs(id){
  o2:{h:'Customers now ask AI where to go',n:'o3',b:'Next',mid:'<div class="cbars"><div class="cbar"><b>5%</b><i style="height:11%;background:#9FB0CC"></i><span class="lbl">June 2025</span></div><div class="cbar"><b>47%</b><i style="height:100%"></i><span class="lbl">July 2026</span></div></div><p class="p mute" style="text-align:center">of Americans use AI to find a local business.</p>'},
  o3:{h:'AI is guessing about local businesses',n:'o4',b:'Next',mid:'<div class="card" style="padding:4px 14px">'+factsHtml(BIZ[0])+'</div><p class="p"><b>AI gets 3 of 8 facts right about this med spa.</b> Most local businesses look like this. The customer goes somewhere else.</p>'},
  o4:{h:'The more AI can verify, the more it trusts you',n:'o5',b:'Next',mid:'<div style="display:flex;flex-direction:column;gap:8px"><div class="row between"><span class="p">Before they claim</span><b class="bf">3 of 8 verified</b></div>'+segs(3)+'</div><div style="display:flex;flex-direction:column;gap:8px"><div class="row between"><span class="p">After they claim</span><b class="bf">7 of 8 verified</b></div>'+segs(7)+'</div><p class="p">Every fact a business corrects and verifies is one less thing AI has to guess. That is how a business gets into AI answers.</p>'},
- o5:{h:'Claim for $0. Get recommended for $14 a day',n:'oj',b:'Next',mid:'<div class="leg3"><div class="r"><span class="num">1</span><div class="grow"><b class="bf">Claim and verify</b><div class="mute" style="font-size:14px">Correct and verify the facts about you.</div></div><b class="money" style="font-size:24px">$0</b></div><div class="r"><span class="num">2</span><div class="grow"><b class="bf">Get recommended by AI</b><div class="mute" style="font-size:14px">AI sends customers your way when they ask.</div></div><b class="money" style="font-size:20px">$14/day</b></div></div><p class="p">You help with step 1. Businesses that want AI recommending them choose step 2.</p>'},
- oj:{h:'Your job is one free signup',n:'o6',b:'Next',mid:'<div class="card" style="padding:12px 14px"><div class="p" style="font-size:15px">Do not sell audits. Do not sell consultations. Do not sell AI.</div></div><div class="say-q" style="padding:16px"><p style="font-size:clamp(20px,3.6cqh,28px)">"People are asking ChatGPT for a med spa near you right now. Want to see if you come up, and if what it says about you is even right? Free, takes 2 minutes."</p></div><p class="p">You are not selling. You are showing them a mirror. The free audit does the convincing.</p>'},
+ o5:{h:'Claim for $0. Get recommended for $14 a day',n:'o6',b:'Next',mid:'<div class="leg3"><div class="r"><span class="num">1</span><div class="grow"><b class="bf">Claim and verify</b><div class="mute" style="font-size:14px">Correct and verify the facts about you.</div></div><b class="money" style="font-size:24px">$0</b></div><div class="r"><span class="num">2</span><div class="grow"><b class="bf">Get recommended by AI</b><div class="mute" style="font-size:14px">AI sends customers your way when they ask.</div></div><b class="money" style="font-size:20px">$14/day</b></div></div><p class="p">You help with step 1. Businesses that want AI recommending them choose step 2.</p>'},
  o6:{h:'How you get paid',n:'o7',b:'Next',mid:'<div class="leg3"><div class="r"><span class="num">1</span><div class="grow"><b class="bf">They claim their page</b><div class="mute" style="font-size:14px">You are their lead</div></div><b class="money" style="font-size:26px">5%</b></div><div class="r"><span class="num">2</span><div class="grow"><b class="bf">They hold a meeting</b><div class="mute" style="font-size:14px">The app books it for you</div></div><b class="money" style="font-size:26px">5%</b></div><div class="r"><span class="num">3</span><div class="grow"><b class="bf">They become a customer</b><div class="mute" style="font-size:14px">Close it yourself or hand it off</div></div><b class="money" style="font-size:26px">5%</b></div></div><p class="p">On a $1,500 plan that is up to <b>$213.75 a month</b>, every month they stay. You get paid only when the customer pays.</p>'},
- o7:{h:'It is a numbers game',n:'id',b:'Get licensed',mid:'<div class="funnel"><div class="f" style="background:var(--ink)"><span>Visit businesses</span><b>100</b></div><div class="f" style="background:#1B3A8F"><span>Claim their page</span><b>10</b></div><div class="f" style="background:#2A55D0"><span>Book a consultation</span><b>5</b></div><div class="f" style="background:var(--blue)"><span>Become a customer</span><b>1</b></div></div><p class="p">At 4 shops an hour, 100 visits is about 25 hours, spread out however you like. One customer pays you up to <b>$213.75 a month</b>. One no is just part of the count.</p><p class="mute" style="font-size:12px;margin:0">From your team\'s field data. Yours replace it as you go.</p>'}
+ o7:{h:'It is a numbers game',n:'id',b:'Get licensed',mid:'<div class="funnel"><div class="f" style="background:var(--ink)"><span>Visit businesses</span><b>40</b></div><div class="f" style="background:#1B3A8F"><span>Claim their page</span><b>8</b></div><div class="f" style="background:#2A55D0"><span>Book a meeting</span><b>2</b></div><div class="f" style="background:var(--blue)"><span>Become a customer</span><b>1</b></div></div><p class="p">At 4 shops an hour, 40 visits is about 10 hours, spread out however you like. One customer pays you up to <b>$213.75 a month</b>. One no is just part of the count.</p><p class="mute" style="font-size:12px;margin:0">An illustration. Yours replace it as you go.</p>'}
  }[id];
  if(C.dark){
   return '<div class="scr dark"><div class="top"></div><div class="mid" style="gap:18px"><div class="appicon" style="width:64px;height:64px;border-radius:16px" aria-hidden="true">'+ic('pin',34)+'</div><h1 class="t1" style="font-size:clamp(30px,5.8cqh,46px)">'+C.h+'</h1><p class="p" style="color:#C9D3E4">'+C.p+'</p></div><div class="bot"><button class="btn btn-paper" data-act="go" data-arg="'+C.n+'">'+C.b+'</button></div></div>';
@@ -538,7 +537,7 @@ function scTime(){
  '<div class="inkcard" style="padding:16px 18px;display:flex;flex-direction:column;gap:10px"><div><div class="lbl" style="color:#9FB0CC">You can visit about</div><div class="money" style="font-size:38px;line-height:1">'+e.stops+' businesses</div></div>'+
  '<div><div class="lbl" style="color:#9FB0CC">This session adds about</div><div class="money" style="font-size:32px;line-height:1.05">'+usd(Math.round(e.lo))+' to '+usd(Math.round(e.hi))+'</div><div style="font-size:14px;color:#C9D3E4">a month, every month they stay</div></div>'+
  '<div style="border-top:1px solid #22304A;padding-top:10px"><div style="font-size:14px;color:#C9D3E4">Every week for 6 months</div><div class="money" style="font-size:28px;line-height:1.1">about '+usd(Math.round(e.sixLo))+' to '+usd(Math.round(e.sixHi))+' a month</div></div></div>'+
- '<p class="mute" style="font-size:12px;margin:0">Estimates use field data from the team: about 1 in 100 visits becomes a customer. Not a guarantee. Yours replace them as you go.</p></div>'+
+ '<p class="mute" style="font-size:12px;margin:0">Estimates use starter ratios: about 1 in 40 visits becomes a customer. Not a guarantee. Yours replace them as you go.</p></div>'+
  '<div class="bot"><button class="btn btn-blue" data-act="starttime">Start</button></div></div>'+tabbar();
 }
 function scFind(){
@@ -558,8 +557,8 @@ function scSummary(){
 function scKnow(){
  var b=biz();
  var opener=b.fresh?'Open with a congrats. They filed a new business name this week.':'About '+b.prompts.toLocaleString()+' people ask AI for a '+b.vert+' near here every month.';
- var rows=[['The business',b.news],['The owner',b.person],['The door opener',opener]].map(function(r){return '<div class="card" style="padding:10px 14px"><div class="lbl">'+r[0]+'</div><div class="p" style="font-size:16px;margin-top:2px">'+r[1]+'</div></div>';}).join('');
- return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:8px"><h1 class="t1">Before you walk in</h1>'+rows+'<div class="card" style="padding:10px 14px"><div class="lbl">They might say</div><div class="p" style="font-size:15px;margin-top:2px">"'+b.obj[0]+'"</div><div class="p mute" style="font-size:14px;margin-top:4px">'+b.obj[1]+'</div></div><p class="mute" style="font-size:12px;margin:0">Collected from the web. Be kind to the front desk. Mention one thing, then show the check.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="there">I am at the door</button></div></div>';
+ var rows=[['About them',b.news+' '+b.person],['The door opener',opener]].map(function(r){return '<div class="card" style="padding:10px 14px"><div class="lbl">'+r[0]+'</div><div class="p" style="font-size:16px;margin-top:2px">'+r[1]+'</div></div>';}).join('');
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:10px"><h1 class="t1">Before you walk in</h1>'+rows+'<div class="card" style="padding:10px 14px"><div class="lbl">They might say</div><div class="p" style="font-size:15px;margin-top:2px">"'+b.obj[0]+'"</div><div class="p mute" style="font-size:14px;margin-top:4px">'+b.obj[1]+'</div></div><p class="mute" style="font-size:12px;margin:0">Collected from the web.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="there">I am at the door</button></div></div>';
 }
 function scThere(){
  var b=biz();
@@ -572,7 +571,7 @@ function scLook(){
 function scSay(){
  var b=biz(),fd=S.who==='desk';
  var chips='<div class="seg" role="group" aria-label="Who are you talking to"><button data-act="who" data-arg="owner" aria-pressed="'+(!fd)+'">Owner</button><button data-act="who" data-arg="desk" aria-pressed="'+fd+'">Front desk</button></div>';
- var tail=fd?'If they say not interested: "Not interested in what? Would you say being found is huge in this area?"':'Hold up your phone and show them: it gets '+right(b)+' of 8 facts right.'+((b.near&&lead('marlow'))?' Marlow next door just fixed theirs.':'');
+ var tail=fd?'If they say not interested: "Not interested in what? Would you say being found is huge in this area?"':'Say it your way. Show them the check on your phone.';
  return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:12px"><h1 class="t1">Say this</h1>'+chips+'<div class="say-q sm"><p>"'+(fd?fdLine(b):sayLine(b))+'"</p></div><p class="p mute" style="font-size:15px">'+tail+'</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="reply">I said it</button></div></div>';
 }
 function scReply(){
@@ -614,7 +613,7 @@ function scLeads(){
   return '<button class="ld" data-act="lead" data-arg="'+l.id+'"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><div class="row" style="gap:6px"><b class="bf">'+l.name+'</b>'+(isHot(l)?'<span class="tag">Hot</span>':'')+'</div><div class="mute" style="font-size:14px">'+st+'</div>'+(ol?'<div style="font-size:13px;color:var(--blue)">'+ol+'</div>':'')+'</div>'+right+'</button>';
  }).join('');
  var qcard=S.queue.length?'<button class="card row" data-act="go" data-arg="queue" style="width:100%;background:var(--tint);border-color:transparent"><span class="dot dot-ok"></span><div class="grow"><b class="bf">New sign-up near you</b><div class="mute" style="font-size:13px">'+S.queue[0].name+', registered '+S.queue[0].ago+'</div></div><span class="tag">Take it</span></button>':'';
- var stats='<div class="stat3 sm"><div><b>'+avgDays('tBook')+'</b><span>Claim to meeting</span></div><div><b>'+closeRate()+'</b><span>Meetings closed</span></div><div><b>'+avgDays('tClose')+'</b><span>Meeting to close</span></div></div>';
+ var stats='<p class="mute" style="font-size:12px;margin:0">Claim to meeting '+avgDays('tBook')+'. Meetings closed '+closeRate()+'. Meeting to close '+avgDays('tClose')+'.</p>';
  if(!S.leads.length)return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="gap:12px">'+qcard+'<p class="p mute" style="text-align:center">No leads yet. When a business claims its page through you, it shows up here with its status.</p></div><div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business</button></div></div>'+tabbar();
  return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="justify-content:flex-start;gap:8px;padding-top:6px;overflow-y:auto">'+qcard+stats+'<div>'+rows+'</div></div></div>'+tabbar();
 }
@@ -625,29 +624,23 @@ function scQueue(){
 function scLead(){
  var l=lead(S.lead);if(!l)return scLeads();
  var t=l.touch||{text:'Never',email:'Never',meet:'None yet'};
- var steps=[['Claimed their page',l.stage>=1?(l.inbound?'Registered on their own. You earn when you book and close.':'You are the lead. 5%'):'The app follows up until they claim'],['Booked a meeting',l.stage>=2&&l.when?l.when+(l.meetIn?', '+l.meetIn+' days out':''):'The app offers times in the next 3 days'],['Meeting held','Shows them the audit. 5%'],['Customer','5% if you close it']];
- var tl=steps.map(function(s,i){var n=i+1,cls=l.stage>=n?'done':(l.stage+1===n?'now':'');return '<div class="ti"><span class="tdot '+cls+'">'+(l.stage>=n?ic('check',16):'')+'</span><div><b class="bf">'+s[0]+'</b><div class="mute" style="font-size:14px">'+s[1]+'</div></div></div>';}).join('');
+ var N=[['Waiting for them to claim','The app follows up until they claim.'],['Waiting for them to book',l.inbound?'Call them now. You earn when you book and close.':'The app offers times in the next 3 days.'],['Meeting booked'+(l.when?', '+l.when:''),'You will show them the audit.'],['Meeting held','Next, the payment link.'],['Customer','Paid every month they stay.']][l.stage];
  var can=l.stage>=2&&l.stage<4&&!l.chain;
  var btn='';
  if(l.stage===0)btn='<button class="btn btn-blue" data-act="protoclaim">Prototype: they claimed</button>';
- else if(l.stage===1)btn='<button class="btn btn-blue" data-act="protobook">Prototype: they booked a meeting</button>';
+ else if(l.stage===1)btn='<button class="btn btn-blue" data-act="protobook">Prototype: they booked</button>';
  else if(l.stage===2&&l.closer==='me')btn='<button class="btn btn-blue" data-act="go" data-arg="dask">Start the demo</button>';
  else if(l.stage===2)btn='<button class="btn btn-blue" data-act="teamclose">Prototype: the team closed it</button>';
  else if(l.stage===3)btn='<button class="btn btn-blue" data-act="go" data-arg="dclose">Send the payment link</button>';
- else btn='<p class="p" style="text-align:center">Customer. You earn <b>'+usd(earn(l))+'</b> a month.</p>';
- var ct=l.contact?'<div class="mute" style="font-size:14px">'+esc(l.contact.name)+', '+esc(l.contact.role.toLowerCase())+', '+esc(l.contact.phone)+'</div>':'';
+ else btn='<p class="p" style="text-align:center">You earn <b>'+usd(earn(l))+'</b> a month.</p>';
+ var ct=l.contact?'<div class="mute" style="font-size:14px">'+esc(l.contact.name)+', '+esc(l.contact.role.toLowerCase())+'</div>':'';
  var ol=openLine(l);
- var touch='<div class="stat3 sm"><div><b>'+t.text+'</b><span>Last text</span></div><div><b>'+t.email+'</b><span>Last email</span></div><div><b>'+t.meet+'</b><span>Meeting</span></div></div>'+(ol?'<div class="row" style="gap:8px;font-size:14px;margin-top:6px"><span class="dot dot-ok"></span><span>'+ol+'</span></div>':'');
- var extra='';
- if(l.stage<=1)extra='<div class="card" style="padding:10px 14px"><div class="p" style="font-size:14px"><b>'+(l.inbound?'Call now.':'Give first.')+'</b> '+(l.inbound?'':'Send something useful before the meeting. People skip meetings with strangers, not with people they owe. ')+'Book within 3 days: a week out means 33% more no-shows.</div></div>';
- else if(l.stage<4)extra='<button class="card row" data-act="teamchat" style="width:100%;padding:10px 14px"><span class="av" aria-hidden="true">#</span><div class="grow"><b class="bf">Team chat</b><div class="mute" style="font-size:13px">lead-'+slug(l.name)+', you and the closer</div></div></button>'+(l.meetIn>=7?'<span class="tag warn">A week or more out. Offer an earlier time.</span>':'');
- if(l.stage>=3)extra+='<div class="row card" style="padding:10px 14px"><span class="fic y">'+ic('check',14)+'</span><span class="p" style="font-size:14px">Meeting recording linked to this lead.</span></div>';
- var reach=l.stage<4?'<button class="btn btn-line" data-act="go" data-arg="nudge">Reach out</button>':'';
+ var note=(l.meetIn>=7)?'A week or more out. Offer an earlier time.':(l.stage<=1?'Book within 3 days. A week out means 33% more no-shows.':'');
  var pm=(l.inbound?0:1)+1+(l.closer==='me'?1:0),pt=(l.inbound?0:1)+1;
- var hint=can?(l.closer==='me'?'You close it. You earn '+pm*5+'%.':'The team closes it. You earn '+pt*5+'%.'):(l.chain?'Chains go to the team.':(l.stage<2?'You choose once they book.':''));
- return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="leads" aria-label="Back to leads">'+ic('back',26)+'</button><div><h1 class="t2" style="font-size:20px">'+l.name+'</h1>'+ct+'</div></div><div class="mid" style="justify-content:flex-start;gap:clamp(8px,1.6cqh,14px);padding-top:6px;overflow-y:auto"><div class="tl">'+tl+'</div>'+
- '<div>'+touch+'</div>'+
- '<div><div class="lbl" style="margin-bottom:6px">Who closes it?</div><div class="seg" role="group" aria-label="Who closes"><button data-act="closer" data-arg="me" aria-pressed="'+(l.closer==='me')+'"'+(can?'':' disabled')+'>I will</button><button data-act="closer" data-arg="team" aria-pressed="'+(l.closer==='team')+'"'+(can?'':' disabled')+'>Let the team</button></div><p class="mute" style="font-size:13px;margin:6px 0 0">'+hint+'</p></div>'+extra+'</div><div class="bot">'+btn+reach+'</div></div>';
+ var closer=can?'<div><div class="lbl" style="margin-bottom:6px">Who closes it?</div><div class="seg" role="group" aria-label="Who closes"><button data-act="closer" data-arg="me" aria-pressed="'+(l.closer==='me')+'">I will</button><button data-act="closer" data-arg="team" aria-pressed="'+(l.closer==='team')+'">Let the team</button></div><p class="mute" style="font-size:13px;margin:6px 0 0">'+(l.closer==='me'?'You earn '+pm*5+'%.':'You earn '+pt*5+'%.')+'</p></div>':(l.chain&&l.stage<4?'<p class="mute" style="font-size:14px;margin:0">Chains go to the team.</p>':'');
+ var chat=(l.stage>=2&&l.stage<4)?'<button class="iconbtn" data-act="teamchat" aria-label="Team chat">'+ic('chat',24)+'</button>':'';
+ var reach=l.stage<4?'<button class="btn btn-line" data-act="go" data-arg="nudge">Reach out</button>':'';
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="leads" aria-label="Back to leads">'+ic('back',26)+'</button><div class="grow"><h1 class="t2" style="font-size:20px">'+l.name+'</h1>'+ct+'</div>'+chat+'</div><div class="mid" style="gap:12px"><div class="lvlbar"><i style="width:'+Math.max(6,l.stage*25)+'%"></i></div><div><h2 class="t1" style="font-size:clamp(24px,4.4cqh,34px)">'+N[0]+'</h2><p class="p mute" style="margin-top:4px">'+N[1]+'</p></div><p class="mute" style="font-size:14px;margin:0">Last text: '+t.text+'. Last email: '+t.email+'.'+(ol?' '+ol+'.':'')+'</p>'+closer+(note?'<p class="mute" style="font-size:13px;margin:0">'+note+'</p>':'')+'</div><div class="bot">'+btn+reach+'</div></div>';
 }
 function scNudge(){
  var l=lead(S.lead);if(!l)return scLeads();
@@ -686,7 +679,7 @@ function scWon(){
  return '<div class="scr dark"><div class="top"></div><div class="mid" style="gap:10px"><div class="lbl" style="color:#9FB0CC">'+l.name+' is a customer</div><h1 class="t1" style="font-size:clamp(30px,5.4cqh,44px)">You earn</h1><div class="money" style="font-size:clamp(56px,9.5cqh,84px);line-height:1">+'+usd(earn(l))+'</div><p class="p" style="color:#C9D3E4">every month while they stay. You found it, booked it and closed it.</p>'+lvl+'</div><div class="bot"><button class="btn btn-paper" data-act="tab" data-arg="money">See my money</button><button class="btn btn-text" style="color:#9FB0CC" data-act="toast" data-arg="Win badge saved. Share it anywhere.">Share my win</button><button class="btn btn-text" style="color:#9FB0CC" data-act="tab" data-arg="find">Find the next business</button></div></div>';
 }
 function proj(){
- var closes=S.weekly*4*4.33*0.01,nm=closes*PLANS[1].p*0.95*0.05*3,m=0;
+ var closes=S.weekly*4*4.33*0.025,nm=closes*PLANS[1].p*0.95*0.05*3,m=0;
  for(var i=0;i<6;i++)m=m*0.95+nm;
  return m;
 }
@@ -713,7 +706,7 @@ function scThread(){
  return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="inbox" aria-label="Back to messages">'+ic('back',26)+'</button><div><b class="bf" style="font-size:18px">'+t.name+'</b><div>'+tstat(t)+'</div></div></div><div class="mid bubs" style="justify-content:flex-end">'+msgs+'</div><div class="bot" style="gap:10px">'+(t.sug.length?'<div class="lbl">Tap to reply</div>':'')+sug+(t.team?'':'<button class="btn btn-text" data-act="closethread">Close this conversation</button>')+'</div></div>';
 }
 var SCREENS={appstore:scAppstore,o1:function(){return scObs('o1');},o2:function(){return scObs('o2');},o3:function(){return scObs('o3');},o4:function(){return scObs('o4');},o5:function(){return scObs('o5');},o6:function(){return scObs('o6');},o7:function(){return scObs('o7');},
- id:scId,q1:function(){return scQuiz(0);},q2:function(){return scQuiz(1);},card:scCard,payout:scPayout,perm:scPerm,board:scBoard,prizes:scPrizes,contact:scContact,cardsent:scCardsent,time:scTime,summary:scSummary,know:scKnow,nudge:scNudge,queue:scQueue,prac:scPrac,oj:function(){return scObs('oj');},find:scFind,there:scThere,look:scLook,say:scSay,reply:scReply,qr:scQr,claimwait:scClaimwait,claimed:scClaimed,
+ id:scId,q1:function(){return scQuiz(0);},q2:function(){return scQuiz(1);},card:scCard,payout:scPayout,perm:scPerm,board:scBoard,prizes:scPrizes,contact:scContact,cardsent:scCardsent,time:scTime,summary:scSummary,know:scKnow,nudge:scNudge,queue:scQueue,prac:scPrac,find:scFind,there:scThere,look:scLook,say:scSay,reply:scReply,qr:scQr,claimwait:scClaimwait,claimed:scClaimed,
  leads:scLeads,lead:scLead,dask:function(){return scDemo('dask');},dshow:function(){return scDemo('dshow');},dworth:function(){return scDemo('dworth');},dplan:function(){return scDemo('dplan');},dclose:function(){return scDemo('dclose');},dsend:scDsend,followup:scFollowup,won:scWon,money:scMoney,inbox:scInbox,thread:scThread};
 
 function render(){
