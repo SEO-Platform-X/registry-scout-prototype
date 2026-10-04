@@ -202,7 +202,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 
 /* messages */
 .th{display:flex;gap:12px;width:100%;min-height:72px;border-bottom:1px solid var(--line);align-items:center}
-.bubs{display:flex;flex-direction:column;gap:8px;justify-content:flex-end;min-height:0;overflow:hidden}
+.bubs{display:flex;flex-direction:column;gap:8px;min-height:0}
 .bub{max-width:84%;padding:12px 16px;border-radius:20px;font-size:17px;line-height:1.35}
 .bub.me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:6px}
 .bub.them{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}
@@ -257,6 +257,28 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .stat3.sm div{padding:8px 4px}
 .toast{position:absolute;left:16px;right:16px;bottom:96px;background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:14px;font-size:15px;line-height:1.4;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.chips{display:flex;gap:8px;overflow-x:auto;flex:none;padding:2px 0 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip.sm{min-height:36px;padding:0 12px;font-size:13px}
+.chip .cn{margin-left:6px;opacity:.7}
+.chp{display:inline-flex;align-items:center;gap:4px;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:12px;padding:3px 8px;border-radius:10px;background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+.dsep{align-self:center;font-size:12px;font-weight:600;color:var(--mute);margin:6px 0 2px}
+.meta.fail{color:#8A2410;font-weight:600}
+.bub.queued{opacity:.6}
+#mlist>*,#llist>*{flex:none}
+.trunc{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bubs{justify-content:flex-start;overflow-y:auto}
+.bubs>:first-child{margin-top:auto}
+.err{font-size:13px;color:#8A2410;margin:-2px 0 0}
+.swr{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;text-align:left;border-bottom:1px solid var(--line)}
+.swt{width:48px;height:28px;border-radius:14px;background:var(--line);position:relative;flex:none}
+.swt i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+.swr[aria-checked="true"] .swt{background:var(--blue)}
+.swr[aria-checked="true"] .swt i{left:23px}
+.offbar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFE3DC;color:#8A2410;font-size:13px;font-weight:600;padding:8px 14px;border-radius:12px;margin:0 0 6px}
+.stt{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin:18px 0 6px;opacity:.7}
+.sec{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:14px 0 4px}
 </style>
 </head>
 <body>
@@ -283,7 +305,11 @@ var IC={
  back:'<path d="M15 5l-7 7 7 7"/>',
  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
  id:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.2"/><path d="M5.5 16c.7-1.6 2-2.4 3.5-2.4s2.8.8 3.5 2.4M14 10h4M14 13h3"/>',
- bank:'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>'
+ bank:'<path d="M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>',
+ mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+ search:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/>',
+ hash:'<path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/>',
+ wifi:'<path d="M3 9a13 13 0 0 1 18 0M6 12.5a9 9 0 0 1 12 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1"/><path d="M4 4l16 16"/>'
 };
 function ic(n,s){s=s||24;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>';}
 function usd(n){var r=Math.round(n*100)/100;return '$'+r.toLocaleString('en-US',{minimumFractionDigits:(r%1?2:0),maximumFractionDigits:2});}
@@ -316,7 +342,7 @@ var QUIZ=[
  {q:'What does it cost a business to claim its page?',o:['Free','$14 a day','$500 a month'],ok:0,fix:'Claiming is free. No credit card.'},
  {q:'What do you say at the door?',o:['"Hey, I checked what ChatGPT knows about you. It gets 3 of 8 facts right. Want to fix it free?"','"I work for Local AI Registry and I am here to sell you a plan."','"You need to pay $1,500 today."'],ok:0,fix:'You are a customer who noticed a problem. Offer the free fix, not a sale.'}
 ];
-var S={screen:'appstore',install:0,prog:0,name:'Sam Ramirez',bi:0,value:450,plan:1,scope:'national',feed:0,thread:'marlow',weekly:2,tab:'board',lead:'marlow',leads:[],threads:[],contact:{name:'',phone:'',email:'',role:'Owner',ok:false},session:{mins:60,total:4,done:0,claims:0,cards:0,active:false},time:60,queue:freshQueue(),who:'owner'};
+var S={screen:'appstore',install:0,prog:0,name:'Sam Ramirez',bi:0,value:450,plan:1,scope:'national',feed:0,thread:'marlow',weekly:2,tab:'board',lead:'marlow',leads:[],threads:[],contact:{name:'',phone:'',email:'',role:'Owner',ok:false},session:{mins:60,total:4,done:0,claims:0,cards:0,active:false},time:60,queue:freshQueue(),who:'owner',mf:'all',mq:'',mqOpen:0,lf:'all',lq:'',lqOpen:0,chan:'sms',draft:'',offline:0,prefs:{hot:1,due:1,queue:1,recap:0}};
 var feedTimer=null,toastTimer=null;
 
 /* flow groups: each shows a progress bar and a back arrow */
@@ -340,11 +366,96 @@ function slug(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-
 function openLine(l){if(!l.open||!l.open.kind)return '';if(l.open.n<1)return l.open.kind==='email'?'Email not opened yet':'Link not clicked yet';return (l.open.kind==='email'?'Opened your email ':'Clicked your link ')+l.open.n+(l.open.n>1?' times':' time')+', '+l.open.ago;}
 function isHot(l){return !!(l.open&&l.open.n>=2&&l.stage<4);}
 function tstat(t){return t.done?'<span class="tag">Done</span>':(t.owe?'<span class="tag warn">Reply due, '+t.since+'</span>':'<span class="tag">Waiting on them</span>');}
+
+/* ---- messaging model ----
+ message = [direction 'me'|'them', text, note, channel 'sms'|'email'|'team', status, day]
+ status: Queued, Sent, Delivered, Opened N times, Link clicked N times, Failed: reason, Posted
+ thread  = {id, name, unread, owe, age (minutes since last message), msgs, sug, auto, team, done} */
+var CHL={sms:'Text',email:'Email',team:'Team'};
+function chInfo(m){
+ var note=m[2]||'',ch=m[3];
+ if(!ch)ch=/email/i.test(note)?'email':(/Team channel/.test(note)?'team':'sms');
+ var st=m[4],mo=note.match(/Opened your email (\d+) times?/),mc=note.match(/Link clicked (\d+) times?/);
+ if(!st)st=mo?'Opened '+mo[1]+(mo[1]==='1'?' time':' times'):(mc?'Link clicked '+mc[1]+(mc[1]==='1'?' time':' times'):(m[0]==='me'?(ch==='team'?'Posted':'Delivered'):''));
+ var by=m[0]==='me'?(/by the app|automatically/i.test(note)?'Sent by the app':'Sent by you'):'';
+ return {ch:ch,st:st,by:by,fail:/^Failed/.test(st),queued:/^Queued/.test(st)};
+}
+function chPill(ch){return '<span class="chp">'+ic(ch==='email'?'mail':(ch==='team'?'hash':'chat'),12)+CHL[ch]+'</span>';}
+function agoLabel(m){return m<1?'now':(m<60?Math.round(m)+'m':(m<1440?Math.round(m/60)+'h':Math.round(m/1440)+'d'));}
+function tAge(t){return t.age!=null?t.age:(t.team?5:(t.owe?120:(t.id==='tide'?300:60)));}
+function threadFailed(t){for(var i=t.msgs.length-1;i>=0;i--){if(t.msgs[i][0]==='me')return chInfo(t.msgs[i]).fail;}return false;}
+function canEmail(t){var l=lead(t.id);return !t.team&&(t.msgs.some(function(m){return chInfo(m).ch==='email';})||!!(l&&l.contact&&l.contact.email));}
+function defChan(t){if(t.team)return 'team';var last=t.msgs[t.msgs.length-1],c=last?chInfo(last).ch:'sms';return (c==='email'&&!canEmail(t))?'sms':c;}
+var MF=[['all','All'],['due','Needs you'],['hot','Hot'],['sms','Text'],['email','Email'],['team','Team'],['done','Done']];
+function mMatch(t,f){
+ var l=lead(t.id);
+ if(f==='done')return !!t.done;
+ if(t.done)return false;
+ if(f==='all')return true;
+ if(f==='due')return !!t.owe||threadFailed(t);
+ if(f==='hot')return !!(l&&isHot(l));
+ if(f==='team')return !!t.team;
+ return t.msgs.some(function(m){return chInfo(m).ch===f;});
+}
+function mSearch(t){var q=(S.mq||'').toLowerCase().trim();if(!q)return true;var l=lead(t.id),hay=t.name+' '+(l&&l.contact?l.contact.name:'')+' '+t.msgs.map(function(m){return m[1];}).join(' ');return hay.toLowerCase().indexOf(q)>-1;}
+function mSort(a,b){var ka=(a.owe?2:0)+(threadFailed(a)?1:0),kb=(b.owe?2:0)+(threadFailed(b)?1:0);return kb-ka||tAge(a)-tAge(b);}
+function mCount(f){return S.threads.filter(function(t){return mMatch(t,f);}).length;}
+function chipsHtml(list,cur,act,cnt){return '<div class="chips" role="group" aria-label="Filter">'+list.map(function(f){var n=cnt(f[0]);return '<button class="chip sm" data-act="'+act+'" data-arg="'+f[0]+'" aria-pressed="'+(cur===f[0])+'">'+f[1]+(n&&f[0]!=='all'?'<span class="cn">'+n+'</span>':'')+'</button>';}).join('')+'</div>';}
+function threadRow(t){
+ var last=t.msgs[t.msgs.length-1],i=chInfo(last),fail=threadFailed(t),l=lead(t.id);
+ var st=fail?'<span class="tag warn">Not delivered</span>':(t.owe?tstat(t):((/^Opened|^Link clicked/.test(i.st))?'<span class="tag">'+i.st+'</span>':tstat(t)));
+ return '<button class="th" data-act="thread" data-arg="'+t.id+'" style="min-height:84px"><span class="av" aria-hidden="true">'+(t.team?'#':t.name[0])+'</span><div class="grow" style="min-width:0"><div class="row between" style="gap:8px"><b class="bf trunc">'+esc(t.name)+'</b><span class="mute" style="font-size:12px;flex:none">'+agoLabel(tAge(t))+'</span></div><div class="row" style="gap:6px;margin:3px 0">'+chPill(i.ch)+st+(l&&isHot(l)?'<span class="tag warn">Hot</span>':'')+'</div><div class="mute trunc" style="font-size:14px">'+(last[0]==='me'?'You: ':'')+esc(last[1])+'</div></div>'+(t.unread?'<span class="dot" aria-label="Unread"></span>':'')+'</button>';
+}
+function inboxBody(){
+ var list=S.threads.filter(function(t){return mMatch(t,S.mf)&&mSearch(t);}).sort(mSort);
+ var hot=(S.mf==='all'&&!S.mq)?S.leads.filter(isHot)[0]:null;
+ var alertCard=hot?'<button class="card row" data-act="hotlead" data-arg="'+hot.id+'" style="width:100%;background:var(--tint);border-color:transparent;margin-bottom:6px"><span class="dot dot-ok"></span><div class="grow"><b class="bf">'+esc(hot.contact?hot.contact.name:hot.name)+' is looking at your '+(hot.open.kind==='email'?'email':'link')+'</b><div class="mute" style="font-size:13px">'+openLine(hot)+'. Good time to reach out.</div></div></button>':'';
+ if(!list.length){
+  if(!S.threads.length)return '<div style="margin:auto;text-align:center"><p class="p mute">No messages yet. When a business claims its page, the app texts them to book a meeting.</p></div>';
+  var fl=MF.filter(function(f){return f[0]===S.mf;})[0][1].toLowerCase();
+  return '<div style="margin:auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center"><p class="p mute">'+(S.mq?'Nothing matches "'+esc(S.mq)+'".':'No '+(S.mf==='done'?'finished':fl)+' conversations.')+'</p><button class="btn btn-line" style="width:auto;padding:0 22px" data-act="mclear">Clear filters</button></div>';
+ }
+ return alertCard+list.map(threadRow).join('')+((S.mf==='all'&&!S.mq)?'<p class="mute" style="font-size:12px;margin:12px 0 0">Texts and emails go out from your Registry Scout number and address. You see opens and clicks.</p>':'');
+}
+function seed(){
+ if(!lead('tide'))S.leads.push({id:'tide',name:'Tidewater Eye Care',stage:2,when:'Fri 2:00 pm',meetIn:6,tBook:3,closer:'team',plan:1,contact:{name:'Dr. Alan Pierce',role:'Owner',phone:'(949) 555-0147',email:'apierce@tidewatereye.com'},touch:{text:'4 days ago',email:'Yesterday',meet:'Fri 2:00 pm'},open:{kind:'email',n:3,ago:'2 hours ago'}});
+ if(!lead('golden'))S.leads.push({id:'golden',name:'Golden State Dermatology',stage:4,when:'',tBook:2,tClose:6,closer:'team',plan:0,contact:{name:'Dr. Mina Castillo',role:'Owner',phone:'(949) 555-0163'},touch:{text:'3 weeks ago',email:'3 weeks ago',meet:'Held'},open:null});
+ if(!thread('tide'))S.threads.push({id:'tide',name:'Tidewater Eye Care',unread:0,owe:false,since:'',msgs:[['me','Thanks for claiming your page, Dr. Pierce. Want a free 15 minute look at how AI sees Tidewater?','Sent by the app for you. Opened your email 3 times'],['them','Friday at 2 works.']],auto:'Reminder text Thu 4:00 pm',sug:[]});
+ if(!thread('golden'))S.threads.push({id:'golden',name:'Golden State Dermatology',unread:1,owe:true,since:'2 hours',msgs:[['them','Do you also handle Google posts?','Waiting 2 hours'],['me','Got it. Looking into it and I will reply today.','Sent by the app automatically']],auto:'',sug:['Yes. Posts and review replies are included.','Yes, and I can show you how it works.']});
+ ensureTeam(lead('tide'));
+}
+function seedMore(){
+ if(!lead('bayview'))S.leads.push({id:'bayview',name:'Bayview Chiropractic',stage:1,when:'',closer:'me',plan:1,contact:{name:'Dr. Lena Ortiz',role:'Owner',phone:'(949) 555-0171',email:'lena@bayviewchiro.com'},touch:{text:'Never',email:'Yesterday',meet:'None yet'},open:{kind:'email',n:3,ago:'3 hours ago'}});
+ if(!lead('pacific'))S.leads.push({id:'pacific',name:'Pacific Dental Group',stage:0,when:'',closer:'me',plan:1,contact:{name:'Front desk',role:'Front desk',phone:'(949) 555-0138'},touch:{text:'Not delivered',email:'Never',meet:'None yet'},open:{kind:'text',n:0,ago:''}});
+ if(!lead('harbor'))S.leads.push({id:'harbor',name:'Harbor Family Law',stage:2,when:'Mon 9:00 am',meetIn:8,tBook:4,closer:'team',plan:1,contact:{name:'Elizabeth Shaw',role:'Manager',phone:'(949) 555-0194',email:'eshaw@harborfamilylaw.com'},touch:{text:'Today',email:'2 days ago',meet:'Mon 9:00 am'},open:{kind:'email',n:1,ago:'2 days ago'}});
+ if(!thread('bayview'))S.threads.push({id:'bayview',name:'Bayview Chiropractic',unread:0,owe:false,age:180,msgs:[['me','Hi Dr. Ortiz, here is the AI report card for Bayview Chiropractic. AI gets 4 of 8 facts right. You can fix it free in about 2 minutes.','Sent by the app for you','email','Opened 3 times','Yesterday']],auto:'Next: second text in 2 days',sug:[]});
+ if(!thread('pacific'))S.threads.push({id:'pacific',name:'Pacific Dental Group',unread:0,owe:false,age:45,msgs:[['me','Hi, here is the AI report card for Pacific Dental Group. AI gets 3 of 8 facts right. You can fix it free in about 2 minutes.','Sent by the app for you','sms','Failed: the number could not be reached','Today']],auto:'',sug:[]});
+ if(!thread('harbor'))S.threads.push({id:'harbor',name:'Harbor Family Law',unread:1,owe:true,since:'1 hour',age:60,msgs:[['me','Hi Elizabeth, thanks for talking with me. I booked a free 15 minute look at how AI sees Harbor Family Law.','Sent by the app for you','email','Delivered','Yesterday'],['them','Monday at 9 works for Mr. Shaw. Can you text me the link?','','sms','','Today']],auto:'',sug:['Here is the link. It is in your calendar invite, and I will text it again Monday.','Sending it now.']});
+ ensureTeam(lead('harbor'));
+ var tm=thread('team-harbor');if(tm)tm.age=1500;
+ var tt=thread('team-tide');if(tt){tt.age=2900;tt.owe=false;}
+}
+function queueMsg(){var t=thread('bayview');if(t){t.msgs.push(['me','Hi Dr. Ortiz, I can show you what AI says about Bayview in 10 minutes. Does tomorrow work?','','sms','Queued. Sends when you are back online','Today']);t.age=0;}}
+function phoneOk(v){return String(v).replace(/\D/g,'').length>=10;}
+function emailOk(v){return !String(v).trim()||/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(v).trim());}
+var LF=[['all','All'],['hot','Hot'],['claim','Waiting to claim'],['book','Waiting to book'],['meet','Meeting'],['cust','Customers']];
+function lMatch(l,f){if(f==='all')return true;if(f==='hot')return isHot(l);if(f==='claim')return l.stage===0;if(f==='book')return l.stage===1;if(f==='meet')return l.stage===2||l.stage===3;return l.stage===4;}
+function lSearch(l){var q=(S.lq||'').toLowerCase().trim();if(!q)return true;return (l.name+' '+(l.contact?l.contact.name:'')).toLowerCase().indexOf(q)>-1;}
+function lCount(f){return S.leads.filter(function(l){return lMatch(l,f);}).length;}
+function leadRows(){
+ var list=S.leads.filter(function(l){return lMatch(l,S.lf)&&lSearch(l);}).sort(function(a,b){return (isHot(b)?1:0)-(isHot(a)?1:0);});
+ if(!list.length)return '<div style="margin:auto;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center"><p class="p mute">'+(S.lq?'Nothing matches "'+esc(S.lq)+'".':'No leads here yet.')+'</p><button class="btn btn-line" style="width:auto;padding:0 22px" data-act="lclear">Clear filters</button></div>';
+ return list.map(function(l){
+  var st=l.stage===2&&l.when?'Meeting booked, '+l.when:STAGE[l.stage],ol=openLine(l);
+  var right=l.stage===4?'<div style="text-align:right"><div class="money" style="font-size:22px">'+usd(earn(l))+'</div><div class="mute" style="font-size:12px">a month</div></div>':'<div style="text-align:right"><div class="mute" style="font-size:12px">Could earn</div><b class="bf">'+usd(potential(l))+'</b></div>';
+  return '<button class="ld" data-act="lead" data-arg="'+l.id+'"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><div class="row" style="gap:6px"><b class="bf">'+l.name+'</b>'+(isHot(l)?'<span class="tag">Hot</span>':'')+'</div><div class="mute" style="font-size:14px">'+st+'</div>'+(ol?'<div style="font-size:13px;color:var(--blue)">'+ol+'</div>':'')+'</div>'+right+'</button>';
+ }).join('');
+}
 function ensureTeam(l){
  var id='team-'+l.id;
  if(thread(id))return;
  var first=l.chain?'Steve here. Chains come to me. '+l.chain+' locations.':(l.closer==='me'?'Bridgette here. I can back you up on the consultation if you want a second voice.':'Bridgette here. I will take the '+(l.when||'consultation')+'. Anything I should know about '+l.name+'?');
- S.threads.push({id:id,name:'lead-'+slug(l.name),team:true,unread:0,owe:true,since:'just now',msgs:[['them',first,'Team channel']],auto:'',sug:['They care most about being found by ChatGPT. Lead with the fact check.','Can you join as my backup? I will lead the call.']});
+ S.threads.push({id:id,name:'lead-'+slug(l.name),team:true,unread:0,owe:l.closer==='team',since:'just now',msgs:[['them',first,'Team channel']],auto:'',sug:['They care most about being found by ChatGPT. Lead with the fact check.','Can you join as my backup? I will lead the call.']});
 }
 function freshQueue(){return [{id:'coastline',name:'Coastline Dermatology',who:'Dr. Elena Ruiz',phone:'(949) 555-0152',email:'elena@coastlinederm.com',ago:'4 minutes ago',dist:'2.1 mi',vert:'dermatologist'}];}
 function nudgeOpts(l){return [['A customer asked a question on their page',1,'Your customers are reaching out through your page. Can we chat about the best next steps for your business?'],['A competitor near them just claimed its page',1,'Another business near you claimed its page 3 days ago. Want to see where you stand?'],['I found something new about their page',1,'I found something new about how AI describes you. Want to see it?'],['Share an AI stat',0,'Almost half of Americans now use AI to find a local business. Worth 10 minutes to see how you show up?']];}
@@ -382,13 +493,12 @@ function addCardLead(b,c){
  if(!l){l={id:b.id,name:b.name,stage:0,when:'',closer:b.chain?'team':'me',chain:b.chain||0,plan:1,contact:{name:c.name,role:c.role,phone:c.phone,email:c.email},touch:{text:'Today',email:c.email?'Today':'Never',meet:'None yet'},open:{kind:c.email?'email':'text',n:0,ago:''}};S.leads.unshift(l);}
  if(!thread(b.id)){S.threads.unshift({id:b.id,name:b.name,unread:0,owe:false,since:'',msgs:[['me','Hi '+c.name+', here is the AI report card for '+b.name+'. AI gets '+right(b)+' of 8 facts right. You can fix it free in about 2 minutes.','Sent by the app for you']],auto:c.email?'Next: email with the claim link in 2 days':'Next: second text in 2 days',sug:[]});}
 }
-function syncSend(){var b=document.getElementById('sendbtn'),c=S.contact;if(!b)return;if(c.ok&&c.name.trim()&&c.phone.trim())b.removeAttribute('disabled');else b.setAttribute('disabled','');}
-function seed(){
- if(!lead('tide'))S.leads.push({id:'tide',name:'Tidewater Eye Care',stage:2,when:'Fri 2:00 pm',meetIn:6,tBook:3,closer:'team',plan:1,contact:{name:'Dr. Alan Pierce',role:'Owner',phone:'(949) 555-0147'},touch:{text:'4 days ago',email:'Yesterday',meet:'Fri 2:00 pm'},open:{kind:'email',n:3,ago:'2 hours ago'}});
- if(!lead('golden'))S.leads.push({id:'golden',name:'Golden State Dermatology',stage:4,when:'',tBook:2,tClose:6,closer:'team',plan:0,contact:{name:'Dr. Mina Castillo',role:'Owner',phone:'(949) 555-0163'},touch:{text:'3 weeks ago',email:'3 weeks ago',meet:'Held'},open:null});
- if(!thread('tide'))S.threads.push({id:'tide',name:'Tidewater Eye Care',unread:0,owe:false,since:'',msgs:[['me','Thanks for claiming your page, Dr. Pierce. Want a free 15 minute look at how AI sees Tidewater?','Sent by the app for you. Opened your email 3 times'],['them','Friday at 2 works.']],auto:'Reminder text Thu 4:00 pm',sug:[]});
- if(!thread('golden'))S.threads.push({id:'golden',name:'Golden State Dermatology',unread:1,owe:true,since:'2 hours',msgs:[['them','Do you also handle Google posts?','Waiting 2 hours'],['me','Got it. Looking into it and I will reply today.','Sent by the app automatically']],auto:'',sug:['Yes. Posts and review replies are included.','Yes, and I can show you how it works.']});
- ensureTeam(lead('tide'));
+function syncSend(){
+ var b=document.getElementById('sendbtn'),c=S.contact;if(!b)return;
+ var pv=c.phone.trim()===''||phoneOk(c.phone),ev=emailOk(c.email),pe=document.getElementById('cperr'),ee=document.getElementById('ceerr');
+ if(pe)pe.textContent=pv?'':'Enter a 10 digit mobile number.';
+ if(ee)ee.textContent=ev?'':'Check the email address.';
+ if(c.ok&&c.name.trim()&&phoneOk(c.phone)&&ev)b.removeAttribute('disabled');else b.setAttribute('disabled','');
 }
 
 function tabbar(){
@@ -412,12 +522,13 @@ function chapterOf(){
  if(s==='find'||s==='time'||s==='summary')return 5;
  if(GROUPS.claim.indexOf(s)>-1||s==='contact'||s==='cardsent')return 6;
  if(s==='leads'||s==='lead'||s==='nudge'||s==='queue')return 7;
+ if(s==='profile'||s==='stloc'||s==='stnone')return 11;
  if(GROUPS.demo.indexOf(s)>-1||s==='dsend'||s==='followup')return 8;
  if(s==='won'||s==='money')return 9;
  if(s==='inbox'||s==='thread')return 10;
  return 0;
 }
-var CHAPS=['See it in the App Store','Learn how AI search works','Get licensed','See who is earning and the prizes','Pick your time and find a business','Get them to claim','Track your leads','Run the demo and close','Get paid','Messages'];
+var CHAPS=['See it in the App Store','Learn how AI search works','Get licensed','See who is earning and the prizes','Pick your time and find a business','Get them to claim','Track your leads','Run the demo and close','Get paid','Messages','Account and edge cases'];
 
 /* US dot map */
 var POLY=[[8,22],[40,16],[80,15],[110,16],[140,14],[150,18],[165,25],[180,22],[195,26],[210,20],[230,18],[245,14],[262,6],[270,14],[262,24],[250,34],[255,42],[245,52],[250,62],[240,78],[236,92],[240,104],[248,118],[252,134],[246,150],[252,168],[244,172],[236,158],[228,140],[214,138],[196,142],[176,148],[160,152],[146,160],[136,172],[124,168],[116,150],[100,140],[90,130],[70,126],[50,120],[40,112],[26,100],[16,84],[10,66],[8,48]];
@@ -515,7 +626,7 @@ function scBoard(){
  var rows=list.map(function(r,i){return repRow(i+1,r);}).join('');
  var lv='<button class="lvl" data-act="go" data-arg="prizes"><div class="row between"><b class="bf">Level '+(li+1)+' of 5: '+L.n+'</b><span class="tag">See prizes</span></div>'+(N?'<div class="lvlbar"><i style="width:'+Math.round(Math.min(1,c/N.need)*100)+'%"></i></div><div class="mute" style="font-size:13px">'+(N.need-c)+' more customer'+(N.need-c>1?'s':'')+' to reach '+N.n+' and win '+lcFirst(N.prize)+'</div>':'<div class="mute" style="font-size:13px">Top level</div>')+'</button>';
  var you=c===0?'<div class="youbar"><span class="av" style="background:var(--paper);color:var(--ink)" aria-hidden="true">You</span><div class="grow"><b class="bf">You</b><div style="font-size:13px;color:#9FB0CC">Unranked until your first customer</div></div></div>':'';
- return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:28px">Who is earning</h1></div><div class="mid board" style="justify-content:flex-start;gap:8px;padding-top:2px"><div class="inkcard">'+usMap()+'<div class="tick" id="tick">'+feedLine()+'</div></div>'+lv+'<div class="rlist">'+rows+'</div>'+you+'</div><div class="bot" style="padding-top:8px"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business near me</button></div></div>'+tabbar();
+ return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:28px">Who is earning</h1><div class="grow"></div><button class="av" data-act="profile" aria-label="Account" style="width:44px;height:44px;margin-right:-4px">'+S.name.split(' ').map(function(w){return w[0];}).join('')+'</button></div><div class="mid board" style="justify-content:flex-start;gap:8px;padding-top:2px"><div class="inkcard">'+usMap()+'<div class="tick" id="tick">'+feedLine()+'</div></div>'+lv+'<div class="rlist">'+rows+'</div>'+you+'</div><div class="bot" style="padding-top:8px"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business near me</button></div></div>'+tabbar();
 }
 function scPrizes(){
  var li=levelOf(custCount());
@@ -582,11 +693,11 @@ function scContact(){
  var chips=['Owner','Manager','Front desk'].map(function(r){return '<button class="chip" data-act="role" data-arg="'+r+'" aria-pressed="'+(c.role===r)+'">'+r+'</button>';}).join('');
  return '<div class="scr">'+flowTop('reply')+'<div class="mid" style="gap:8px"><h1 class="t1">Who gets the report card?</h1><p class="p mute">'+(c.fd?'Ask: "Who is the owner, and what is the best way to reach them?"':'Ask: "Who should I send it to, and what is the best number?"')+'</p>'+
  '<label class="sr" for="cn">Name</label><input class="field sm" id="cn" placeholder="Name" value="'+esc(c.name)+'" data-in="cname" autocomplete="off">'+
- '<label class="sr" for="cp">Mobile number</label><input class="field sm" id="cp" inputmode="tel" placeholder="Mobile number" value="'+esc(c.phone)+'" data-in="cphone" autocomplete="off">'+
- '<label class="sr" for="ce">Email, optional</label><input class="field sm" id="ce" inputmode="email" placeholder="Email (optional)" value="'+esc(c.email)+'" data-in="cemail" autocomplete="off">'+
+ '<label class="sr" for="cp">Mobile number</label><input class="field sm" id="cp" inputmode="tel" placeholder="Mobile number" value="'+esc(c.phone)+'" data-in="cphone" autocomplete="off"><div class="err" id="cperr"></div>'+
+ '<label class="sr" for="ce">Email, optional</label><input class="field sm" id="ce" inputmode="email" placeholder="Email (optional)" value="'+esc(c.email)+'" data-in="cemail" autocomplete="off"><div class="err" id="ceerr"></div>'+
  '<div class="row" style="gap:8px;flex-wrap:wrap">'+chips+'</div>'+
  '<label class="check"><input type="checkbox" data-in="cok" '+(c.ok?'checked':'')+'><span class="p" style="font-size:15px">They said yes to getting a text.</span></label></div>'+
- '<div class="bot"><button class="btn btn-blue" id="sendbtn" data-act="sendcard" '+(c.ok&&c.name.trim()&&c.phone.trim()?'':'disabled')+'>Send the report card</button></div></div>';
+ '<div class="bot"><button class="btn btn-blue" id="sendbtn" data-act="sendcard" '+(c.ok&&c.name.trim()&&phoneOk(c.phone)&&emailOk(c.email)?'':'disabled')+'>Send the report card</button></div></div>';
 }
 function scCardsent(){
  var b=biz(),c=S.contact;
@@ -607,15 +718,11 @@ function scClaimed(){
 }
 var STAGE=['Report card sent. Waiting for them to claim','Claimed. Waiting for them to book','Meeting booked','Meeting held','Customer'];
 function scLeads(){
- var rows=S.leads.map(function(l){
-  var st=l.stage===2&&l.when?'Meeting booked, '+l.when:STAGE[l.stage],ol=openLine(l);
-  var right=l.stage===4?'<div style="text-align:right"><div class="money" style="font-size:22px">'+usd(earn(l))+'</div><div class="mute" style="font-size:12px">a month</div></div>':'<div style="text-align:right"><div class="mute" style="font-size:12px">Could earn</div><b class="bf">'+usd(potential(l))+'</b></div>';
-  return '<button class="ld" data-act="lead" data-arg="'+l.id+'"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><div class="row" style="gap:6px"><b class="bf">'+l.name+'</b>'+(isHot(l)?'<span class="tag">Hot</span>':'')+'</div><div class="mute" style="font-size:14px">'+st+'</div>'+(ol?'<div style="font-size:13px;color:var(--blue)">'+ol+'</div>':'')+'</div>'+right+'</button>';
- }).join('');
- var qcard=S.queue.length?'<button class="card row" data-act="go" data-arg="queue" style="width:100%;background:var(--tint);border-color:transparent"><span class="dot dot-ok"></span><div class="grow"><b class="bf">New sign-up near you</b><div class="mute" style="font-size:13px">'+S.queue[0].name+', registered '+S.queue[0].ago+'</div></div><span class="tag">Take it</span></button>':'';
- var stats='<p class="mute" style="font-size:12px;margin:0">Claim to meeting '+avgDays('tBook')+'. Meetings closed '+closeRate()+'. Meeting to close '+avgDays('tClose')+'.</p>';
- if(!S.leads.length)return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="gap:12px">'+qcard+'<p class="p mute" style="text-align:center">No leads yet. When a business claims its page through you, it shows up here with its status.</p></div><div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business</button></div></div>'+tabbar();
- return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="justify-content:flex-start;gap:8px;padding-top:6px;overflow-y:auto">'+qcard+stats+'<div>'+rows+'</div></div></div>'+tabbar();
+ var head=S.lqOpen?'<div class="top"><label class="sr" for="lq">Search leads</label><input class="field sm" id="lq" style="min-height:44px;font-size:16px" placeholder="Search business or name" value="'+esc(S.lq)+'" data-in="lq" autocomplete="off"><button class="btn btn-text" style="width:auto;min-height:44px;padding:0 6px" data-act="lsearch">Cancel</button></div>':'<div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1><div class="grow"></div>'+(S.leads.length?'<button class="iconbtn" data-act="lsearch" aria-label="Search leads" style="margin-right:-6px">'+ic('search',24)+'</button>':'')+'</div>';
+ var qcard=S.queue.length?'<button class="card row" data-act="go" data-arg="queue" style="width:100%;background:var(--tint);border-color:transparent;margin-bottom:6px"><span class="dot dot-ok"></span><div class="grow"><b class="bf">New sign-up near you</b><div class="mute" style="font-size:13px">'+S.queue[0].name+', registered '+S.queue[0].ago+'</div></div><span class="tag">Take it</span></button>':'';
+ if(!S.leads.length)return '<div class="scr">'+head+'<div class="mid" style="gap:12px">'+qcard+'<p class="p mute" style="text-align:center">No leads yet. When a business claims its page through you, it shows up here with its status.</p></div><div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business</button></div></div>'+tabbar();
+ var stats=(S.lf==='all'&&!S.lq)?'<p class="mute" style="font-size:12px;margin:0 0 4px">Claim to meeting '+avgDays('tBook')+'. Meetings closed '+closeRate()+'. Meeting to close '+avgDays('tClose')+'.</p>':'';
+ return '<div class="scr">'+head+chipsHtml(LF,S.lf,'lfilter',lCount)+'<div class="mid" id="llist" style="justify-content:flex-start;gap:8px;padding-top:4px;overflow-y:auto">'+((S.lf==='all'&&!S.lq)?qcard+stats:'')+leadRows()+'</div></div>'+tabbar();
 }
 function scQueue(){
  var q=S.queue[0];if(!q)return scLeads();
@@ -692,25 +799,50 @@ function scMoney(){
  '<div class="card"><label class="sl"><span class="row between"><span class="p" style="font-size:15px">Hours you have each week</span><b id="o-weekly" class="bf" style="font-size:20px">'+S.weekly+' hr</b></span><input type="range" min="0" max="10" step="1" value="'+S.weekly+'" data-in="weekly" aria-label="Hours you have each week"></label><div class="row between"><span class="mute" style="font-size:14px">After 6 months</span><b class="money" style="font-size:24px" id="o-proj">'+usd(proj())+' a month</b></div><p class="mute" style="font-size:12px;margin:4px 0 0">An illustration, not a promise.</p></div></div></div>'+tabbar();
 }
 function scInbox(){
- var list=S.threads.filter(function(t){return !t.done;}).sort(function(a,b){return (b.owe?1:0)-(a.owe?1:0);});
- var hot=S.leads.filter(isHot)[0];
- var alertCard=hot?'<button class="card row" data-act="hotlead" data-arg="'+hot.id+'" style="width:100%;background:var(--tint);border-color:transparent;margin-bottom:6px"><span class="dot dot-ok"></span><div class="grow"><b class="bf">'+esc(hot.contact?hot.contact.name:hot.name)+' is looking at your '+(hot.open.kind==='email'?'email':'link')+'</b><div class="mute" style="font-size:13px">'+openLine(hot)+'. Good time to reach out.</div></div></button>':'';
- var rows=list.map(function(t){var l=t.msgs[t.msgs.length-1];return '<button class="th" data-act="thread" data-arg="'+t.id+'" style="min-height:84px"><span class="av" aria-hidden="true">'+(t.team?'#':t.name[0])+'</span><div class="grow"><b class="bf" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+t.name+'</b><div style="margin:2px 0">'+tstat(t)+'</div><div class="mute" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(l[1])+'</div></div>'+(t.unread?'<span class="dot"></span>':'')+'</button>';}).join('');
- var body=list.length?alertCard+rows+'<p class="mute" style="font-size:13px;margin:12px 0 0">The app messages your leads for you, from a number it gives you, not your own. You see when they open or click.</p>':'<p class="p mute" style="text-align:center">No messages yet. When a business claims its page, the app texts them to book a meeting.</p>';
- return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Messages</h1></div><div class="mid" style="justify-content:'+(list.length?'flex-start':'center')+';gap:0;padding-top:8px;overflow-y:auto">'+body+'</div></div>'+tabbar();
+ var head=S.mqOpen?'<div class="top"><label class="sr" for="mq">Search messages</label><input class="field sm" id="mq" style="min-height:44px;font-size:16px" placeholder="Search name or message" value="'+esc(S.mq)+'" data-in="mq" autocomplete="off"><button class="btn btn-text" style="width:auto;min-height:44px;padding:0 6px" data-act="msearch">Cancel</button></div>':'<div class="top"><h1 class="t1" style="font-size:32px">Messages</h1><div class="grow"></div>'+(S.threads.length?'<button class="iconbtn" data-act="msearch" aria-label="Search messages" style="margin-right:-6px">'+ic('search',24)+'</button>':'')+'</div>';
+ return '<div class="scr">'+head+(S.threads.length?chipsHtml(MF,S.mf,'mfilter',mCount):'')+'<div class="mid" id="mlist" style="justify-content:flex-start;gap:0;padding-top:4px;overflow-y:auto">'+inboxBody()+'</div></div>'+tabbar();
 }
 function scThread(){
  var t=thread(S.thread);if(!t)return scInbox();
- var msgs=t.msgs.slice(-3).map(function(m){return '<div class="bub '+m[0]+'">'+esc(m[1])+'</div>'+(m[2]?'<div class="meta '+m[0]+'">'+esc(m[2])+'</div>':'');}).join('');
- var sug=t.sug.length?t.sug.map(function(s,i){return '<button class="reply" data-act="sendreply" data-arg="'+i+'">'+esc(s)+'</button>';}).join(''):(t.auto?'<p class="mute" style="font-size:14px;margin:0;text-align:center">'+t.auto+'</p>':'');
- return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="inbox" aria-label="Back to messages">'+ic('back',26)+'</button><div><b class="bf" style="font-size:18px">'+t.name+'</b><div>'+tstat(t)+'</div></div></div><div class="mid bubs" style="justify-content:flex-end">'+msgs+'</div><div class="bot" style="gap:10px">'+(t.sug.length?'<div class="lbl">Tap to reply</div>':'')+sug+(t.team?'':'<button class="btn btn-text" data-act="closethread">Close this conversation</button>')+'</div></div>';
+ var l=lead(t.id),c=l&&l.contact,em=canEmail(t),ch=t.team?'team':(S.chan==='email'&&em?'email':'sms'),prev='';
+ var msgs=t.msgs.map(function(m,idx){
+  var i=chInfo(m),d=m[5]||'Today',sep=d!==prev?'<div class="dsep">'+d+'</div>':'';prev=d;
+  var parts=[CHL[i.ch]];if(m[0]==='me'){if(i.st)parts.push(i.st);if(i.by)parts.push(i.by);}else{parts.push('Received');if(/^Waiting/.test(m[2]||''))parts.push(m[2]);}
+  var retry=(i.fail&&idx===lastOut(t))?'<div class="row" style="gap:8px;align-self:flex-end;margin:2px 0"><button class="chip sm" data-act="retry">Try again</button><button class="chip sm" data-act="tolead">Check the number</button></div>':'';
+  return sep+'<div class="bub '+m[0]+(i.queued?' queued':'')+'">'+esc(m[1])+'</div><div class="meta '+m[0]+(i.fail?' fail':'')+'">'+esc(parts.join(' · '))+'</div>'+retry;
+ }).join('');
+ var seg=em?'<div class="seg" role="group" aria-label="Reply by"><button data-act="chan" data-arg="sms" aria-pressed="'+(ch==='sms')+'">Text</button><button data-act="chan" data-arg="email" aria-pressed="'+(ch==='email')+'">Email</button></div>':'';
+ var sug=t.sug.length?t.sug.map(function(x,i){return '<button class="reply" data-act="sendreply" data-arg="'+i+'">'+esc(x)+'</button>';}).join(''):(t.auto?'<p class="mute" style="font-size:14px;margin:0;text-align:center">'+t.auto+'</p>':'');
+ var dest=t.team?'Team channel':(c?esc(c.name)+(c.role?', '+esc(c.role.toLowerCase()):''):'');
+ var acts=(l&&!t.team?'<button class="iconbtn" data-act="tolead" aria-label="Open lead" style="margin-left:0">'+ic('leads',22)+'</button>':'')+(!t.team?'<button class="iconbtn" data-act="closethread" aria-label="Mark done" style="margin-left:0">'+ic('check',22)+'</button>':'');
+ var to=ch==='email'?(c&&c.email?c.email:'email on file'):(c?c.phone:'');
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="inbox" aria-label="Back to messages">'+ic('back',26)+'</button><div class="grow" style="min-width:0"><b class="bf trunc" style="font-size:18px">'+esc(t.name)+'</b><div class="mute trunc" style="font-size:13px">'+dest+'</div></div>'+acts+'</div><div class="mid bubs">'+msgs+'</div><div class="bot" style="gap:8px">'+seg+(t.sug.length?'<div class="lbl">Tap to reply'+(t.team?'':' by '+(ch==='email'?'email':'text')+(to?' to '+esc(to):''))+'</div>':'')+sug+'<div class="row" style="gap:8px"><label class="sr" for="draft">Write your own message</label><input class="field sm" id="draft" style="min-height:48px;font-size:16px" placeholder="Write your own" value="'+esc(S.draft)+'" data-in="draft" autocomplete="off"><button class="btn btn-blue" id="sendmsg" data-act="compose" style="width:auto;min-height:48px;padding:0 18px" '+(S.draft.trim()?'':'disabled')+'>Send</button></div></div></div>';
 }
-var SCREENS={appstore:scAppstore,o1:function(){return scObs('o1');},o2:function(){return scObs('o2');},o3:function(){return scObs('o3');},o4:function(){return scObs('o4');},o5:function(){return scObs('o5');},o6:function(){return scObs('o6');},o7:function(){return scObs('o7');},
+function lastOut(t){for(var i=t.msgs.length-1;i>=0;i--){if(t.msgs[i][0]==='me')return i;}return -1;}
+function sw(k,label,sub){return '<button class="swr" data-act="sw" data-arg="'+k+'" role="switch" aria-checked="'+(S.prefs[k]?'true':'false')+'"><div class="grow"><b class="bf">'+label+'</b>'+(sub?'<div class="mute" style="font-size:13px">'+sub+'</div>':'')+'</div><span class="swt"><i></i></span></button>';}
+function scProfile(){
+ var c=custCount(),li=levelOf(c),ini=S.name.split(' ').map(function(w){return w[0];}).join('');
+ var row=function(a,b,t){return '<div class="row between" style="min-height:52px;border-bottom:1px solid var(--line);gap:10px"><div><b class="bf">'+a+'</b><div class="mute" style="font-size:13px">'+b+'</div></div>'+(t?'<span class="tag">'+t+'</span>':'')+'</div>';};
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="board" aria-label="Back">'+ic('back',26)+'</button><h1 class="t2" style="font-size:22px">Account</h1></div><div class="mid" style="justify-content:flex-start;gap:0;overflow-y:auto;padding-top:4px"><div class="row" style="gap:12px;margin-bottom:4px"><span class="av" style="width:52px;height:52px;font-size:17px" aria-hidden="true">'+ini+'</span><div><b class="bf" style="font-size:18px">'+S.name+'</b><div class="mute" style="font-size:14px">Licensed. Level '+(li+1)+', '+LEVELS[li].n+'</div></div></div>'+
+ '<div class="sec">Get paid</div>'+row('Bank account','Mercury, ending 4417','Ready')+row('Tax form','W-9 received','Done')+
+ '<div class="sec">Notifications</div>'+sw('hot','Hot lead alerts','When someone opens or clicks twice')+sw('due','Reply due reminders','When a business is waiting on you')+sw('queue','New sign-ups near me','First to take it keeps it')+sw('recap','Weekly recap','Sunday evening')+
+ '<div class="sec">Messaging</div>'+row('Sending hours','8 am to 9 pm, their time')+row('Opt out','Every first text says how to stop')+
+ '<div class="sec">Privacy</div>'+row('Location','Only while you use the app','On')+
+ '<div class="sec">About</div><button class="swr" data-act="toast" data-arg="Opening help.">Help and support</button><button class="swr" data-act="toast" data-arg="Earnings vary and are not guaranteed. You work for yourself, not for Local AI Registry.">Earnings disclosure</button><button class="swr" data-act="toast" data-arg="Signed out.">Sign out</button></div></div>';
+}
+function scState(k){
+ var C={loc:{i:'pin',h:'Turn on location',p:'Registry Scout uses it to find businesses near you and to confirm you visited. It never tracks you in the background.',b:'Open Settings',a:'toast',g:'Opening Settings.',t:'Not now',ta:'tab',tg:'board'},
+ none:{i:'search',h:'No businesses nearby',p:'There are no unclaimed businesses within 3 miles. Try a larger area or come back later.',b:'Search 10 miles',a:'toast',g:'Searching 10 miles.',t:'Back',ta:'tab',tg:'board'}}[k];
+ return '<div class="scr"><div class="top"></div><div class="mid" style="text-align:center;gap:12px;align-items:center"><div class="bigpin" aria-hidden="true">'+ic(C.i,48)+'</div><h1 class="t1">'+C.h+'</h1><p class="p mute">'+C.p+'</p></div><div class="bot"><button class="btn btn-blue" data-act="'+C.a+'" data-arg="'+C.g+'">'+C.b+'</button><button class="btn btn-text" data-act="'+C.ta+'" data-arg="'+C.tg+'">'+C.t+'</button></div></div>'+tabbar();
+}
+var SCREENS={profile:scProfile,stloc:function(){return scState('loc');},stnone:function(){return scState('none');},appstore:scAppstore,o1:function(){return scObs('o1');},o2:function(){return scObs('o2');},o3:function(){return scObs('o3');},o4:function(){return scObs('o4');},o5:function(){return scObs('o5');},o6:function(){return scObs('o6');},o7:function(){return scObs('o7');},
  id:scId,q1:function(){return scQuiz(0);},q2:function(){return scQuiz(1);},card:scCard,payout:scPayout,perm:scPerm,board:scBoard,prizes:scPrizes,contact:scContact,cardsent:scCardsent,time:scTime,summary:scSummary,know:scKnow,nudge:scNudge,queue:scQueue,prac:scPrac,find:scFind,there:scThere,look:scLook,say:scSay,reply:scReply,qr:scQr,claimwait:scClaimwait,claimed:scClaimed,
  leads:scLeads,lead:scLead,dask:function(){return scDemo('dask');},dshow:function(){return scDemo('dshow');},dworth:function(){return scDemo('dworth');},dplan:function(){return scDemo('dplan');},dclose:function(){return scDemo('dclose');},dsend:scDsend,followup:scFollowup,won:scWon,money:scMoney,inbox:scInbox,thread:scThread};
 
 function render(){
  var hostEl=document.getElementById('host');hostEl.innerHTML=SCREENS[S.screen]();document.getElementById('phone').classList.toggle('dk',!!hostEl.querySelector('.scr.dark'));
+ if(S.offline){var sc=hostEl.querySelector('.scr');if(sc)sc.insertAdjacentHTML('afterbegin','<div class="offbar" role="status"><span>You are offline. Messages send when you reconnect.</span><button class="chip sm" data-act="online">Go online</button></div>');}
+ var bu=hostEl.querySelector('.bubs');if(bu)bu.scrollTop=bu.scrollHeight;
  if(S.screen==='board')startFeed();else stopFeed();
  renderChaps();
 }
@@ -719,22 +851,24 @@ function stopFeed(){if(feedTimer){clearInterval(feedTimer);feedTimer=null;}}
 function renderChaps(){
  var cur=chapterOf();
  var list='<ol class="chap">'+CHAPS.map(function(c,i){return '<li><button data-act="chap" data-arg="'+(i+1)+'" '+(cur===i+1?'aria-current="true"':'')+'><i>'+(i+1)+'</i>'+c+'</button></li>';}).join('')+'</ol>';
- document.getElementById('rail').innerHTML='<h1>Registry Scout</h1><p>One screen at a time. One button. Tap through it or jump to any step.</p>'+list+'<p class="note">Names, earnings, the leaderboard and plan prices are sample data. Screens marked Prototype stand in for things that happen on the customer\'s side.</p>';
- document.getElementById('sheet').innerHTML='<h2>Jump to a step</h2>'+list;
+ var stl='<h3 class="stt">Edge states</h3><ol class="chap">'+[['offline','Offline'],['loc','Location off'],['none','Nothing nearby'],['failed','Message not delivered'],['emptyinbox','Empty inbox'],['emptyleads','Empty leads']].map(function(x){return '<li><button data-act="state" data-arg="'+x[0]+'"><i>!</i>'+x[1]+'</button></li>';}).join('')+'</ol>';
+ document.getElementById('rail').innerHTML='<h1>Registry Scout</h1><p>One screen at a time. One button. Tap through it or jump to any step.</p>'+list+stl+'<p class="note">Names, earnings, the leaderboard and plan prices are sample data. Screens marked Prototype stand in for things that happen on the customer\'s side.</p>';
+ document.getElementById('sheet').innerHTML='<h2>Jump to a step</h2>'+list+stl;
 }
 function jump(n){
- document.getElementById('sheetback').classList.remove('open');
- S.leads=[];S.threads=[];S.bi=0;S.plan=1;S.lead='marlow';S.session={mins:60,total:4,done:0,claims:0,cards:0,active:false};S.queue=freshQueue();S.who='owner';
+ document.getElementById('sheetback').classList.remove('open');document.getElementById('toast').innerHTML='';
+ S.leads=[];S.threads=[];S.bi=0;S.plan=1;S.lead='marlow';S.session={mins:60,total:4,done:0,claims:0,cards:0,active:false};S.queue=freshQueue();S.who='owner';S.mf='all';S.mq='';S.mqOpen=0;S.lf='all';S.lq='';S.lqOpen=0;S.offline=0;S.draft='';
  if(n===1){S.screen='appstore';S.install=0;}
  else if(n===2){S.screen='o1';}
  else if(n===3){S.screen='id';}
  else if(n===4){S.screen='board';S.tab='board';}
  else if(n===5){S.screen='time';S.tab='find';}
  else if(n===6){S.session.active=true;S.screen='know';}
- else if(n===7){seed();addMarlow(1);S.screen='leads';S.tab='leads';}
+ else if(n===7){seed();seedMore();addMarlow(1);S.screen='leads';S.tab='leads';}
  else if(n===8){seed();addMarlow(2);S.screen='dask';}
  else if(n===9){seed();addMarlow(4);S.screen='won';S.tab='money';}
- else if(n===10){seed();addMarlow(2);S.screen='inbox';S.tab='inbox';}
+ else if(n===10){seed();seedMore();addMarlow(2);S.screen='inbox';S.tab='inbox';}
+ else if(n===11){S.screen='profile';S.tab='board';}
  render();
 }
 function act(a,arg,el){
@@ -753,6 +887,27 @@ function act(a,arg,el){
   case 'who':S.who=arg;render();break;
   case 'takeq':var qq=S.queue.shift();if(qq){S.leads.unshift({id:qq.id,name:qq.name,stage:1,when:'',closer:'me',plan:1,inbound:1,contact:{name:qq.who,role:'Owner',phone:qq.phone},touch:{text:'Never',email:'Never',meet:'None yet'},open:{kind:'email',n:0,ago:''}});S.threads.unshift({id:qq.id,name:qq.name,unread:0,owe:false,since:'',msgs:[['me','Hi '+qq.who+', thanks for registering '+qq.name+'. Want a free 15 minute look at how AI sees it? Pick a time in the next 3 days.','Sent by the app for you']],auto:'Call them now. The first 15 minutes matter.',sug:[]});S.lead=qq.id;S.screen='lead';render();toast('Yours. Call '+qq.who+' now.');}break;
   case 'passq':S.queue.shift();S.screen='leads';render();break;
+  case 'msearch':S.mqOpen=S.mqOpen?0:1;if(!S.mqOpen)S.mq='';render();if(S.mqOpen){var mi=document.getElementById('mq');if(mi)mi.focus();}break;
+  case 'mfilter':S.mf=arg;render();break;
+  case 'mclear':S.mf='all';S.mq='';S.mqOpen=0;render();break;
+  case 'lsearch':S.lqOpen=S.lqOpen?0:1;if(!S.lqOpen)S.lq='';render();if(S.lqOpen){var li2=document.getElementById('lq');if(li2)li2.focus();}break;
+  case 'lfilter':S.lf=arg;render();break;
+  case 'lclear':S.lf='all';S.lq='';S.lqOpen=0;render();break;
+  case 'chan':S.chan=arg;render();break;
+  case 'compose':var tc=thread(S.thread),tx=(S.draft||'').trim();if(tc&&tx){var cc=tc.team?'team':(S.chan==='email'&&canEmail(tc)?'email':'sms');tc.msgs.push(['me',tx,'',cc,S.offline?'Queued. Sends when you are back online':(cc==='team'?'Posted':(cc==='email'?'Sent':'Delivered')),'Today']);tc.sug=[];tc.owe=false;tc.age=0;S.draft='';var tl=lead(tc.id);if(tl&&tl.touch&&!S.offline){if(cc==='sms')tl.touch.text='Just now';if(cc==='email')tl.touch.email='Just now';}render();}break;
+  case 'retry':var rt=thread(S.thread);if(rt){var ri=lastOut(rt);if(ri>-1){rt.msgs[ri][4]=S.offline?'Queued. Sends when you are back online':'Delivered';rt.age=0;}render();toast(S.offline?'Queued. It sends when you are back online.':'Sent again.');}break;
+  case 'tolead':var tl2=lead(S.thread);if(tl2){S.lead=tl2.id;S.screen='lead';S.tab='leads';render();}break;
+  case 'sw':S.prefs[arg]=S.prefs[arg]?0:1;render();break;
+  case 'profile':S.screen='profile';render();break;
+  case 'online':S.offline=0;S.threads.forEach(function(t){t.msgs.forEach(function(m){if(/^Queued/.test(m[4]||''))m[4]=(m[3]==='email'?'Sent':'Delivered');});});render();toast('Back online. Queued messages sent.');break;
+  case 'state':document.getElementById('sheetback').classList.remove('open');document.getElementById('toast').innerHTML='';S.leads=[];S.threads=[];S.offline=0;S.queue=freshQueue();S.mf='all';S.mq='';S.mqOpen=0;S.lf='all';S.lq='';S.lqOpen=0;S.draft='';
+   if(arg==='offline'){seed();seedMore();S.offline=1;queueMsg();S.screen='inbox';S.tab='inbox';}
+   else if(arg==='loc'){S.screen='stloc';S.tab='find';}
+   else if(arg==='none'){S.screen='stnone';S.tab='find';}
+   else if(arg==='failed'){seed();seedMore();S.thread='pacific';S.chan='sms';S.screen='thread';S.tab='inbox';}
+   else if(arg==='emptyinbox'){S.screen='inbox';S.tab='inbox';}
+   else if(arg==='emptyleads'){S.queue=[];S.screen='leads';S.tab='leads';}
+   render();break;
   case 'role':S.contact.role=arg;render();break;
   case 'sendcard':var cb=biz();addCardLead(cb,S.contact);S.lead=cb.id;S.session.cards++;S.session.done++;S.screen='cardsent';render();break;
   case 'settime':S.time=+arg;render();break;
@@ -770,8 +925,8 @@ function act(a,arg,el){
   case 'pickplan':S.plan=+arg;S.screen='dclose';render();break;
   case 'paid':var pd=lead(S.lead);if(!pd){addMarlow(4);pd=lead('marlow');S.lead='marlow';}pd.stage=4;pd.plan=S.plan;if(!pd.closer)pd.closer='me';pd.tClose=5;if(pd.tBook==null)pd.tBook=2;S.screen='won';render();break;
   case 'toast':toast(arg);break;
-  case 'thread':S.thread=arg;thread(arg).unread=0;S.screen='thread';render();break;
-  case 'sendreply':var th=thread(S.thread);th.msgs.push(['me',th.sug[+arg],th.team?'Team channel':'Sent from your app number']);th.sug=[];th.owe=false;th.auto=th.team?'':'Next follow-up: tomorrow 9:00 am';render();break;
+  case 'thread':S.thread=arg;thread(arg).unread=0;S.draft='';S.chan=defChan(thread(arg));S.screen='thread';render();break;
+  case 'sendreply':var th=thread(S.thread),cr=th.team?'team':(S.chan==='email'&&canEmail(th)?'email':'sms');th.msgs.push(['me',th.sug[+arg],th.team?'Team channel':'',cr,S.offline?'Queued. Sends when you are back online':(cr==='team'?'Posted':(cr==='email'?'Sent':'Delivered')),'Today']);th.sug=[];th.owe=false;th.age=0;th.auto=th.team?'':'Next follow-up: tomorrow 9:00 am';render();break;
   case 'closethread':var ct=thread(S.thread);if(ct)ct.done=true;S.screen='inbox';render();break;
   case 'teamchat':var tcl=lead(S.lead);ensureTeam(tcl);S.thread='team-'+tcl.id;thread(S.thread).unread=0;S.screen='thread';S.tab='inbox';render();break;
   case 'hotlead':S.lead=arg;S.screen='nudge';S.tab='leads';render();break;
@@ -783,10 +938,14 @@ document.addEventListener('input',function(e){
  var el=e.target,k=el.getAttribute('data-in');if(!k)return;
  if(k==='cname'||k==='cphone'||k==='cemail'){S.contact[k==='cname'?'name':(k==='cphone'?'phone':'email')]=el.value;syncSend();}
  else if(k==='cok'){S.contact.ok=el.checked;syncSend();}
+ else if(k==='mq'){S.mq=el.value;var ml=document.getElementById('mlist');if(ml)ml.innerHTML=inboxBody();}
+ else if(k==='lq'){S.lq=el.value;var ll=document.getElementById('llist');if(ll)ll.innerHTML=((S.lf==='all'&&!S.lq)?'':'')+leadRows();}
+ else if(k==='draft'){S.draft=el.value;var sb=document.getElementById('sendmsg');if(sb){if(S.draft.trim())sb.removeAttribute('disabled');else sb.setAttribute('disabled','');}}
  else if(k==='value'){S.value=+el.value;document.getElementById('o-value').textContent=usd(S.value);document.getElementById('o-win').textContent=usd(winMonthly());}
  else if(k==='weekly'){S.weekly=+el.value;document.getElementById('o-weekly').textContent=S.weekly+' hr';document.getElementById('o-proj').textContent=usd(proj())+' a month';}
 });
 document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('sheetback').classList.remove('open');});
+document.getElementById('toast').setAttribute('aria-live','polite');
 render();
 })();
 </script>
