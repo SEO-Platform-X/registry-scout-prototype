@@ -250,6 +250,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .chip{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:var(--card);font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:14px;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .m-row b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stat3.sm b{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;line-height:1.25;font-weight:700}
+.stat3.sm div{padding:8px 4px}
 .toast{position:absolute;left:16px;right:16px;bottom:96px;background:var(--ink);color:var(--paper);padding:14px 16px;border-radius:14px;font-size:15px;line-height:1.4;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
@@ -287,9 +289,9 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 /* sample data for the prototype */
 var PLANS=[{n:'Basic',p:420,s:'$14 a day'},{n:'Standard',p:1500,s:''},{n:'Premium',p:3000,s:''}];
 var BIZ=[
- {id:'marlow',owner:'Dr. Priya Raman',phone:'(949) 555-0188',email:'priya@marlowmedspa.com',name:'Marlow Med Spa',dist:'0.4 mi',walk:'8 min walk',d:[250,120],vert:'med spa',comp:'Aurelle Skin',f:[['y','Open until 7 pm'],['y','Correct'],['y','Correct'],['n','Misses lip filler'],['n','Lists Dr. Kim, who left'],['q','No price info'],['n','Photos from 2019'],['n','Shows an old rating']]},
- {id:'aperture',owner:'Dr. Sam Whitfield',phone:'(949) 555-0121',email:'office@apertureplastics.com',name:'Aperture Plastic Surgery',dist:'0.5 mi',walk:'2 doors down',d:[110,70],vert:'plastic surgeon',comp:'Lumen Plastic Surgery',near:'marlow',f:[['n','No hours found'],['y','Correct'],['n','Shows an old number'],['y','Correct'],['n','Lists a retired surgeon'],['q','No price info'],['n','Photos from 2018'],['q','No review info']]},
- {id:'verdant',owner:'Rae Okafor',phone:'(949) 555-0176',email:'rae@verdantdispensary.com',name:'Verdant Dispensary',dist:'1.4 mi',walk:'6 min drive',d:[290,170],vert:'dispensary',comp:'Evergreen Collective',f:[['y','Open until 9 pm'],['n','Shows the old address'],['y','Correct'],['y','Correct'],['q','No staff info'],['n','Old menu prices'],['n','Old storefront photo'],['y','Correct']]}
+ {id:'marlow',owner:'Dr. Priya Raman',phone:'(949) 555-0188',email:'priya@marlowmedspa.com',name:'Marlow Med Spa',dist:'0.4 mi',walk:'8 min walk',d:[250,120],vert:'med spa',comp:'Aurelle Skin',news:'Opened a second location in Tustin this spring.',person:'Dr. Priya Raman. UCLA trained, 12 years in practice.',prompts:900,obj:['I already pay someone for SEO.','Ask what they get back each month. The fact check shows what AI still gets wrong.'],f:[['y','Open until 7 pm'],['y','Correct'],['y','Correct'],['n','Misses lip filler'],['n','Lists Dr. Kim, who left'],['q','No price info'],['n','Photos from 2019'],['n','Shows an old rating']]},
+ {id:'aperture',owner:'Dr. Sam Whitfield',phone:'(949) 555-0121',email:'office@apertureplastics.com',name:'Aperture Plastic Surgery',dist:'0.5 mi',walk:'2 doors down',d:[110,70],vert:'plastic surgeon',comp:'Lumen Plastic Surgery',near:'marlow',news:'Featured in a local magazine this year.',person:'Dr. Sam Whitfield. Board certified plastic surgeon.',prompts:410,obj:['I do not have time for this.','It takes two minutes and they scan one code. You do the rest.'],f:[['n','No hours found'],['y','Correct'],['n','Shows an old number'],['y','Correct'],['n','Lists a retired surgeon'],['q','No price info'],['n','Photos from 2018'],['q','No review info']]},
+ {id:'verdant',owner:'Rae Okafor',phone:'(949) 555-0176',email:'rae@verdantdispensary.com',name:'Verdant Dispensary',dist:'1.4 mi',walk:'6 min drive',d:[290,170],vert:'dispensary',comp:'Evergreen Collective',news:'Renovated the storefront this summer.',person:'Rae Okafor. Owner.',prompts:1300,obj:['Is this free? What is the catch?','Claiming is free. The only paid step is optional and comes later.'],f:[['y','Open until 9 pm'],['n','Shows the old address'],['y','Correct'],['y','Correct'],['q','No staff info'],['n','Old menu prices'],['n','Old storefront photo'],['y','Correct']]}
 ];
 var LEVELS=[{n:'Bronze',need:0,prize:'You are licensed'},{n:'Silver',need:1,prize:'$100 bonus'},{n:'Gold',need:5,prize:'A new iPhone'},{n:'Platinum',need:15,prize:'A trip to the quarterly conference'},{n:'Diamond',need:30,prize:'A car'}];
 var FN=['Danielle','Marcus','Priya','Jonah','Lena','Andre','Camille','Tomas','Mei','Rafael','Hannah','Dev','Sofia','Malik','Grace','Owen','Nadia','Luis','Tara','Eli','Ruth','Kenji','Alma','Theo','Zara','Cole','Imani','Noah','Leah','Omar'];
@@ -314,7 +316,7 @@ var S={screen:'appstore',install:0,prog:0,name:'Sam Ramirez',bi:0,value:450,plan
 var feedTimer=null,toastTimer=null;
 
 /* flow groups: each shows a progress bar and a back arrow */
-var GROUPS={learn:['o1','o2','o3','o4','o5','o6','o7'],license:['id','q1','q2','card','payout','perm'],claim:['there','look','say','reply','qr','claimwait','claimed'],demo:['dshow','dworth','dplan','dclose']};
+var GROUPS={learn:['o1','o2','o3','o4','o5','o6','o7'],license:['id','q1','q2','card','payout','perm'],claim:['know','there','look','say','reply','qr','claimwait','claimed'],demo:['dask','dshow','dworth','dplan','dclose']};
 var GBACK={claim:'find',demo:'lead'};
 var NOBACK={o1:1,id:1,claimed:1};
 function groupOf(s){for(var g in GROUPS){if(GROUPS[g].indexOf(s)>-1)return g;}return null;}
@@ -330,14 +332,28 @@ function winMonthly(){return 900*0.03*S.value*0.10;}
 function months(p){var w=winMonthly();if(w<p)return null;var m=p/w;return m<1?'under a month':(Math.round(m*10)/10)+' months';}
 function toast(msg){var el=document.getElementById('toast');el.innerHTML='<div class="toast">'+msg+'</div>';clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.innerHTML='';},3600);}
 function thread(id){return S.threads.filter(function(t){return t.id===id;})[0];}
+function slug(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+function openLine(l){if(!l.open||!l.open.kind)return '';if(l.open.n<1)return l.open.kind==='email'?'Email not opened yet':'Link not clicked yet';return (l.open.kind==='email'?'Opened your email ':'Clicked your link ')+l.open.n+(l.open.n>1?' times':' time')+', '+l.open.ago;}
+function isHot(l){return !!(l.open&&l.open.n>=2&&l.stage<4);}
+function tstat(t){return t.done?'<span class="tag">Done</span>':(t.owe?'<span class="tag warn">Reply due, '+t.since+'</span>':'<span class="tag">Waiting on them</span>');}
+function ensureTeam(l){
+ var id='team-'+l.id;
+ if(thread(id))return;
+ S.threads.push({id:id,name:'#'+slug(l.name),team:true,unread:0,owe:true,since:'just now',msgs:[['them',l.closer==='me'?'Kody here. I can back you up on the meeting if you want a second voice.':'Kody here. I will take the '+(l.when||'meeting')+'. Anything I should know about '+l.name+'?','Team channel']],auto:'',sug:['They care most about being named by ChatGPT. Lead with the fact check.','They already verified 7 of 8 facts. Ask what problem they want solved.']});
+}
+function nudgeOpts(l){return [['A patient asked a question on their page',1,'A patient asked a question on your page this week. Want to see what they asked?'],['A competitor near them just claimed its page',1,'Another business near you claimed its page 3 days ago. Want to see where you stand?'],['Share an AI stat',0,'Almost half of Americans now use AI to find a local business. Worth 10 minutes to see how you show up?']];}
+function avgDays(f){var a=S.leads.filter(function(l){return l[f]!=null;}).map(function(l){return l[f];});if(!a.length)return '--';return (Math.round(a.reduce(function(x,y){return x+y;},0)/a.length*10)/10)+' days';}
+function closeRate(){var b=S.leads.filter(function(l){return l.stage>=2;}).length,c=S.leads.filter(function(l){return l.stage===4;}).length;return b?c+' of '+b:'--';}
 function addMarlow(stage){
  var l=lead('marlow');
- if(!l){l={id:'marlow',name:'Marlow Med Spa',stage:stage,when:'',closer:'me',plan:1,contact:{name:'Dr. Priya Raman',role:'Owner',phone:'(949) 555-0188'}};S.leads.unshift(l);}
- l.stage=stage;if(stage>=2)l.when='Thu 10:30 am';
- if(stage===4)l.plan=S.plan;
- if(!thread('marlow')){S.threads.unshift({id:'marlow',name:'Marlow Med Spa',unread:0,claimmsg:1,msgs:[['me','Thanks for claiming your page, Dr. Raman. Want a free 15 minute look at how AI sees Marlow? Pick a time here.','Sent by the app for you. Opened 2 times']],auto:'Next reminder in 2 days',sug:[]});}
+ if(!l){l={id:'marlow',name:'Marlow Med Spa',stage:stage,when:'',closer:'me',plan:1,contact:{name:'Dr. Priya Raman',role:'Owner',phone:'(949) 555-0188'},touch:{text:'2 days ago',email:'Never',meet:'None yet'},open:{kind:'text',n:2,ago:'1 hour ago'}};S.leads.unshift(l);}
+ l.stage=stage;
+ if(stage>=2){l.when='Thu 10:30 am';l.meetIn=2;if(l.tBook==null)l.tBook=2;}
+ if(stage===4){l.plan=S.plan;if(l.tClose==null)l.tClose=5;}
+ if(!thread('marlow')){S.threads.unshift({id:'marlow',name:'Marlow Med Spa',unread:0,claimmsg:1,owe:false,since:'',msgs:[['me','Thanks for claiming your page, Dr. Raman. Want a free 15 minute look at how AI sees Marlow? Pick a time in the next 3 days.','Sent by the app for you. Link clicked 2 times']],auto:'Next reminder in 2 days',sug:[]});}
  var t=thread('marlow');
  if(stage>=2&&!t.booked){t.booked=1;t.msgs.push(['them','Thursday at 10:30 works.']);t.msgs.push(['me','Booked. You will get a reminder the day before.','Sent by the app for you']);t.auto='Reminder text Wed 4:00 pm';}
+ if(stage>=2)ensureTeam(l);
 }
 var TIMES=[[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours']];
 function tlabel(m){var r=TIMES.filter(function(t){return t[0]===m;})[0];return r?r[1]:m+' min';}
@@ -348,24 +364,25 @@ function est(mins){
 function bizOf(id){return BIZ.filter(function(b){return b.id===id;})[0];}
 function claimLead(b,contact){
  var l=lead(b.id);
- if(!l){l={id:b.id,name:b.name,stage:1,when:'',closer:'me',plan:1,contact:contact};S.leads.unshift(l);}
+ if(!l){l={id:b.id,name:b.name,stage:1,when:'',closer:'me',plan:1,contact:contact,touch:{text:'Today',email:'Never',meet:'None yet'},open:{kind:'text',n:2,ago:'1 hour ago'}};S.leads.unshift(l);}
  else{if(l.stage<1)l.stage=1;if(!l.contact)l.contact=contact;}
  var t=thread(b.id);
- if(!t){S.threads.unshift({id:b.id,name:b.name,unread:0,msgs:[],auto:'Next reminder in 2 days',sug:[]});t=thread(b.id);}
- if(!t.claimmsg){t.claimmsg=1;t.msgs.push(['me','Thanks for claiming your page, '+(l.contact?l.contact.name:'')+'. Want a free 15 minute look at how AI sees '+b.name+'? Pick a time here.','Sent by the app for you']);}
+ if(!t){S.threads.unshift({id:b.id,name:b.name,unread:0,owe:false,since:'',msgs:[],auto:'Next reminder in 2 days',sug:[]});t=thread(b.id);}
+ if(!t.claimmsg){t.claimmsg=1;t.msgs.push(['me','Thanks for claiming your page, '+(l.contact?l.contact.name:'')+'. Want a free 15 minute look at how AI sees '+b.name+'? Pick a time in the next 3 days.','Sent by the app for you. Link clicked 2 times']);}
  S.lead=b.id;
 }
 function addCardLead(b,c){
  var l=lead(b.id);
- if(!l){l={id:b.id,name:b.name,stage:0,when:'',closer:'me',plan:1,contact:{name:c.name,role:c.role,phone:c.phone,email:c.email}};S.leads.unshift(l);}
- if(!thread(b.id)){S.threads.unshift({id:b.id,name:b.name,unread:0,msgs:[['me','Hi '+c.name+', here is the AI report card for '+b.name+'. AI gets '+right(b)+' of 8 facts right. You can fix it free in about 2 minutes.','Sent by the app for you']],auto:c.email?'Next: email with the claim link in 2 days':'Next: second text in 2 days',sug:[]});}
+ if(!l){l={id:b.id,name:b.name,stage:0,when:'',closer:'me',plan:1,contact:{name:c.name,role:c.role,phone:c.phone,email:c.email},touch:{text:'Today',email:c.email?'Today':'Never',meet:'None yet'},open:{kind:c.email?'email':'text',n:0,ago:''}};S.leads.unshift(l);}
+ if(!thread(b.id)){S.threads.unshift({id:b.id,name:b.name,unread:0,owe:false,since:'',msgs:[['me','Hi '+c.name+', here is the AI report card for '+b.name+'. AI gets '+right(b)+' of 8 facts right. You can fix it free in about 2 minutes.','Sent by the app for you']],auto:c.email?'Next: email with the claim link in 2 days':'Next: second text in 2 days',sug:[]});}
 }
 function syncSend(){var b=document.getElementById('sendbtn'),c=S.contact;if(!b)return;if(c.ok&&c.name.trim()&&c.phone.trim())b.removeAttribute('disabled');else b.setAttribute('disabled','');}
 function seed(){
- if(!lead('tide'))S.leads.push({id:'tide',name:'Tidewater Eye Care',stage:2,when:'Fri 2:00 pm',closer:'team',plan:1,contact:{name:'Dr. Alan Pierce',role:'Owner',phone:'(949) 555-0147'}});
- if(!lead('golden'))S.leads.push({id:'golden',name:'Golden State Dermatology',stage:4,when:'',closer:'team',plan:0,contact:{name:'Dr. Mina Castillo',role:'Owner',phone:'(949) 555-0163'}});
- if(!thread('tide'))S.threads.push({id:'tide',name:'Tidewater Eye Care',unread:0,msgs:[['me','Thanks for claiming your page, Dr. Pierce. Want a free 15 minute look at how AI sees Tidewater?','Sent by the app for you. Opened 3 times'],['them','Friday at 2 works.']],auto:'Reminder text Thu 4:00 pm',sug:[]});
- if(!thread('golden'))S.threads.push({id:'golden',name:'Golden State Dermatology',unread:1,msgs:[['them','Do you also handle Google posts?']],auto:'',sug:['Yes. Posts and review replies are included.','Yes, and I can show you how it works.']});
+ if(!lead('tide'))S.leads.push({id:'tide',name:'Tidewater Eye Care',stage:2,when:'Fri 2:00 pm',meetIn:6,tBook:3,closer:'team',plan:1,contact:{name:'Dr. Alan Pierce',role:'Owner',phone:'(949) 555-0147'},touch:{text:'4 days ago',email:'Yesterday',meet:'Fri 2:00 pm'},open:{kind:'email',n:3,ago:'2 hours ago'}});
+ if(!lead('golden'))S.leads.push({id:'golden',name:'Golden State Dermatology',stage:4,when:'',tBook:2,tClose:6,closer:'team',plan:0,contact:{name:'Dr. Mina Castillo',role:'Owner',phone:'(949) 555-0163'},touch:{text:'3 weeks ago',email:'3 weeks ago',meet:'Held'},open:null});
+ if(!thread('tide'))S.threads.push({id:'tide',name:'Tidewater Eye Care',unread:0,owe:false,since:'',msgs:[['me','Thanks for claiming your page, Dr. Pierce. Want a free 15 minute look at how AI sees Tidewater?','Sent by the app for you. Opened your email 3 times'],['them','Friday at 2 works.']],auto:'Reminder text Thu 4:00 pm',sug:[]});
+ if(!thread('golden'))S.threads.push({id:'golden',name:'Golden State Dermatology',unread:1,owe:true,since:'2 hours',msgs:[['them','Do you also handle Google posts?','Waiting 2 hours'],['me','Got it. Looking into it and I will reply today.','Sent by the app automatically']],auto:'',sug:['Yes. Posts and review replies are included.','Yes, and I can show you how it works.']});
+ ensureTeam(lead('tide'));
 }
 
 function tabbar(){
@@ -388,7 +405,7 @@ function chapterOf(){
  if(s==='board'||s==='prizes')return 4;
  if(s==='find'||s==='time'||s==='summary')return 5;
  if(GROUPS.claim.indexOf(s)>-1||s==='contact'||s==='cardsent')return 6;
- if(s==='leads'||s==='lead')return 7;
+ if(s==='leads'||s==='lead'||s==='nudge')return 7;
  if(GROUPS.demo.indexOf(s)>-1||s==='dsend'||s==='followup')return 8;
  if(s==='won'||s==='money')return 9;
  if(s==='inbox'||s==='thread')return 10;
@@ -515,7 +532,7 @@ function scTime(){
 function scFind(){
  var b=biz(),ss=S.session,finished=ss.done>=ss.total,stopN=Math.min(ss.done+1,ss.total),near=(b.near&&lead('marlow'))?'<span class="tag">Marlow next door claimed today</span>':'';
  var bar='<div><div class="row between"><span class="lbl">Your '+tlabel(ss.mins)+'</span><b class="bf">'+(finished?'Time is up':'Stop '+stopN+' of '+ss.total)+'</b></div><div class="lvlbar" style="margin-top:6px"><i style="width:'+Math.round(Math.min(1,ss.done/ss.total)*100)+'%"></i></div></div>';
- var bot=finished?'<button class="btn btn-blue" data-act="done">See today\'s summary</button><button class="btn btn-text" data-act="go" data-arg="there">Keep going</button>':'<button class="btn btn-blue" data-act="go" data-arg="there">Go there</button><div class="row" style="gap:0"><button class="btn btn-text" data-act="skip" style="text-align:center">Skip this one</button><button class="btn btn-text" data-act="done" style="text-align:center">Done for today</button></div>';
+ var bot=finished?'<button class="btn btn-blue" data-act="done">See today\'s summary</button><button class="btn btn-text" data-act="go" data-arg="know">Keep going</button>':'<button class="btn btn-blue" data-act="go" data-arg="know">Go there</button><div class="row" style="gap:0"><button class="btn btn-text" data-act="skip" style="text-align:center">Skip this one</button><button class="btn btn-text" data-act="done" style="text-align:center">Done for today</button></div>';
  return '<div class="scr"><div class="mid" style="gap:clamp(8px,1.6cqh,14px)">'+bar+'<div class="mapbox">'+mapSvg()+'</div><div><div class="row" style="gap:8px;flex-wrap:wrap"><span class="tag warn">AI gets '+right(b)+' of 8 facts right</span>'+near+'</div><h1 class="t1" style="margin-top:6px">'+b.name+'</h1><p class="p mute" style="margin-top:4px">'+b.dist+', '+b.walk+'. ChatGPT sends people to '+b.comp+' instead.</p></div>'+
  '<div class="card" style="display:flex;flex-direction:column;gap:4px;padding:10px 14px"><div class="p" style="font-size:15px"><b>Today</b> You walk in and show the AI check.</div><div class="p" style="font-size:15px"><b>Tonight</b> The app texts their report card.</div><div class="p" style="font-size:15px"><b>Day 2</b> The app sends the claim link.</div></div></div>'+
  '<div class="bot">'+bot+'</div></div>'+tabbar();
@@ -525,13 +542,18 @@ function scSummary(){
  return '<div class="scr"><div class="top"></div><div class="mid" style="gap:14px"><h1 class="t1">Done for today</h1><p class="p mute">You gave '+tlabel(ss.mins)+'. Here is what it did.</p><div class="stat3"><div><b>'+ss.done+'</b><span>Businesses</span></div><div><b>'+ss.claims+'</b><span>Claims</span></div><div><b>'+ss.cards+'</b><span>Report cards</span></div></div>'+
  (wait>0?'<div class="inkcard" style="padding:16px 18px"><div class="lbl" style="color:#9FB0CC">Your open leads could earn up to</div><div class="money" style="font-size:40px;line-height:1.05">'+usd(wait)+' a month</div><div style="font-size:14px;color:#C9D3E4">if they become customers. The app keeps following up for you.</div></div>':'<p class="p">Your leads show up here as businesses claim their pages. The app keeps following up for you.</p>')+'</div><div class="bot"><button class="btn btn-blue" data-act="endsession" data-arg="leads">See my leads</button><button class="btn btn-text" data-act="endsession" data-arg="board">Back to the board</button></div></div>';
 }
+function scKnow(){
+ var b=biz();
+ var rows=[['The business',b.news],['The owner',b.person],['The door opener','About '+b.prompts.toLocaleString()+' people ask AI for a '+b.vert+' near here every month.']].map(function(r){return '<div class="card" style="padding:10px 14px"><div class="lbl">'+r[0]+'</div><div class="p" style="font-size:16px;margin-top:2px">'+r[1]+'</div></div>';}).join('');
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:8px"><h1 class="t1">Before you walk in</h1>'+rows+'<div class="card" style="padding:10px 14px"><div class="lbl">They might say</div><div class="p" style="font-size:15px;margin-top:2px">"'+b.obj[0]+'"</div><div class="p mute" style="font-size:14px;margin-top:4px">'+b.obj[1]+'</div></div><p class="mute" style="font-size:12px;margin:0">Collected from the web. Mention one thing, then show the check.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="there">I am at the door</button></div></div>';
+}
 function scThere(){
  var b=biz();
  return '<div class="scr">'+flowTop()+'<div class="mid" style="text-align:center"><div class="bigpin" aria-hidden="true">'+ic('pin',52)+'</div><h1 class="t1">You are here</h1><p class="p mute">'+b.name+'</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="look">Look it up</button></div></div>';
 }
 function scLook(){
  var b=biz();
- return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:10px"><h1 class="t1">What AI knows about them</h1><div class="card" style="padding:4px 14px">'+factsHtml(b)+'</div><div class="inkcard" style="padding:14px 16px"><b class="bf" style="font-size:17px">AI gets '+right(b)+' of 8 facts right.</b><div style="font-size:14px;color:#C9D3E4;margin-top:2px">It sends people to '+b.comp+' instead.</div></div><p class="mute" style="font-size:12px;margin:0">Example result. The app runs the real check for you.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="say">Next</button></div></div>';
+ return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:10px"><h1 class="t1">What AI knows about them</h1><div class="card" style="padding:4px 14px">'+factsHtml(b)+'</div><div class="inkcard" style="padding:14px 16px"><b class="bf" style="font-size:17px">AI gets '+right(b)+' of 8 facts right.</b><div style="font-size:14px;color:#C9D3E4;margin-top:2px">It sends people to '+b.comp+' instead.</div></div><p class="mute" style="font-size:12px;margin:0">Collected from the web. This is what AI will say about them unless it gets fixed.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="say">Next</button></div></div>';
 }
 function scSay(){
  var b=biz();
@@ -571,37 +593,56 @@ function scClaimed(){
 var STAGE=['Report card sent. Waiting for them to claim','Claimed. Waiting for them to book','Meeting booked','Meeting held','Customer'];
 function scLeads(){
  var rows=S.leads.map(function(l){
-  var st=l.stage===2&&l.when?'Meeting booked, '+l.when:STAGE[l.stage];
+  var st=l.stage===2&&l.when?'Meeting booked, '+l.when:STAGE[l.stage],ol=openLine(l);
   var right=l.stage===4?'<div style="text-align:right"><div class="money" style="font-size:22px">'+usd(earn(l))+'</div><div class="mute" style="font-size:12px">a month</div></div>':'<div style="text-align:right"><div class="mute" style="font-size:12px">Could earn</div><b class="bf">'+usd(potential(l))+'</b></div>';
-  return '<button class="ld" data-act="lead" data-arg="'+l.id+'"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><b class="bf">'+l.name+'</b><div class="mute" style="font-size:14px">'+st+'</div></div>'+right+'</button>';
+  return '<button class="ld" data-act="lead" data-arg="'+l.id+'"><span class="av" aria-hidden="true">'+l.name[0]+'</span><div class="grow"><div class="row" style="gap:6px"><b class="bf">'+l.name+'</b>'+(isHot(l)?'<span class="tag">Hot</span>':'')+'</div><div class="mute" style="font-size:14px">'+st+'</div>'+(ol?'<div style="font-size:13px;color:var(--blue)">'+ol+'</div>':'')+'</div>'+right+'</button>';
  }).join('');
- var body=S.leads.length?rows:'<p class="p mute" style="text-align:center">No leads yet. When a business claims its page through you, it shows up here with its status.</p>';
- return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="justify-content:'+(S.leads.length?'flex-start':'center')+';gap:0;padding-top:8px">'+body+'</div>'+(S.leads.length?'':'<div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business</button></div>')+'</div>'+tabbar();
+ var stats='<div class="stat3 sm"><div><b>'+avgDays('tBook')+'</b><span>Claim to meeting</span></div><div><b>'+closeRate()+'</b><span>Meetings closed</span></div><div><b>'+avgDays('tClose')+'</b><span>Meeting to close</span></div></div>';
+ if(!S.leads.length)return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid"><p class="p mute" style="text-align:center">No leads yet. When a business claims its page through you, it shows up here with its status.</p></div><div class="bot"><button class="btn btn-blue" data-act="tab" data-arg="find">Find a business</button></div></div>'+tabbar();
+ return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Your leads</h1></div><div class="mid" style="justify-content:flex-start;gap:8px;padding-top:6px;overflow-y:auto">'+stats+'<div>'+rows+'</div></div></div>'+tabbar();
 }
 function scLead(){
  var l=lead(S.lead);if(!l)return scLeads();
- var steps=[['Claimed their page',l.stage>=1?'You are the lead. 5%':'The app follows up until they claim'],['Booked a meeting',l.stage>=2&&l.when?l.when:'The app asks them to book'],['Meeting held','Shows them the audit. 5%'],['Customer','5% if you close it']];
+ var t=l.touch||{text:'Never',email:'Never',meet:'None yet'};
+ var steps=[['Claimed their page',l.stage>=1?'You are the lead. 5%':'The app follows up until they claim'],['Booked a meeting',l.stage>=2&&l.when?l.when+(l.meetIn?', '+l.meetIn+' days out':''):'The app offers times in the next 3 days'],['Meeting held','Shows them the audit. 5%'],['Customer','5% if you close it']];
  var tl=steps.map(function(s,i){var n=i+1,cls=l.stage>=n?'done':(l.stage+1===n?'now':'');return '<div class="ti"><span class="tdot '+cls+'">'+(l.stage>=n?ic('check',16):'')+'</span><div><b class="bf">'+s[0]+'</b><div class="mute" style="font-size:14px">'+s[1]+'</div></div></div>';}).join('');
  var can=l.stage>=2&&l.stage<4;
  var btn='';
  if(l.stage===0)btn='<button class="btn btn-blue" data-act="protoclaim">Prototype: they claimed</button>';
  else if(l.stage===1)btn='<button class="btn btn-blue" data-act="protobook">Prototype: they booked a meeting</button>';
- else if(l.stage===2&&l.closer==='me')btn='<button class="btn btn-blue" data-act="go" data-arg="dshow">Start the demo</button>';
+ else if(l.stage===2&&l.closer==='me')btn='<button class="btn btn-blue" data-act="go" data-arg="dask">Start the demo</button>';
  else if(l.stage===2)btn='<button class="btn btn-blue" data-act="teamclose">Prototype: the team closed it</button>';
  else if(l.stage===3)btn='<button class="btn btn-blue" data-act="go" data-arg="dclose">Send the payment link</button>';
  else btn='<p class="p" style="text-align:center">Customer. You earn <b>'+usd(earn(l))+'</b> a month.</p>';
  var ct=l.contact?'<div class="mute" style="font-size:14px">'+esc(l.contact.name)+', '+esc(l.contact.role.toLowerCase())+', '+esc(l.contact.phone)+'</div>':'';
- return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="leads" aria-label="Back to leads">'+ic('back',26)+'</button><div><h1 class="t2" style="font-size:20px">'+l.name+'</h1>'+ct+'</div></div><div class="mid" style="justify-content:flex-start;gap:clamp(10px,2cqh,18px);padding-top:8px"><div class="tl">'+tl+'</div>'+
- '<div><div class="lbl" style="margin-bottom:6px">Who closes it?</div><div class="seg" role="group" aria-label="Who closes"><button data-act="closer" data-arg="me" aria-pressed="'+(l.closer==='me')+'"'+(can?'':' disabled')+'>I will</button><button data-act="closer" data-arg="team" aria-pressed="'+(l.closer==='team')+'"'+(can?'':' disabled')+'>Let the team</button></div><p class="mute" style="font-size:13px;margin:6px 0 0">'+(can?(l.closer==='me'?'You earn all three: 15%.':'You earn 10%. The team earns the close.'):(l.stage<2?'You choose once they book.':''))+'</p></div></div><div class="bot">'+btn+'</div></div>';
+ var ol=openLine(l);
+ var touch='<div class="stat3 sm"><div><b>'+t.text+'</b><span>Last text</span></div><div><b>'+t.email+'</b><span>Last email</span></div><div><b>'+t.meet+'</b><span>Meeting</span></div></div>'+(ol?'<div class="row" style="gap:8px;font-size:14px;margin-top:6px"><span class="dot dot-ok"></span><span>'+ol+'</span></div>':'');
+ var extra='';
+ if(l.stage<=1)extra='<div class="card" style="padding:10px 14px"><div class="p" style="font-size:14px"><b>Book within 3 days.</b> Meetings a week or more away see 33% more no-shows.</div></div>';
+ else if(l.stage<4)extra='<button class="card row" data-act="teamchat" style="width:100%;padding:10px 14px"><span class="av" aria-hidden="true">#</span><div class="grow"><b class="bf">Team chat</b><div class="mute" style="font-size:13px">#'+slug(l.name)+', you and the closer</div></div></button>'+(l.meetIn>=7?'<span class="tag warn">A week or more out. Offer an earlier time.</span>':'');
+ if(l.stage>=3)extra+='<div class="row card" style="padding:10px 14px"><span class="fic y">'+ic('check',14)+'</span><span class="p" style="font-size:14px">Meeting recording linked to this lead.</span></div>';
+ var reach=l.stage<4?'<button class="btn btn-line" data-act="go" data-arg="nudge">Reach out</button>':'';
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="leads" aria-label="Back to leads">'+ic('back',26)+'</button><div><h1 class="t2" style="font-size:20px">'+l.name+'</h1>'+ct+'</div></div><div class="mid" style="justify-content:flex-start;gap:clamp(8px,1.6cqh,14px);padding-top:6px;overflow-y:auto"><div class="tl">'+tl+'</div>'+
+ '<div>'+touch+'</div>'+
+ '<div><div class="lbl" style="margin-bottom:6px">Who closes it?</div><div class="seg" role="group" aria-label="Who closes"><button data-act="closer" data-arg="me" aria-pressed="'+(l.closer==='me')+'"'+(can?'':' disabled')+'>I will</button><button data-act="closer" data-arg="team" aria-pressed="'+(l.closer==='team')+'"'+(can?'':' disabled')+'>Let the team</button></div><p class="mute" style="font-size:13px;margin:6px 0 0">'+(can?(l.closer==='me'?'You earn all three: 15%.':'You earn 10%. The team earns the close.'):(l.stage<2?'You choose once they book.':''))+'</p></div>'+extra+'</div><div class="bot">'+btn+reach+'</div></div>';
+}
+function scNudge(){
+ var l=lead(S.lead);if(!l)return scLeads();
+ var t=l.touch||{text:'Never',email:'Never',meet:'None yet'};
+ var opts=nudgeOpts(l).map(function(o,i){return '<button class="opt" data-act="sendnudge" data-arg="'+i+'" style="display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left"><span>'+o[0]+'</span>'+(o[1]?'<span class="tag">True</span>':'')+'</button>';}).join('');
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="go" data-arg="lead" aria-label="Back to the lead">'+ic('back',26)+'</button><h1 class="t2" style="font-size:20px">'+l.name+'</h1></div><div class="mid" style="gap:10px"><h1 class="t1">Reach out</h1><div class="stat3 sm"><div><b>'+t.text+'</b><span>Last text</span></div><div><b>'+t.email+'</b><span>Last email</span></div><div><b>'+t.meet+'</b><span>Meeting</span></div></div><p class="p mute" style="font-size:15px">Pick a reason. Just bumping this up does not work.</p>'+opts+'<p class="mute" style="font-size:12px;margin:0">Only reasons that are true show up here.</p></div></div>';
 }
 function scDemo(id){
  var b=lead(S.lead)?lead(S.lead).name:'Marlow Med Spa';
+ if(id==='dask'){
+  return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">Ask this first</h1><div class="say-q"><p>"What problem do you have, and why do you think this can fix it?"</p></div><p class="p mute">Then stop talking. Let them sell themselves.</p><div class="row card" style="padding:10px 14px"><span class="fic y">'+ic('check',14)+'</span><span class="p" style="font-size:15px">Notetaker is on. The meeting is recorded and linked to this lead.</span></div></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dshow">They answered</button></div></div>';
+ }
  if(id==='dshow'){
   return '<div class="scr">'+flowTop()+'<div class="mid" style="gap:22px"><h1 class="t1">Show them this</h1><div class="fact"><span class="dot dot-ok"></span><span>7 of 8 facts are now verified. That was step 1.</span></div><div class="fact"><span class="dot"></span><span>ChatGPT still sends people to '+(bizOf(S.lead)?bizOf(S.lead).comp:'Aurelle Skin')+'.</span></div><div class="fact"><span class="dot dot-ok"></span><span>Step 2 gets your verified facts into AI faster.</span></div></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dworth">Next</button></div></div>';
  }
  if(id==='dworth'){
   return '<div class="scr">'+flowTop()+'<div class="mid"><h1 class="t1">What is one new patient worth to you?</h1><label class="sl"><span class="row between"><span class="p mute">Ask them</span><b id="o-value" class="bf" style="font-size:22px">'+usd(S.value)+'</b></span><input type="range" min="100" max="2000" step="50" value="'+S.value+'" data-in="value" aria-label="Value of one new patient"></label>'+
-  '<div class="inkcard" style="padding:20px"><div class="lbl" style="color:#9FB0CC">AI could bring them about</div><div class="money" style="font-size:clamp(44px,7.4cqh,60px);line-height:1.05" id="o-win">'+usd(winMonthly())+'</div><div style="font-size:15px;color:#C9D3E4">a month</div></div><p class="mute" style="font-size:13px;margin:0">An estimate, not a promise. Based on 900 searches a month, 3% booking, 10% won.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dplan">Next</button></div></div>';
+  '<div class="inkcard" style="padding:20px"><div class="lbl" style="color:#9FB0CC">AI could bring them about</div><div class="money" style="font-size:clamp(44px,7.4cqh,60px);line-height:1.05" id="o-win">'+usd(winMonthly())+'</div><div style="font-size:15px;color:#C9D3E4">a month</div></div><p class="mute" style="font-size:13px;margin:0">An estimate, not a promise. Search volume is pulled live for their website. 3% book and 10% are won.</p></div><div class="bot"><button class="btn btn-blue" data-act="go" data-arg="dplan">Next</button></div></div>';
  }
  if(id==='dplan'){
   var btns=PLANS.map(function(p,i){var m=months(p.p);return '<button class="plan" data-act="pickplan" data-arg="'+i+'"><div class="grow"><b class="bf" style="font-size:19px">'+p.n+'</b><div class="mute" style="font-size:14px">'+(m?'Pays for itself in '+m:'Needs more than '+usd(p.p)+' a month in wins')+'</div></div><div style="text-align:right"><div class="money" style="font-size:26px">'+usd(p.p)+'</div><div class="mute" style="font-size:12px">'+(p.s||'a month')+'</div></div></button>';}).join('');
@@ -635,19 +676,22 @@ function scMoney(){
  '<div class="card"><label class="sl"><span class="row between"><span class="p" style="font-size:15px">Hours you have each week</span><b id="o-weekly" class="bf" style="font-size:20px">'+S.weekly+' hr</b></span><input type="range" min="0" max="10" step="1" value="'+S.weekly+'" data-in="weekly" aria-label="Hours you have each week"></label><div class="row between"><span class="mute" style="font-size:14px">After 6 months</span><b class="money" style="font-size:24px" id="o-proj">'+usd(proj())+' a month</b></div><p class="mute" style="font-size:12px;margin:4px 0 0">An illustration, not a promise.</p></div></div></div>'+tabbar();
 }
 function scInbox(){
- var rows=S.threads.map(function(t){var l=t.msgs[t.msgs.length-1];return '<button class="th" data-act="thread" data-arg="'+t.id+'"><span class="av" aria-hidden="true">'+t.name[0]+'</span><div class="grow"><b class="bf">'+t.name+'</b><div class="mute" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(l[1])+'</div></div>'+(t.unread?'<span class="dot"></span>':'')+'</button>';}).join('');
- var body=S.threads.length?rows+'<p class="mute" style="font-size:13px;margin:14px 0 0">The app messages your leads for you, from a number it gives you, not your own.</p>':'<p class="p mute" style="text-align:center">No messages yet. When a business claims its page, the app texts them to book a meeting.</p>';
- return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Messages</h1></div><div class="mid" style="justify-content:'+(S.threads.length?'flex-start':'center')+';gap:0;padding-top:8px">'+body+'</div></div>'+tabbar();
+ var list=S.threads.filter(function(t){return !t.done;}).sort(function(a,b){return (b.owe?1:0)-(a.owe?1:0);});
+ var hot=S.leads.filter(isHot)[0];
+ var alertCard=hot?'<button class="card row" data-act="hotlead" data-arg="'+hot.id+'" style="width:100%;background:var(--tint);border-color:transparent;margin-bottom:6px"><span class="dot dot-ok"></span><div class="grow"><b class="bf">'+esc(hot.contact?hot.contact.name:hot.name)+' is looking at your '+(hot.open.kind==='email'?'email':'link')+'</b><div class="mute" style="font-size:13px">'+openLine(hot)+'. Good time to reach out.</div></div></button>':'';
+ var rows=list.map(function(t){var l=t.msgs[t.msgs.length-1];return '<button class="th" data-act="thread" data-arg="'+t.id+'" style="min-height:84px"><span class="av" aria-hidden="true">'+(t.team?'#':t.name[0])+'</span><div class="grow"><b class="bf" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+t.name+'</b><div style="margin:2px 0">'+tstat(t)+'</div><div class="mute" style="font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(l[1])+'</div></div>'+(t.unread?'<span class="dot"></span>':'')+'</button>';}).join('');
+ var body=list.length?alertCard+rows+'<p class="mute" style="font-size:13px;margin:12px 0 0">The app messages your leads for you, from a number it gives you, not your own. You see when they open or click.</p>':'<p class="p mute" style="text-align:center">No messages yet. When a business claims its page, the app texts them to book a meeting.</p>';
+ return '<div class="scr"><div class="top"><h1 class="t1" style="font-size:32px">Messages</h1></div><div class="mid" style="justify-content:'+(list.length?'flex-start':'center')+';gap:0;padding-top:8px;overflow-y:auto">'+body+'</div></div>'+tabbar();
 }
 function scThread(){
  var t=thread(S.thread);if(!t)return scInbox();
  var msgs=t.msgs.slice(-3).map(function(m){return '<div class="bub '+m[0]+'">'+esc(m[1])+'</div>'+(m[2]?'<div class="meta '+m[0]+'">'+esc(m[2])+'</div>':'');}).join('');
  var sug=t.sug.length?t.sug.map(function(s,i){return '<button class="reply" data-act="sendreply" data-arg="'+i+'">'+esc(s)+'</button>';}).join(''):(t.auto?'<p class="mute" style="font-size:14px;margin:0;text-align:center">'+t.auto+'</p>':'');
- return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="inbox" aria-label="Back to messages">'+ic('back',26)+'</button><b class="bf" style="font-size:18px">'+t.name+'</b></div><div class="mid bubs" style="justify-content:flex-end">'+msgs+'</div><div class="bot" style="gap:10px">'+(t.sug.length?'<div class="lbl">Tap to reply</div>':'')+sug+'</div></div>';
+ return '<div class="scr"><div class="top"><button class="iconbtn" data-act="tab" data-arg="inbox" aria-label="Back to messages">'+ic('back',26)+'</button><div><b class="bf" style="font-size:18px">'+t.name+'</b><div>'+tstat(t)+'</div></div></div><div class="mid bubs" style="justify-content:flex-end">'+msgs+'</div><div class="bot" style="gap:10px">'+(t.sug.length?'<div class="lbl">Tap to reply</div>':'')+sug+(t.team?'':'<button class="btn btn-text" data-act="closethread">Close this conversation</button>')+'</div></div>';
 }
 var SCREENS={appstore:scAppstore,o1:function(){return scObs('o1');},o2:function(){return scObs('o2');},o3:function(){return scObs('o3');},o4:function(){return scObs('o4');},o5:function(){return scObs('o5');},o6:function(){return scObs('o6');},o7:function(){return scObs('o7');},
- id:scId,q1:function(){return scQuiz(0);},q2:function(){return scQuiz(1);},card:scCard,payout:scPayout,perm:scPerm,board:scBoard,prizes:scPrizes,contact:scContact,cardsent:scCardsent,time:scTime,summary:scSummary,find:scFind,there:scThere,look:scLook,say:scSay,reply:scReply,qr:scQr,claimwait:scClaimwait,claimed:scClaimed,
- leads:scLeads,lead:scLead,dshow:function(){return scDemo('dshow');},dworth:function(){return scDemo('dworth');},dplan:function(){return scDemo('dplan');},dclose:function(){return scDemo('dclose');},dsend:scDsend,followup:scFollowup,won:scWon,money:scMoney,inbox:scInbox,thread:scThread};
+ id:scId,q1:function(){return scQuiz(0);},q2:function(){return scQuiz(1);},card:scCard,payout:scPayout,perm:scPerm,board:scBoard,prizes:scPrizes,contact:scContact,cardsent:scCardsent,time:scTime,summary:scSummary,know:scKnow,nudge:scNudge,find:scFind,there:scThere,look:scLook,say:scSay,reply:scReply,qr:scQr,claimwait:scClaimwait,claimed:scClaimed,
+ leads:scLeads,lead:scLead,dask:function(){return scDemo('dask');},dshow:function(){return scDemo('dshow');},dworth:function(){return scDemo('dworth');},dplan:function(){return scDemo('dplan');},dclose:function(){return scDemo('dclose');},dsend:scDsend,followup:scFollowup,won:scWon,money:scMoney,inbox:scInbox,thread:scThread};
 
 function render(){
  var hostEl=document.getElementById('host');hostEl.innerHTML=SCREENS[S.screen]();document.getElementById('phone').classList.toggle('dk',!!hostEl.querySelector('.scr.dark'));
@@ -670,9 +714,9 @@ function jump(n){
  else if(n===3){S.screen='id';}
  else if(n===4){S.screen='board';S.tab='board';}
  else if(n===5){S.screen='time';S.tab='find';}
- else if(n===6){S.session.active=true;S.screen='there';}
+ else if(n===6){S.session.active=true;S.screen='know';}
  else if(n===7){seed();addMarlow(1);S.screen='leads';S.tab='leads';}
- else if(n===8){seed();addMarlow(2);S.screen='dshow';}
+ else if(n===8){seed();addMarlow(2);S.screen='dask';}
  else if(n===9){seed();addMarlow(4);S.screen='won';S.tab='money';}
  else if(n===10){seed();addMarlow(2);S.screen='inbox';S.tab='inbox';}
  render();
@@ -697,18 +741,22 @@ function act(a,arg,el){
   case 'done':S.screen='summary';render();break;
   case 'endsession':S.session={mins:S.time,total:Math.max(1,Math.round(S.time/60*4)),done:0,claims:0,cards:0,active:false};S.tab=arg;S.screen=arg;render();break;
   case 'nextbiz':S.bi=(S.bi+1)%BIZ.length;S.screen='find';S.tab='find';render();break;
-  case 'protoclaim':var pc=lead(S.lead);claimLead(bizOf(pc.id)||biz(),pc.contact);pc.stage=1;render();toast('They claimed. The app is texting them to book a meeting.');break;
+  case 'protoclaim':var pc=lead(S.lead);claimLead(bizOf(pc.id)||biz(),pc.contact);pc.stage=1;pc.open={kind:'text',n:2,ago:'just now'};render();toast('They claimed. The app is texting them to book a meeting.');break;
   case 'nextdoor':S.bi=1;S.screen='find';S.tab='find';render();break;
   case 'claimed':claimLead(biz(),{name:biz().owner,role:'Owner',phone:biz().phone});S.session.claims++;S.session.done++;S.screen='claimed';render();break;
   case 'lead':S.lead=arg;S.screen='lead';render();break;
   case 'closer':var l=lead(S.lead);if(l){l.closer=arg;}render();break;
-  case 'protobook':var pl=lead(S.lead);pl.stage=2;pl.when='Thu 10:30 am';var pt=thread(pl.id);if(pt&&!pt.booked){pt.booked=1;pt.msgs.push(['them','Thursday at 10:30 works.']);pt.msgs.push(['me','Booked. You will get a reminder the day before.','Sent by the app for you']);pt.auto='Reminder text Wed 4:00 pm';}render();toast('They booked Thu 10:30 am. Choose who closes it.');break;
-  case 'teamclose':var tl=lead(S.lead);tl.stage=4;render();break;
+  case 'protobook':var pl=lead(S.lead);pl.stage=2;pl.when='Thu 10:30 am';pl.meetIn=2;pl.tBook=2;var pt=thread(pl.id);if(pt&&!pt.booked){pt.booked=1;pt.msgs.push(['them','Thursday at 10:30 works.']);pt.msgs.push(['me','Booked. You will get a reminder the day before.','Sent by the app for you']);pt.auto='Reminder text Wed 4:00 pm';}ensureTeam(pl);render();toast('They booked Thu 10:30 am, 2 days out. A team chat opened for this lead.');break;
+  case 'teamclose':var tl=lead(S.lead);tl.stage=4;tl.tClose=6;render();break;
   case 'pickplan':S.plan=+arg;S.screen='dclose';render();break;
-  case 'paid':var pd=lead(S.lead);if(!pd){addMarlow(4);pd=lead('marlow');S.lead='marlow';}pd.stage=4;pd.plan=S.plan;if(!pd.closer)pd.closer='me';S.screen='won';render();break;
+  case 'paid':var pd=lead(S.lead);if(!pd){addMarlow(4);pd=lead('marlow');S.lead='marlow';}pd.stage=4;pd.plan=S.plan;if(!pd.closer)pd.closer='me';pd.tClose=5;if(pd.tBook==null)pd.tBook=2;S.screen='won';render();break;
   case 'toast':toast(arg);break;
   case 'thread':S.thread=arg;thread(arg).unread=0;S.screen='thread';render();break;
-  case 'sendreply':var th=thread(S.thread);th.msgs.push(['me',th.sug[+arg],'Sent from your app number']);th.sug=[];th.auto='Next follow-up: tomorrow 9:00 am';render();break;
+  case 'sendreply':var th=thread(S.thread);th.msgs.push(['me',th.sug[+arg],th.team?'Team channel':'Sent from your app number']);th.sug=[];th.owe=false;th.auto=th.team?'':'Next follow-up: tomorrow 9:00 am';render();break;
+  case 'closethread':var ct=thread(S.thread);if(ct)ct.done=true;S.screen='inbox';render();break;
+  case 'teamchat':var tcl=lead(S.lead);ensureTeam(tcl);S.thread='team-'+tcl.id;thread(S.thread).unread=0;S.screen='thread';S.tab='inbox';render();break;
+  case 'hotlead':S.lead=arg;S.screen='nudge';S.tab='leads';render();break;
+  case 'sendnudge':var nl=lead(S.lead),no=nudgeOpts(nl)[+arg],nt=thread(nl.id);if(nt){nt.msgs.push(['me',no[2],'Sent by the app for you']);nt.owe=false;}if(nl.touch)nl.touch.text='Just now';S.screen='lead';render();toast('Sent. You will see when they click or reply.');break;
  }
 }
 document.addEventListener('click',function(e){var el=e.target.closest('[data-act]');if(!el||el.disabled)return;act(el.getAttribute('data-act'),el.getAttribute('data-arg'),el);});
