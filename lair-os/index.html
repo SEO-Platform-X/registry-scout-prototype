@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>LAIR OS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one phone-width app column (bottom tab bar, sticky header), centered on desktop.
+   A dark "prototype controls" strip above it switches between the 8 LAIR roles, like the Acorn prototype. */
+:root{
+  --blue:#1F4FE0;--blue-2:#1a43c2;--tint:#E7EDFC;--coral:#FF5A3C;
+  --ink:#0B1A2E;--ink-2:#3a4a62;--muted:#6b778a;--faint:#9aa3b2;
+  --paper:#F4F1EA;--paper-2:#ECE6D6;--card:#ffffff;--line:#e2dccd;--line-2:#cfc8b6;
+  --good:#1f8a4c;--good-soft:#dff2e6;--warn:#a5600a;--warn-soft:#fbefd9;--bad:#c4281c;--bad-soft:#fbe4e1;
+  --demo:#0B1A2E;--demo-2:#16263d;--demo-fg:#e8ecf3;--demo-mute:#93a0b5;
+  --scrim:rgba(11,26,46,.45);
+  --display:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;
+  --body:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
+  --serif:'Cormorant',Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --blue:#6d8fff;--blue-2:#89a4ff;--tint:#1b2a52;--ink:#eef1f6;--ink-2:#c3cbd8;--muted:#8e9aae;--faint:#5f6b80;
+  --paper:#0B1A2E;--paper-2:#122339;--card:#132840;--line:#22385a;--line-2:#2f4a72;
+  --good:#4cc782;--good-soft:#123826;--warn:#f0b357;--warn-soft:#3a2c10;--bad:#ff7a6b;--bad-soft:#40181a;
+  --demo:#050d18;--demo-2:#0f1d31;--scrim:rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --blue:#6d8fff;--blue-2:#89a4ff;--tint:#1b2a52;--ink:#eef1f6;--ink-2:#c3cbd8;--muted:#8e9aae;--faint:#5f6b80;
+  --paper:#0B1A2E;--paper-2:#122339;--card:#132840;--line:#22385a;--line-2:#2f4a72;
+  --good:#4cc782;--good-soft:#123826;--warn:#f0b357;--warn-soft:#3a2c10;--bad:#ff7a6b;--bad-soft:#40181a;
+  --demo:#050d18;--demo-2:#0f1d31;--scrim:rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--paper)}
+body{color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--demo)}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{margin:0;text-wrap:balance}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* prototype strip */
+.demo{background:var(--demo);color:var(--demo-fg)}
+.dw{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;display:grid;gap:8px}
+.dtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--demo-mute)}
+.dtag{background:var(--coral);color:#fff;font:700 10.5px var(--display);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.dtypes{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.dtypes::-webkit-scrollbar{display:none}
+.dt{flex:0 0 auto;display:grid;text-align:left;background:var(--demo-2);border:1px solid #24364f;color:var(--demo-fg);padding:6px 11px 7px;border-radius:10px;line-height:1.25;min-width:118px}
+.dt small{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--demo-mute);font-weight:600}
+.dt b{font-size:13px;font-weight:600;white-space:nowrap}
+.dt[aria-pressed="true"]{background:#fff;color:#0B1A2E;border-color:#fff}
+.dt[aria-pressed="true"] small{color:#1F4FE0}
+
+/* app column */
+.app{max-width:560px;margin:0 auto;min-height:calc(100vh - 120px);background:var(--paper);position:relative;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+@media (min-width:600px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;min-width:0}
+.brand svg{width:26px;height:26px;flex:0 0 auto}
+.brand b{font:800 15px var(--display);letter-spacing:-.2px;white-space:nowrap}
+.brand span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.av{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font:700 12px var(--display);margin-left:auto;flex:0 0 auto}
+.main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 24px;display:grid;gap:22px}
+
+/* tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;pointer-events:none}
+.tabs nav{pointer-events:auto;max-width:560px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tb{flex:1;border:0;background:transparent;display:grid;justify-items:center;gap:2px;padding:6px 2px;color:var(--muted);font-size:11px;font-weight:600;position:relative;border-radius:10px}
+.tb svg{width:22px;height:22px}
+.tb[aria-current="page"]{color:var(--blue)}
+.tb .bd{position:absolute;top:2px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--bad);color:#fff;font-size:10.5px;line-height:17px;font-weight:700}
+
+/* type */
+.hello{font:500 italic 34px/1.05 var(--serif);letter-spacing:-.3px}
+.sub{color:var(--ink-2);font-size:14.5px;margin-top:4px}
+.lbl{font:700 11px var(--display);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lbl a,.lbl button{font:600 12.5px var(--body);letter-spacing:0;text-transform:none;color:var(--blue);border:0;background:none;padding:0}
+.sec{display:grid;gap:10px}
+.h1{font:700 24px/1.15 var(--display);letter-spacing:-.4px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.xs{font-size:12px}
+
+/* surfaces */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;min-width:0}
+.card.flat{background:transparent}
+.card.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.card.blue .muted{color:rgba(255,255,255,.75)}
+.list{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.li{display:flex;gap:12px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--line);min-width:0;width:100%;background:transparent;border-left:0;border-right:0;border-top:0;text-align:left}
+.li:last-child{border-bottom:0}
+button.li:hover{background:color-mix(in srgb,var(--tint) 50%,transparent)}
+.li .grow{flex:1;min-width:0}
+.li .t{font-weight:600;font-size:15px;line-height:1.3}
+.li .m{font-size:13px;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.li .r{text-align:right;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.chev{color:var(--faint);flex:0 0 auto}
+.ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:0 0 auto;background:var(--tint);color:var(--blue)}
+.ic svg{width:20px;height:20px}
+.ic.bad{background:var(--bad-soft);color:var(--bad)}.ic.warn{background:var(--warn-soft);color:var(--warn)}.ic.good{background:var(--good-soft);color:var(--good)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sp{justify-content:space-between}
+.stack{display:grid;gap:10px}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--paper-2);color:var(--ink-2);white-space:nowrap;line-height:1.5}
+.chip.good{background:var(--good-soft);color:var(--good)}.chip.warn{background:var(--warn-soft);color:var(--warn)}.chip.bad{background:var(--bad-soft);color:var(--bad)}.chip.blue{background:var(--tint);color:var(--blue)}
+.chip.solid{background:var(--ink);color:var(--paper)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;min-width:0}
+.kpi .l{font-size:12.5px;color:var(--muted);font-weight:500}
+.kpi .v{font:700 26px/1.1 var(--display);letter-spacing:-.6px;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12.5px;margin-top:3px;color:var(--ink-2)}
+.kpi.good .s{color:var(--good)}.kpi.bad .s{color:var(--bad)}.kpi.warn .s{color:var(--warn)}
+.kpi.bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+
+/* buttons + fields */
+.btn{border:1px solid var(--line-2);background:var(--card);color:var(--ink);font-weight:600;font-size:14px;padding:9px 14px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--ink-2)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.pri:hover{background:var(--blue-2)}
+.btn.ink{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.sm{padding:6px 11px;font-size:13px;border-radius:10px}
+.btn.block{width:100%;padding:14px;font-size:16px;border-radius:14px}
+.btn.big{width:100%;padding:20px;font:800 20px var(--display);border-radius:18px;letter-spacing:-.2px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--blue);padding-inline:4px}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.btn svg{width:16px;height:16px}
+input,select,textarea{font:inherit;font-size:16px;width:100%;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--line-2);background:var(--card);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px var(--tint)}
+textarea{min-height:110px;resize:vertical;line-height:1.45}
+.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.f small{font-weight:400;color:var(--muted)}
+.seg{display:flex;background:var(--paper-2);border-radius:12px;padding:3px;gap:2px;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:1;border:0;background:transparent;padding:8px 10px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(11,26,46,.12)}
+
+/* meters, bars */
+.meter{height:8px;border-radius:99px;background:var(--paper-2);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:99px;background:var(--blue)}
+.meter.good i{background:var(--good)}.meter.warn i{background:var(--warn)}.meter.bad i{background:var(--bad)}
+.hb{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:13.5px}
+.hb .meter{grid-column:1/-1}
+.cols{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:4px;align-items:end;height:110px}
+.cols i{display:block;border-radius:5px 5px 2px 2px;background:var(--blue);min-height:3px}
+.cols i.f{background:color-mix(in srgb,var(--blue) 30%,transparent)}
+.axis{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:4px;font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+svg.chart text{fill:var(--muted);font:500 10.5px var(--body)}
+
+/* deliverable grid (8 things) */
+.eight{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.e8{border:1px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center;font-size:11px;font-weight:600;line-height:1.2;background:var(--card);display:grid;gap:4px;justify-items:center}
+.e8 i{width:10px;height:10px;border-radius:50%;background:var(--paper-2);border:1.5px solid var(--line-2)}
+.e8.s1 i{background:var(--warn-soft);border-color:var(--warn)}
+.e8.s2 i{background:var(--good);border-color:var(--good)}
+.e8.s2{color:var(--ink)}
+.e8.s0{color:var(--muted)}
+
+/* access checklist */
+.acc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.acc div{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;background:var(--card)}
+.acc .ok{color:var(--good)}.acc .no{color:var(--bad)}
+
+/* timeline */
+.tl{display:grid}
+.tl .i{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tl .i:last-child{border-bottom:0}
+.tl .d{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.tl .k{font:700 10.5px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+
+/* map */
+.tm{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
+.tile{aspect-ratio:1;max-width:100%;border:0;border-radius:5px;display:grid;place-items:center;font:700 9.5px var(--display);padding:0;background:var(--paper-2);color:var(--muted)}
+.tile.g{background:var(--good);color:#fff}.tile.a{background:#e0a33a;color:#2b1c03}.tile.r{background:var(--bad);color:#fff}
+.tile.u{background:transparent;box-shadow:inset 0 0 0 1.5px var(--bad);color:var(--bad)}
+.tile.sel{outline:2.5px solid var(--blue);outline-offset:1px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-2)}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* storefront preview */
+.sf{border-radius:18px;background:var(--ink);color:var(--paper);padding:16px;display:grid;gap:12px}
+.sf .muted{color:color-mix(in srgb,var(--paper) 65%,transparent)}
+.sf .chip{background:color-mix(in srgb,var(--paper) 14%,transparent);color:var(--paper)}
+.sf .chip.good{background:#1d5c3a;color:#bff0d2}
+.sf .tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sf .tri div{border:1px solid color-mix(in srgb,var(--paper) 18%,transparent);border-radius:12px;padding:10px;text-align:center}
+.sf .tri b{font:700 20px var(--display);display:block}
+.logo-sq{width:52px;height:52px;border-radius:14px;background:var(--paper);color:var(--ink);display:grid;place-items:center;font:800 22px var(--display);flex:0 0 auto}
+
+/* sheet + toast */
+.ov{position:fixed;inset:0;z-index:50;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
+.sh{background:var(--paper);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;
+  padding:8px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;gap:14px}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line-2);margin:4px auto 2px}
+@media (prefers-reduced-motion:no-preference){.sh{animation:up .22s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.5}}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--paper);padding:11px 16px;border-radius:12px;font-size:14px;font-weight:500;max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.script{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;font:500 italic 22px/1.3 var(--serif)}
+.mail{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:14px;white-space:pre-wrap;line-height:1.5}
+.rule{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.rule:last-child{border-bottom:0}
+.rule .t{font-weight:600}
+.rule .why{grid-column:1/-1;font-size:12.5px;color:var(--muted)}
+.big-n{font:800 44px/1 var(--display);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.live{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 var(--good)}
+@media (prefers-reduced-motion:no-preference){.live{animation:pulse 1.6s infinite}@keyframes pulse{70%{box-shadow:0 0 0 9px transparent}}}
+.rng{display:grid;gap:4px}
+.rng .row{justify-content:space-between;font-size:14px}
+.rng input{padding:0;accent-color:var(--blue);border:0;box-shadow:none}
+.me{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:var(--card);border-radius:999px;padding:3px 3px 3px 10px;flex:0 0 auto}
+.me:hover{border-color:var(--blue)}
+.me .av{margin:0;width:30px;height:30px}
+.wamt{display:inline-flex;align-items:center;gap:5px;font:700 13.5px var(--display);color:var(--good);font-variant-numeric:tabular-nums}
+.empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
+.pool{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--paper-2)}
+.pool i{display:block;height:100%;border-right:2px solid var(--card)}
+.pool.over{box-shadow:0 0 0 2px var(--bad)}
+.poolrows{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 12px;font-size:13.5px;align-items:center}
+.poolrows span:first-child,.poolrows>span:nth-child(3n+1){display:inline-flex;align-items:center;gap:7px}
+.offer{background:var(--ink);color:var(--paper);border-radius:18px;padding:16px;display:grid;gap:8px}
+.offer .chip{background:color-mix(in srgb,var(--paper) 14%,transparent);color:var(--paper)}
+.offer .chip.warn{background:var(--coral);color:#fff}
+.offer-h{font:800 26px/1.1 var(--display);letter-spacing:-.5px}
+.warnbox{font-size:13.5px;padding:9px 12px;border-radius:10px}
+.warnbox.bad{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.warnbox.warn{background:var(--warn-soft);color:var(--warn)}
+
+/* global search + 360 */
+.hdr{flex-wrap:wrap}
+.qbar{flex:1 1 100%;display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:var(--card);border-radius:12px;padding:9px 12px;color:var(--muted);font-size:15px;text-align:left}
+.qbar:hover{border-color:var(--blue)}
+.qbar svg{width:18px;height:18px;flex:0 0 auto}
+.sh.full{height:96vh;max-height:96vh;align-content:start}
+.qin{position:sticky;top:-8px;z-index:2;background:var(--paper);padding-block:6px}
+.qgrp{font:700 11px var(--display);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:6px 2px 6px}
+.pipe{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+.pipe div{display:grid;gap:5px;font-size:10.5px;font-weight:600;color:var(--faint);line-height:1.15}
+.pipe i{height:6px;border-radius:9px;background:var(--paper-2)}
+.pipe .on{color:var(--ink-2)}.pipe .on i{background:var(--blue)}
+.pipe .cur{color:var(--blue)}.pipe .cur i{background:var(--blue);box-shadow:0 0 0 3px var(--tint)}
+.clocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.clock{border-radius:16px;padding:12px 14px;background:var(--card);border:1px solid var(--line);min-width:0}
+.clock .n{font:800 30px/1 var(--display);letter-spacing:-1px;font-variant-numeric:tabular-nums;margin-top:6px}
+.clock .n small{font:600 13px var(--body);letter-spacing:0;color:var(--muted)}
+.clock .w{font-size:12.5px;color:var(--ink-2);margin-top:6px}
+.clock.bad{background:var(--bad-soft);border-color:transparent}.clock.bad .n{color:var(--bad)}
+.clock.warn{background:var(--warn-soft);border-color:transparent}.clock.warn .n{color:var(--warn)}
+.clock.good .n{color:var(--good)}
+.facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 14px;font-size:14px}
+.facts dt{color:var(--muted)}.facts dd{margin:0;overflow-wrap:anywhere}
+.msg{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.msg:last-child{border-bottom:0}
+.msg .b{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--tint);color:var(--blue)}
+.msg .b svg{width:16px;height:16px}
+.msg.in .b{background:var(--good-soft);color:var(--good)}
+.msg .h{font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.person{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.person:last-child{border-bottom:0}
+.person .av{margin:0;width:38px;height:38px;background:var(--ink);color:var(--paper)}
+.tip{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;font-size:14.5px;padding:7px 0}
+.tip b{color:var(--blue);font:800 14px var(--display)}
+.obj{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.obj:last-child{border-bottom:0}
+.obj q{font-weight:600;quotes:none}
+</style>
+
+<aside class="demo" aria-label="Prototype controls"><div class="dw" id="demo"></div></aside>
+<div class="app">
+  <header class="hdr" id="hdr"></header>
+  <main class="main" id="main"></main>
+</div>
+<div class="tabs"><nav id="tabs" aria-label="Sections"></nav></div>
+<div id="sheet"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+/* ================= helpers ================= */
+const TODAY='2026-10-30';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=n=>'$'+Math.round(n).toLocaleString('en-US');
+const $k=n=>n>=1000?'$'+(Math.round(n/100)/10).toLocaleString('en-US')+'k':$(n);
+const D=s=>new Date(s+'T12:00:00');
+const ago=(s,b=TODAY)=>Math.round((D(b)-D(s))/864e5);
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fd=s=>{const d=D(s);return MON[d.getMonth()]+' '+d.getDate()};
+const chip=(t,k='')=>`<span class="chip ${k}">${t}</span>`;
+const kpi=(l,v,s='',k='')=>`<div class="kpi ${k}"><div class="l">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+const meter=(p,k='')=>`<div class="meter ${k}"><i style="width:${Math.max(0,Math.min(100,p))}%"></i></div>`;
+const lbl=(t,r='')=>`<div class="lbl"><span>${t}</span>${r}</div>`;
+const CH='<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
+const IP={
+ home:'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+ brief:'M4 7h16v13H4zM9 7V4h6v3M4 12h16',
+ tool:'M14 6l4 4M4 20l6-6M13 3l8 8-3 3-8-8z',
+ inbox:'M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6H3v-6z',
+ wallet:'M3 7h18v13H3zM16 14h2M3 7l3-3h12',
+ store:'M3 9l2-5h14l2 5M4 9v11h16V9M9 20v-6h6v6',
+ pin:'M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12zM12 11.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+ users:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c.8-3.5 3.6-5.5 7-5.5s6.2 2 7 5.5M16 3.5a4 4 0 0 1 0 7.5M18 15.6c2 .8 3.4 2.6 4 5.4',
+ chart:'M4 20V10M10 20V4M16 20v-7M22 20H2',
+ trophy:'M8 4h8v5a4 4 0 0 1-8 0zM8 6H4a3 3 0 0 0 4 4M16 6h4a3 3 0 0 1-4 4M12 13v4M8 21h8',
+ cash:'M2 6h20v12H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 9v.01M18 15v.01',
+ send:'M22 2L11 13M22 2l-7 20-4-9-9-4z',
+ alert:'M12 3l10 18H2zM12 10v5M12 18h.01',
+ gauge:'M12 14l4-4M3.5 18a9.5 9.5 0 1 1 17 0',
+ bulb:'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z',
+ ship:'M12 2c4 3 5 8 4 13H8C7 10 8 5 12 2zM8 15l-3 4h4M16 15l3 4h-4M12 9h.01',
+ funnel:'M3 4h18l-7 9v7l-4-2v-5z',
+ map:'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',
+ bolt:'M13 2L4 14h7l-1 8 9-12h-7z',
+ chat:'M4 5h16v11H9l-5 4z',
+ phone:'M5 3h4l2 5-3 2a11 11 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z',
+ key:'M15 7a4 4 0 1 1-3.5 6L4 20.5V17h3v-3h3l1.5-1.5A4 4 0 0 1 15 7zM16 9h.01',
+ check:'M4 12l5 5L20 6',
+ doc:'M6 2h9l5 5v15H6zM14 2v6h6M9 13h8M9 17h6',
+ search:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5',
+ book:'M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4zM8 4v16',
+ sliders:'M4 6h10M18 6h2M16 4v4M4 12h4M12 12h8M10 10v4M4 18h12M20 18h0M18 16v4',
+ eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+ link:'M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1',
+ plus:'M12 5v14M5 12h14'};
+const ic=(n,w=20)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${IP[n]}"/></svg>`;
+const MARK='<svg viewBox="0 0 100 100" aria-label="Local AI Registry" role="img"><path d="M50 10 L92 86 L64 86 L50 58 L36 86 L8 86 Z" fill="#1F4FE0"/><path d="M50 10 L61 30 L39 30 Z" fill="#FF5A3C"/></svg>';
+function li({icon,ik='',t,m='',r='',a='',id='',chev=true}){const tagn=a?'button':'div';return `<${tagn} class="li" ${a?`data-a="${a}" data-id="${esc(id)}"`:''}>${icon?`<span class="ic ${ik}">${ic(icon)}</span>`:''}<span class="grow"><span class="t" style="display:block">${t}</span>${m?`<span class="m">${m}</span>`:''}</span>${r?`<span class="r">${r}</span>`:''}${a&&chev?CH:''}</${tagn}>`}
+function line(vals,{w=320,h=110,labels=[],floor=null,color='var(--blue)',fmt=$k,proj=-1}={}){
+  const mn=Math.min(...vals,floor??Infinity)*0.92,mx=Math.max(...vals)*1.06,pad=24;
+  const X=i=>pad+i*(w-pad-8)/(vals.length-1),Y=v=>8+(h-30)*(1-(v-mn)/(mx-mn||1));
+  const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`);
+  const solid=proj>0?pts.slice(0,proj+1):pts,dash=proj>0?pts.slice(proj):[];
+  const area=`M${pts[0]} L${pts.join(' L')} L${X(vals.length-1)},${h-22} L${X(0)},${h-22} Z`;
+  const grid=[0,.5,1].map(f=>{const v=mn+(mx-mn)*f;return `<line x1="${pad}" x2="${w-8}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${pad-4}" y="${Y(v)+3}" text-anchor="end">${fmt(v)}</text>`}).join('');
+  const fl=floor!=null?`<line x1="${pad}" x2="${w-8}" y1="${Y(floor)}" y2="${Y(floor)}" stroke="var(--bad)" stroke-dasharray="4 3" stroke-width="1.2"/><text x="${w-8}" y="${Y(floor)-4}" text-anchor="end" style="fill:var(--bad)">floor ${fmt(floor)}</text>`:'';
+  const lab=labels.map((l,i)=>l?`<text x="${X(i)}" y="${h-6}" text-anchor="middle">${l}</text>`:'').join('');
+  const last=vals.length-1;
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Line chart">${grid}<path d="${area}" fill="${color}" opacity=".08"/>${fl}<polyline points="${solid.join(' ')}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round"/>${dash.length?`<polyline points="${dash.join(' ')}" fill="none" stroke="${color}" stroke-width="2.2" stroke-dasharray="5 4"/>`:''}<circle cx="${X(last)}" cy="${Y(vals[last])}" r="4" fill="${color}"/>${lab}</svg>`}
+function cols(vals,labels,futureFrom=99){const mx=Math.max(...vals)||1;return `<div class="cols" style="--n:${vals.length}">${vals.map((v,i)=>`<i class="${i>=futureFrom?'f':''}" style="height:${v/mx*100}%" title="${$(v)}"></i>`).join('')}</div><div class="axis" style="--n:${vals.length}">${labels.map(l=>`<span>${l}</span>`).join('')}</div>`}
+
+/* ================= people + roles ================= */
+const ROLES=[
+ {id:'spec',k:'Specialist',person:'Caron Cooper',ini:'CC',title:'SEO / AEO Specialist',first:'Caron'},
+ {id:'rep',k:'AIORS rep',person:'Kody Muffoletto',ini:'KM',title:'AI Onboarding & Readiness Specialist',first:'Kody'},
+ {id:'rsm',k:'Sales manager',person:'Bridgette DeBrino',ini:'BD',title:'VP Marketing & Sales · RSM view',first:'Bridgette'},
+ {id:'cfo',k:'Finance',person:'Eric Sim',ini:'ES',title:'COO · Finance view',first:'Eric'},
+ {id:'cto',k:'CTO / CPO',person:'Clinton',ini:'CL',title:'Product & engineering',first:'Clinton'},
+ {id:'god',k:'Godmode',person:'Steve Lee',ini:'SL',title:'CEO · Godmode (Steve + Eric)',first:'Steve'},
+ {id:'mkt',k:'Marketing',person:'Flávia Gottschalk',ini:'FG',title:'Manager, Growth Marketing',first:'Flávia'},
+ {id:'cs',k:'Customer service',person:'Support desk',ini:'SD',title:'Support · free owners, tech, provider watch',first:'team'},
+ {id:'partner',k:'Referral partner',person:'Dana Reyes',ini:'DR',title:'Partner portal · code DANA15',first:'Dana'}];
+const TABS={
+ spec:[['today','Today','home'],['accts','Accounts','brief'],['work','Work','tool'],['wallet','Wallet','wallet'],['store','Profile','store']],
+ rep:[['go','Go','bolt'],['leads','Leads','users'],['earn','Earnings','wallet'],['ranks','Ranks','trophy']],
+ rsm:[['make','Make deal','bolt'],['pulse','Pulse','gauge'],['deals','Pipeline','funnel'],['map','Map','map'],['reps','Reps','users']],
+ cfo:[['margin','Margin','gauge'],['collect','Collect','alert'],['pay','Pay out','send'],['fore','Forecast','chart']],
+ cto:[['health','Health','gauge'],['funnel','Funnel','funnel'],['insights','Insights','bulb'],['ship','Build','ship']],
+ god:[['over','Overview','eye'],['fore','Forecast','sliders'],['alerts','Alerts','alert'],['team','Team','users']],
+ mkt:[['mql','MQLs','funnel'],['opps','Opportunities','bulb'],['camp','Campaigns','chart'],['send','New send','send']],
+ cs:[['queue','Queue','inbox'],['watch','Provider watch','eye'],['look','Look up','search'],['macros','Macros','book']],
+ partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pshare','Share','send'],['pgrow','Go full time','trophy']]};
+
+/* ================= data (sample) ================= */
+const W8=[['technical','Technical fixes'],['llms','llms.txt'],['cannibal','Cannibalization'],['topical','Topical map'],['crawl','Crawl budget'],['schema','Schema'],['onsite','Articles & blogs'],['offpage','Backlinks']];
+const W8S={technical:'Technical',llms:'llms.txt',cannibal:'Cannibal.',topical:'Topical map',crawl:'Crawl',schema:'Schema',onsite:'Articles',offpage:'Backlinks'};
+let db;
+function seed(){return {
+ accts:[
+  {id:'rve',name:'R.Ve Aesthetics',city:'Huntington, NY',tier:'Authority',mrr:3000,owner:'Dr. Osborne Williams',phone:'(631) 555-0148',start:'2026-10-06',access:{Website:1,GBP:1,GA4:0,GSC:0},asked:'2026-10-22',appr:3,apprOld:'2026-10-24',q:2,qHrs:31,profile:92,
+   work:{technical:2,llms:2,cannibal:1,topical:2,crawl:0,schema:2,onsite:1,offpage:1},
+   comms:[['2026-10-29','Inbox','Patient asked if they offer Morpheus8. Unanswered.'],['2026-10-28','Edit','Owner edited the botox article intro.'],['2026-10-24','Approval','3 drafts sent for approval: 2 GBP posts, 1 review reply.'],['2026-10-22','Email','Asked for GA4 and Search Console access.'],['2026-10-01','Report','September report delivered. Opened 2x.']]},
+  {id:'nutri',name:'NutriChem',city:'Ottawa, ON',tier:'Authority',mrr:3000,owner:'Tom Miron',phone:'(613) 555-0122',start:'2026-10-27',access:{Website:0,GBP:0,GA4:0,GSC:0},asked:'2026-10-28',appr:0,q:0,profile:41,handoff:true,
+   work:{technical:0,llms:0,cannibal:0,topical:0,crawl:0,schema:0,onsite:0,offpage:0},
+   comms:[['2026-10-28','Email','Welcome + access request sent (website, GBP, GA4, GSC).'],['2026-10-27','Handoff','Kody closed on Authority. Notes: compounding pharmacy + naturopathic clinic.']]},
+  {id:'ces',name:'Commonwealth Eye Surgery',city:'',tier:'Trust',mrr:1500,owner:'Shawna',phone:'(859) 555-0170',start:'2026-06-02',access:{Website:1,GBP:1,GA4:1,GSC:1},appr:0,q:1,qHrs:26,profile:88,
+   work:{technical:2,llms:2,cannibal:2,topical:2,crawl:2,schema:2,onsite:2,offpage:1},
+   comms:[['2026-10-29','Inbox','Shawna asked to change the doctor name on two review replies.'],['2026-10-20','Approval','Approved 6 GBP posts.'],['2026-10-01','Report','September report delivered. Opened 4x.']]},
+  {id:'qvita',name:'Qvita Health and Wellness',city:'Wesley Chapel, FL',tier:'Trust',mrr:1500,owner:'Panagiota Demetriou',phone:'(813) 555-0119',start:'2026-08-15',access:{Website:1,GBP:1,GA4:1,GSC:0},asked:'2026-10-01',appr:1,apprOld:'2026-10-28',q:0,profile:79,
+   work:{technical:2,llms:2,cannibal:1,topical:1,crawl:1,schema:2,onsite:1,offpage:1},
+   comms:[['2026-10-28','Approval','1 review reply waiting.'],['2026-10-12','Text','Reminded to use "Panagiota" not "Nurse Peggy" in replies.']]},
+  {id:'lis',name:'Dr. Jeff Lisiecki',city:'',tier:'Authority',mrr:2000,owner:'Dr. Jeff Lisiecki',phone:'(555) 555-0131',start:'2026-09-30',access:{Website:1,GBP:1,GA4:1,GSC:1},appr:0,q:0,profile:95,
+   work:{technical:2,llms:2,cannibal:2,topical:2,crawl:2,schema:2,onsite:2,offpage:2},
+   comms:[['2026-10-26','Approval','Approved 2 articles, no edits.'],['2026-10-01','Report','September report delivered.']]},
+  {id:'lux',name:'Luxurecovery',city:'',tier:'Authority',mrr:3000,owner:'Owner',phone:'(555) 555-0188',start:'2026-09-10',access:{Website:1,GBP:1,GA4:1,GSC:1},appr:2,apprOld:'2026-10-27',q:0,profile:84,meet:'2026-11-03',
+   work:{technical:1,llms:2,cannibal:0,topical:2,crawl:1,schema:1,onsite:1,offpage:0},
+   comms:[['2026-10-27','Approval','2 new WordPress pages sent for approval.'],['2026-10-21','Call','Booked a site walkthrough for Nov 3.']]},
+  {id:'est',name:'Eye Surgery Today',city:'',tier:'Authority',mrr:3000,owner:'Practice lead',phone:'(555) 555-0102',start:'2026-05-01',access:{Website:1,GBP:1,GA4:1,GSC:1},appr:0,q:0,profile:90,
+   work:{technical:2,llms:2,cannibal:2,topical:2,crawl:2,schema:2,onsite:1,offpage:2},
+   comms:[['2026-10-23','Edit','Owner rewrote the LASIK FAQ answer.'],['2026-10-01','Report','September report delivered. Opened 1x.']]},
+  {id:'quik',name:'Quiktox Medspa',city:'',tier:'Trust',mrr:1500,owner:'Owner',phone:'(555) 555-0164',start:'2023-11-01',access:{Website:1,GBP:1,GA4:1,GSC:1},appr:0,q:0,profile:93,
+   work:{technical:2,llms:2,cannibal:2,topical:2,crawl:2,schema:2,onsite:2,offpage:2},
+   comms:[['2026-10-25','Approval','Approved Botox promo post.']]}],
+ log:[
+  {acct:'rve',type:'onsite',date:'2026-10-21',title:'What to expect at your first microneedling visit',link:'rveaesthetics.com/blog/microneedling-first-visit'},
+  {acct:'rve',type:'schema',date:'2026-10-14',title:'MedicalBusiness + FAQ schema on 6 service pages',link:'Google Doc'},
+  {acct:'rve',type:'technical',date:'2026-10-10',title:'Fixed 14 redirect chains, new XML sitemap',link:'rveaesthetics.com/sitemap.xml'},
+  {acct:'ces',type:'offpage',date:'2026-10-18',title:'Kentucky Health News: cataract surgery explainer',link:'off-page placement'},
+  {acct:'lis',type:'onsite',date:'2026-10-26',title:'IV hydration: who it helps and who it doesn\'t',link:'blog post'}],
+ nearby:[
+  {id:'n1',name:'Canyon Crest Med Spa',kind:'Med spa',dist:'0.3 mi',wrong:'ChatGPT says they do laser hair removal. Their menu doesn\'t list it.',score:34},
+  {id:'n2',name:'Mission Grove Dental',kind:'Dentist',dist:'0.6 mi',wrong:'AI lists Saturday hours. Google says closed Saturdays.',score:41},
+  {id:'n3',name:'Glow Lab Aesthetics',kind:'Med spa',dist:'0.9 mi',wrong:'AI can\'t name a single provider. Owner is a nurse injector.',score:22},
+  {id:'n4',name:'Arlington Wellness Chiropractic',kind:'Chiropractor',dist:'1.2 mi',wrong:'Two different phone numbers across 5 directories.',score:46},
+  {id:'n5',name:'Riverside Smile Studio',kind:'Dentist',dist:'1.6 mi',wrong:'Hours are right. AI never recommends them for Invisalign.',score:52}],
+ leads:[
+  {id:'k1',name:'Tyler Ave Family Dental',stage:'claimed',date:'2026-10-24',auto:'Booking email opened 3x, no meeting yet',closer:'hand',plan:0},
+  {id:'k2',name:'Sol Skin Studio',stage:'claimed',date:'2026-10-29',auto:'Booking email sent today',closer:'hand',plan:0},
+  {id:'k3',name:'Magnolia Pet Hospital',stage:'booked',date:'2026-10-20',meet:'2026-11-04',auto:'Meeting with Kody · Nov 4',closer:'self',plan:0},
+  {id:'k4',name:'Riverwalk Dermatology',stage:'booked',date:'2026-10-18',meet:'2026-11-12',auto:'Meeting Nov 12 · 25 days after claim',closer:'hand',plan:0},
+  {id:'k5',name:'NutriChem',stage:'closed',date:'2026-10-09',auto:'Paid · Authority',closer:'self',plan:3000},
+  {id:'k6',name:'Canyon Lake Vet',stage:'closed',date:'2026-09-21',auto:'Paid · Trust',closer:'hand',plan:1500},
+  {id:'k7',name:'Corona Laser Clinic',stage:'closed',date:'2026-08-30',auto:'Paid · Fix',closer:'self',plan:500}],
+ reps:[
+  {id:'kody',name:'Kody Muffoletto',city:'Riverside, CA',st:'CA',visits:58,claims:7,t2m:1.6,mtgOut:6,show:82,closes:3,mrr:5000},
+  {id:'mari',name:'Marisol Vega',city:'San Diego, CA',st:'CA',visits:44,claims:5,t2m:3.4,mtgOut:9,show:71,closes:2,mrr:3000},
+  {id:'derek',name:'Derek Thompson',city:'Phoenix, AZ',st:'AZ',visits:21,claims:1,t2m:8.5,mtgOut:14,show:50,closes:0,mrr:0},
+  {id:'aal',name:'Aaliyah Brooks',city:'Miami, FL',st:'FL',visits:63,claims:9,t2m:1.2,mtgOut:4,show:88,closes:4,mrr:7500},
+  {id:'sam',name:'Sam Patel',city:'Dallas, TX',st:'TX',visits:38,claims:3,t2m:5.1,mtgOut:11,show:64,closes:1,mrr:1500},
+  {id:'jor',name:'Jordan Kim',city:'Seattle, WA',st:'WA',visits:40,claims:4,t2m:2.2,mtgOut:7,show:75,closes:2,mrr:4500},
+  {id:'tony',name:'Tony Russo',city:'New York, NY',st:'NY',visits:29,claims:2,t2m:6.8,mtgOut:13,show:58,closes:0,mrr:0}],
+ deals:[
+  {id:'d1',name:'Dermatex Hair Replacement',rep:'kody',st:'CA',first:'2026-10-14',meet:'2026-10-28',stage:'Proposal',val:3000,last:'2026-10-21'},
+  {id:'d2',name:'Nova Skincare',rep:'kody',st:'CA',first:'2026-10-16',meet:'2026-10-19',stage:'Proposal',val:3000,last:'2026-10-20'},
+  {id:'d3',name:'Optima Eye',rep:'mari',st:'CA',first:'2026-10-20',meet:'2026-10-22',stage:'Meeting held',val:3000,last:'2026-10-29'},
+  {id:'d4',name:'Westlake Eye Specialists',rep:'mari',st:'CA',first:'2026-10-22',meet:'2026-11-07',stage:'Meeting booked',val:3000,last:'2026-10-22'},
+  {id:'d5',name:'Sora Dermatology',rep:'jor',st:'WA',first:'2026-10-23',meet:'2026-10-27',stage:'Meeting held',val:1500,last:'2026-10-28'},
+  {id:'d6',name:'Doss Eye Medical Group',rep:'sam',st:'TX',first:'2026-10-15',meet:'2026-11-03',stage:'Meeting booked',val:3000,last:'2026-10-15'},
+  {id:'d7',name:'Florida Eye Microsurgical',rep:'aal',st:'FL',first:'2026-10-26',meet:'2026-10-28',stage:'Proposal',val:3000,last:'2026-10-29'},
+  {id:'d8',name:'Chicago Cornea Consultants',rep:null,st:'IL',first:'2026-10-21',meet:null,stage:'New claim',val:1500,last:'2026-10-21'},
+  {id:'d9',name:'Zhu Vision',rep:'tony',st:'NY',first:'2026-10-12',meet:'2026-10-30',stage:'Meeting booked',val:3000,last:'2026-10-12'},
+  {id:'d10',name:'The Cannaisseur',rep:'aal',st:'FL',first:'2026-10-24',meet:'2026-10-27',stage:'Won',val:1500,last:'2026-10-29'}],
+ ar:[
+  {id:'i1',client:'Bayview Laser Studio',amt:3000,due:'2026-07-20',step:3},
+  {id:'i2',client:'Northgate Family Dental',amt:1500,due:'2026-08-28',step:2},
+  {id:'i3',client:'Harbor Vision Center',amt:3000,due:'2026-09-25',step:1},
+  {id:'i4',client:'Elm Street Med Spa',amt:1500,due:'2026-10-12',step:1},
+  {id:'i5',client:'Pinecrest Plastic Surgery',amt:3000,due:'2026-10-22',step:0},
+  {id:'i6',client:'Sunset Skin Co.',amt:500,due:'2026-10-25',step:0}],
+ ap:[
+  {id:'p1',who:'Caron Cooper',what:'Specialist payout · 8 accounts',amt:6475,due:'2026-11-01',ok:false,grp:'People'},
+  {id:'p2',who:'2 more specialists',what:'Specialist payouts · 13 accounts',amt:7350,due:'2026-11-01',ok:false,grp:'People'},
+  {id:'p3',who:'AIORS reps (7)',what:'October commissions',amt:3930,due:'2026-11-01',ok:false,grp:'People'},
+  {id:'p4',who:'Luke (BWInc)',what:'SEO/GEO contractor',amt:1800,due:'2026-11-05',ok:true,grp:'People'},
+  {id:'p5',who:'Qwoted + Press Ranger',what:'PR tools',amt:178,due:'2026-11-03',ok:true,grp:'Tools'},
+  {id:'p6',who:'Ahrefs, Semrush, Clay',what:'Data tools',amt:1240,due:'2026-11-08',ok:true,grp:'Tools'},
+  {id:'p7',who:'The Silicon Review',what:'Profile article (due on publish)',amt:1000,due:'2026-11-28',ok:false,grp:'Press'}],
+ tickets:[
+  {id:'T-418',who:'Glow Lab Aesthetics',kind:'Can\'t get the OTP code',cat:'Tech',ch:'Chat',hrs:2,txt:'I tried to claim our page 3 times. The text code never comes.',assign:'Clinton'},
+  {id:'T-416',who:'Harbor Pilates Studio',kind:'What\'s in Trust vs Fix?',cat:'Pricing',ch:'Chat',hrs:5,txt:'Free account. What do I actually get for $1,500 vs $500?',assign:''},
+  {id:'T-414',who:'Mission Grove Dental',kind:'Hours wrong on page',cat:'Page fix',ch:'Page flag',hrs:41,txt:'Visitor flagged: we are closed Saturdays.',assign:''},
+  {id:'T-411',who:'Oak Hill Vet',kind:'Delete my account',cat:'Delete',ch:'Email',hrs:30,txt:'Please delete my login and stop the emails.',assign:''},
+  {id:'T-409',who:'Anonymous owner',kind:'Take my page down',cat:'Delete',ch:'Email',hrs:76,txt:'Remove our business from your site.',assign:''},
+  {id:'T-417',who:'Commonwealth Eye Surgery',kind:'Wrong doctor name in replies',cat:'Paid client',ch:'Email',hrs:26,txt:'Two review replies use the wrong doctor. Can you fix today?',routed:'Caron Cooper'},
+  {id:'T-412',who:'Sunset Skin Co.',kind:'Where is my report?',cat:'Paid client',ch:'Email',hrs:52,txt:'I never got October\'s report.',routed:'Specialist B'}],
+ offers:[
+  {id:'o1',name:'October flash: 50% off month 1',kind:'firstpct',amt:50,months:1,min:0,exp:'2026-10-31',plan:'Any plan',planN:1500,for:'Everyone',used:7,cap:20},
+  {id:'o2',name:'Founding 20: 20% off for life',kind:'life',amt:20,months:0,min:0,exp:'2026-11-15',plan:'Trust and up',planN:1500,for:'Everyone',used:12,cap:20},
+  {id:'o3',name:'Dermatex: first month free, 6-month minimum',kind:'free',amt:100,months:1,min:6,exp:'2026-11-03',plan:'Authority',planN:3000,for:'Dermatex Hair Replacement',used:0,cap:1}],
+ pcodes:[
+  {code:'DANA15',who:'Dana Reyes',role:'Med spa consultant',pct:15,cust:0,refs:6,paying:3,mrr:6000},
+  {code:'SMILEPRO10',who:'Mark Ellison',role:'Dental practice broker',pct:10,cust:5,refs:3,paying:1,mrr:1500},
+  {code:'LASERREP8',who:'Nina Park',role:'Laser device rep',pct:8,cust:7,refs:9,paying:2,mrr:3000}],
+};}
+db=seed();
+
+/* ================= state ================= */
+const S={role:'spec',tab:{},detail:null,sheet:null,online:false,hours:2,shift:{v:0,c:0},persona:'biz',mapSel:'CA',
+ dl:{kind:'firstpct',amt:50,months:1,min:0,exp:7,plan:3000,for:'Everyone',cap:10,closer:'self'},pc:{who:'',pct:10,cust:5},prRefs:3,oppSeg:'press',
+ fc:{reps:12,visits:25,claim:10,paid:8,plan:1800,churn:4},storeEdit:false,storeSeg:'front'};
+const R=()=>ROLES.find(r=>r.id===S.role);
+const tab=()=>S.tab[S.role]||TABS[S.role][0][0];
+const A=id=>db.accts.find(a=>a.id===id);
+const RP=id=>db.reps.find(r=>r.id===id);
+const SHARE=.35;
+function hello(){const h=19;return h<12?'Good morning':h<17?'Good afternoon':'Good evening'}
+
+/* ================= SPECIALIST (Caron) ================= */
+function specItems(){
+ const it=[];
+ db.accts.forEach(a=>{
+  const miss=Object.entries(a.access).filter(([,v])=>!v).map(([k])=>k);
+  if(miss.length){const d=a.asked?ago(a.asked):0;it.push({lv:a.handoff||d>=5?'bad':'warn',icon:'key',t:`Get ${miss.join(', ')} access`,a,m:`${esc(a.name)} · ${a.handoff?`New handoff, day ${ago(a.start)}`:`asked ${d} days ago`}`,act:'nudge',kind:'access'});}
+  if(a.appr){const d=ago(a.apprOld);it.push({lv:d>3?'bad':'warn',icon:'check',t:`${a.appr} draft${a.appr>1?'s':''} waiting on approval`,a,m:`${esc(a.name)} · oldest ${d} days${d>3?' · past 3-day rule':''}`,act:'nudge',kind:'appr'});}
+  if(a.q){it.push({lv:a.qHrs>24?'bad':'warn',icon:'chat',t:`${a.q} owner question${a.q>1?'s':''} unanswered`,a,m:`${esc(a.name)} · ${a.qHrs}h old · target under 24h`,act:'acct',kind:'q'});}
+  if(a.profile<60)it.push({lv:'warn',icon:'doc',t:`Fill their LAIR profile (${a.profile}%)`,a,m:`${esc(a.name)} · owner couldn't finish setup`,act:'acct',kind:'profile'});
+  if(a.meet)it.push({lv:'',icon:'phone',t:`Call with owner ${fd(a.meet)}`,a,m:`${esc(a.name)} · site walkthrough`,act:'acct',kind:'meet'});
+ });
+ const o={bad:0,warn:1,'':2};return it.sort((x,y)=>o[x.lv]-o[y.lv]);
+}
+function wDone(a){return Object.values(a.work).filter(v=>v===2).length}
+const V={};
+V.spec_today=()=>{
+ const it=specItems(),bad=it.filter(i=>i.lv==='bad').length;
+ const due=db.accts.filter(a=>wDone(a)<8&&!a.handoff).length;
+ return `<div><div class="hello">${hello()}, Caron.</div><div class="sub">${bad} things are late. The November reports lock in 2 days.</div></div>
+ <div class="kpis">${kpi('Accounts',db.accts.length,'1 new handoff')}${kpi('Report work done',Math.round(db.accts.reduce((s,a)=>s+wDone(a),0)/(db.accts.length*8)*100)+'%',`${due} accounts not complete`,'warn')}</div>
+ <div class="sec">${lbl('Do these first')}<div class="list">${it.map(i=>li({icon:i.icon,ik:i.lv,t:i.t,m:i.m+(i.lv==='bad'?' '+chip('Late','bad'):''),a:i.act==='nudge'?'nudge':'openAcct',id:i.act==='nudge'?i.a.id+'|'+i.kind:i.a.id})).join('')}</div></div>
+ <div class="sec">${lbl('Report closes Nov 1',`<button data-a="tab" data-id="work">Log work</button>`)}<div class="list">${db.accts.filter(a=>wDone(a)<8&&!a.handoff).map(a=>li({icon:'doc',t:esc(a.name),m:`${8-wDone(a)} of 8 not done: ${W8.filter(([k])=>a.work[k]<2).map(([k])=>W8S[k]).join(', ')}`,a:'openAcct',id:a.id})).join('')}</div></div>`;
+};
+V.spec_accts=()=>{
+ if(S.detail)return acctDetail(A(S.detail));
+ return `<div><div class="h1">Your accounts</div><div class="sub">${db.accts.length} accounts · ${$(db.accts.reduce((s,a)=>s+a.mrr,0))}/mo under your care</div></div>
+ <div class="list">${db.accts.map(a=>{const miss=Object.values(a.access).filter(v=>!v).length;const st=a.handoff?chip('Handoff','blue'):miss?chip(`${miss} access missing`,'bad'):a.appr?chip(`${a.appr} approvals`,'warn'):chip('On track','good');
+  return li({icon:'brief',ik:a.handoff?'':miss?'bad':a.appr?'warn':'good',t:esc(a.name),m:`${a.tier} · ${wDone(a)}/8 done · ${st}`,r:`<div class="num" style="font-weight:600">${$(a.mrr)}</div><div class="xs muted">/mo</div>`,a:'openAcct',id:a.id})}).join('')}</div>`;
+};
+function eight(a){return `<div class="eight">${W8.map(([k])=>`<div class="e8 s${a.work[k]}"><i></i>${W8S[k]}</div>`).join('')}</div>`}
+function acctDetail(a){
+ const miss=Object.entries(a.access).filter(([,v])=>!v).map(([k])=>k);
+ const logs=db.log.filter(l=>l.acct===a.id);
+ return `<button class="btn ghost" data-a="back">← All accounts</button>
+ <div><div class="h1">${esc(a.name)}</div><div class="sub">${a.city?esc(a.city)+' · ':''}${a.tier} · ${$(a.mrr)}/mo · since ${fd(a.start)}</div>
+  <div class="row" style="margin-top:12px"><button class="btn pri sm" data-a="nudge" data-id="${a.id}|text">${ic('chat',16)}Text owner</button><button class="btn sm" data-a="logWork" data-id="${a.id}">${ic('plus',16)}Log work</button><button class="btn sm" data-a="p360" data-id="${slug(a.name)}">${ic('eye',16)}360 view</button><button class="btn sm" data-a="toast" data-id="Opened ${esc(a.name)}'s LAIR profile editor">${ic('doc',16)}Edit LAIR profile</button></div></div>
+ <div class="sec">${lbl('Access',miss.length?chip(`${miss.length} missing`,'bad'):chip('All set','good'))}<div class="acc">${Object.entries(a.access).map(([k,v])=>`<div><span class="${v?'ok':'no'}">${v?'✓':'✕'}</span>${k}</div>`).join('')}</div>
+  ${miss.length?`<button class="btn block" data-a="nudge" data-id="${a.id}|access">Ask for ${miss.join(', ')} again</button>`:''}</div>
+ <div class="sec">${lbl('This month\'s 8',`${wDone(a)}/8 done`)}${eight(a)}<div class="leg"><span><i class="sw" style="background:var(--good)"></i>Done</span><span><i class="sw" style="background:var(--warn-soft);box-shadow:inset 0 0 0 1.5px var(--warn)"></i>In progress</span><span><i class="sw" style="background:var(--paper-2);box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>Not started</span></div></div>
+ <div class="sec">${lbl('In the November report',`<button data-a="logWork" data-id="${a.id}">+ Add</button>`)}${logs.length?`<div class="list">${logs.map(l=>li({icon:'link',t:esc(l.title),m:`${W8S[l.type]} · ${fd(l.date)} · ${esc(l.link)}`})).join('')}</div>`:`<div class="card empty">Nothing logged yet. Every item you add shows in the client's report with its date and link.</div>`}</div>
+ <div class="kpis">${kpi('LAIR profile',a.profile+'%',a.profile<60?'Fill it for them':'Owner confirmed',a.profile<60?'warn':'good')}${kpi('Waiting on owner',(a.appr||0)+(a.q||0),a.appr?`${a.appr} approvals · ${a.q||0} questions`:'Nothing pending',a.appr||a.q?'warn':'good')}</div>
+ <div class="sec">${lbl('Everything sent to and from them')}<div class="card"><div class="tl">${a.comms.map(([d,k,t])=>`<div class="i"><div class="d">${fd(d)}</div><div><div class="k">${k}</div><div>${esc(t)}</div></div></div>`).join('')}</div></div></div>
+ <div class="card flat small muted">Owner: ${esc(a.owner)} · ${esc(a.phone)}</div>`;
+}
+V.spec_work=()=>{
+ const all=[...db.log].sort((x,y)=>y.date.localeCompare(x.date));
+ return `<div><div class="h1">Log your work</div><div class="sub">Date, title and a link or file. It shows up in that client's monthly report, in "Everything we did, day by day."</div></div>
+ <button class="btn pri block" data-a="logWork" data-id="">${ic('plus',18)}Add work to a report</button>
+ <div class="sec">${lbl('By account, this month')}<div class="list">${db.accts.filter(a=>!a.handoff).map(a=>`<div class="li" style="display:grid;gap:8px"><div class="row sp"><b>${esc(a.name)}</b><span class="xs muted">${wDone(a)}/8</span></div>${eight(a)}</div>`).join('')}</div></div>
+ <div class="sec">${lbl('Recently logged')}<div class="list">${all.map(l=>li({icon:'link',t:esc(l.title),m:`${esc(A(l.acct).name)} · ${W8S[l.type]} · ${fd(l.date)}`})).join('')}</div></div>`;
+};
+V.spec_wallet=()=>{
+ const mo=db.accts.reduce((s,a)=>s+a.mrr*SHARE,0);
+ const fc=[mo,mo+1050,mo+1050,mo+1575];
+ return `<div class="card blue"><div class="muted small">Next payout · Nov 1</div><div class="big-n" style="margin-top:4px">${$(mo)}</div><div class="muted small" style="margin-top:6px">${db.accts.length} accounts at 35% of each retainer</div></div>
+ <div class="kpis">${kpi('Paid this year',$(52880),'Jan to Oct')}${kpi('Referral bonuses',$(1000),'2 paid, 1 pending','good')}</div>
+ <div class="sec">${lbl('Forecast if every account stays')}<div class="card">${cols(fc,['Nov','Dec','Jan','Feb'],1)}<div class="xs muted" style="margin-top:8px">Dec adds NutriChem's full month. Feb assumes one referral closes.</div></div></div>
+ <div class="sec">${lbl('Your referral link')}<div class="card stack"><div class="small">Send this to any business. You get $500 when they stay 60 days on a paid plan.</div><div class="row"><input id="reflink" readonly value="localairegistry.com/r/caron"><button class="btn sm" data-a="copy" data-id="localairegistry.com/r/caron">Copy</button></div></div></div>
+ <div class="sec">${lbl('Per account')}<div class="list">${db.accts.map(a=>li({t:esc(a.name),m:`${a.tier} · ${$(a.mrr)}/mo retainer`,r:`<b class="num">${$(a.mrr*SHARE)}</b>`})).join('')}</div></div>
+ <div class="sec">${lbl('Payout method')}<div class="card row sp"><span>Direct deposit ··· 4417</span><button class="btn sm">Change</button></div></div>`;
+};
+V.spec_store=()=>{
+ const seg=`<div class="seg">${[['front','My public profile'],['whole','Wholesale']].map(([k,l])=>`<button data-a="storeSeg" data-id="${k}" aria-pressed="${S.storeSeg===k}">${l}</button>`).join('')}</div>`;
+ if(S.storeSeg==='whole')return seg+`<div><div class="h1">Wholesale bench</div><div class="sub">Provider-only prices for work you'd rather hand off. You stay the client's specialist.</div></div>
+ <div class="list">${[['SEO article, 1,200 words, expert reviewed','From $35','doc'],['Digital PR placement','From $150','send'],['Local SEO citation cleanup','From $75','pin'],['AEO audit for one location','From $99','eye'],['Schema implementation','From $60','tool']].map(([t,p,i])=>li({icon:i,t,m:'Delivered in 3 to 5 business days',r:`<b>${p}</b>`,a:'toast',id:'Added to your cart',chev:false})).join('')}</div>
+ <div class="xs muted">Illustrative prices. Paid from your wallet balance.</div>`;
+ const chk=[['Headshot and bio',1],['Specialties picked',1],['2 verified results from GSC',1],['Client review from R.Ve',0],['Intro video',0]];
+ const pct=Math.round(chk.filter(c=>c[1]).length/chk.length*100);
+ return seg+`<div class="card stack"><div class="row sp"><b>Profile strength</b><b class="num" style="color:var(--good)">${pct}/100</b></div>${meter(pct,'good')}<div class="small muted">Add 1 client review and an intro video to show up first when owners pick a specialist.</div></div>
+ <div class="sf"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="logo-sq">CC</span><div style="min-width:0"><div style="font:700 19px var(--display)">Caron Cooper</div><div class="row" style="margin-top:4px">${chip('✓ Verified by LAIR','good')}${chip('Technical SEO')}${chip('AEO')}</div></div></div>
+  <div class="small">SEO and AI visibility for medical practices. 20 years building and fixing websites. Seattle, works nationwide.</div>
+  <div class="tri"><div><b>4.9</b><span class="xs muted">14 reviews</span></div><div><b>21</b><span class="xs muted">accounts served</span></div><div><b>96%</b><span class="xs muted">kept 6+ months</span></div></div>
+  <div class="small"><b>Verified results</b><div class="muted" style="margin-top:4px">Eye surgery practice: AI mentions 3 to 11 of 20 test prompts in 90 days · Search Console connected</div><div class="muted">Med spa: organic clicks +64% in 6 months · Search Console connected</div></div>
+  <div class="row sp"><span class="small muted">Included with LAIR Authority</span><span class="chip">Responds within 1 day</span></div></div>
+ <div class="list">${chk.map(([t,d])=>li({icon:d?'check':'plus',ik:d?'good':'',t:esc(t),m:d?'Done':'Add this',a:d?'':'toast',id:'Opened editor',chev:!d})).join('')}</div>`;
+};
+
+/* ================= AIORS REP (Kody) ================= */
+const REP_PCT=.05;
+function repMonthly(){return db.leads.filter(l=>l.stage==='closed').reduce((s,l)=>s+l.plan*(l.closer==='self'?.15:.10),0)}
+V.rep_go=()=>{
+ const est=Math.round(S.hours*7*.18*4)*10;
+ if(!S.online)return `<div><div class="hello">Ready, Kody?</div><div class="sub">Walk in as a customer who couldn't find them. Get them to claim their free page. That's the whole job.</div></div>
+ <div class="sec">${lbl('How long do you have?')}<div class="seg">${[1,2,4,6].map(h=>`<button data-a="hours" data-id="${h}" aria-pressed="${S.hours===h}">${h} hr${h>1?'s':''}</button>`).join('')}</div>
+ <div class="card"><div class="small muted">About ${S.hours*7} visits · about ${Math.max(1,Math.round(S.hours*7*.18))} claims</div><div class="big-n" style="margin-top:6px">~${$(est)}<span style="font:600 15px var(--body);color:var(--muted)">/mo added</span></div><div class="xs muted" style="margin-top:6px">Based on your last 30 days. 1 in 40 visits becomes a paying customer.</div></div></div>
+ <button class="btn pri big" data-a="goOnline">Go online</button>
+ <div class="kpis">${kpi('This week',`${db.leads.filter(l=>ago(l.date)<7).length} claims`,'+2 vs last week','good')}${kpi('Your monthly',$(repMonthly()),'recurring, while they pay')}</div>`;
+ return `<div class="row sp"><div><div class="row"><span class="live"></span><b>Online · ${S.hours} hr shift</b></div><div class="sub">${S.shift.v} visits · ${S.shift.c} claims so far</div></div><button class="btn sm" data-a="goOffline">End shift</button></div>
+ <div class="sec">${lbl('Near you · AI has these wrong')}<div class="list">${db.nearby.map(n=>`<button class="li" data-a="visit" data-id="${n.id}"><span class="ic ${n.score<35?'bad':'warn'}"><b style="font:800 13px var(--display)">${n.score}</b></span><span class="grow"><span class="t" style="display:block">${esc(n.name)}</span><span class="m">${n.kind} · ${n.dist}</span><span class="m" style="color:var(--ink-2)">${esc(n.wrong)}</span></span>${CH}</button>`).join('')}</div><div class="xs muted">The number is their AI Score out of 100. Lower means more for you to show them.</div></div>`;
+};
+V.rep_leads=()=>{
+ const g=k=>db.leads.filter(l=>l.stage===k);
+ const row=l=>{const late=l.stage==='claimed'&&ago(l.date)>=5||l.stage==='booked'&&l.meet&&ago(l.date,l.meet)>10;
+  return li({icon:l.stage==='closed'?'check':l.stage==='booked'?'phone':'pin',ik:l.stage==='closed'?'good':late?'bad':'',t:esc(l.name),m:`${esc(l.auto)}${late?' '+chip(l.stage==='claimed'?'No meeting in 5+ days':'Meeting too far out','bad'):''}`,r:l.stage==='closed'?`<b class="num">${$(l.plan*(l.closer==='self'?.15:.10))}</b><div class="xs muted">/mo</div>`:`<span class="chip ${l.closer==='self'?'blue':''}">${l.closer==='self'?'You close':'Closer'}</span>`,a:'leadSheet',id:l.id})};
+ return `<div><div class="h1">Your leads</div><div class="sub">You earn 5% for each step you own: they claim, they meet, they pay. Every month they stay.</div></div>
+ <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))">${kpi('Claimed',g('claimed').length)}${kpi('Meeting',g('booked').length)}${kpi('Paying',g('closed').length)}</div>
+ ${['claimed','booked','closed'].map(k=>`<div class="sec">${lbl({claimed:'Claimed · waiting on a meeting',booked:'Meeting booked',closed:'Paying customers'}[k])}<div class="list">${g(k).map(row).join('')||'<div class="empty">None yet</div>'}</div></div>`).join('')}`;
+};
+V.rep_earn=()=>{
+ const m=repMonthly();
+ return `<div class="card blue"><div class="muted small">Earning every month</div><div class="big-n" style="margin-top:4px">${$(m)}</div><div class="muted small" style="margin-top:6px">From ${db.leads.filter(l=>l.stage==='closed').length} paying businesses. Paid on the 1st.</div></div>
+ <div class="sec">${lbl('Last 6 months')}<div class="card">${cols([60,75,150,300,375,m],['May','Jun','Jul','Aug','Sep','Oct'])}</div></div>
+ <div class="sec">${lbl('If your 4 open leads close')}<div class="card"><div class="row sp"><span>Pending, at typical plans</span><b class="num">+${$(4*1500*.10)}/mo</b></div></div></div>
+ <div class="sec">${lbl('How you get paid')}<div class="list">${[['They claim their page','5% · you are the lead source'],['They meet with sales','5% · booked by you or the auto email'],['They pay','5% · if you close it yourself'],['Deals and partner codes','Come out of the same 30% pool. A deep discount lowers each 5%.']].map(([t,m],i)=>li({icon:['pin','phone','cash','bolt'][i],t,m})).join('')}</div></div>`;
+};
+V.rep_ranks=()=>{
+ const lb=[['Aaliyah Brooks','Miami, FL',9],['Ray Delgado','Houston, TX',8],['Mina Cho','Atlanta, GA',8],['Kody Muffoletto','Riverside, CA',7],['Marisol Vega','San Diego, CA',5],['Chris Avila','Denver, CO',5],['Jordan Kim','Seattle, WA',4],['Priya Nair','Chicago, IL',4],['Sam Patel','Dallas, TX',3],['Lena Ortiz','Tampa, FL',3],['Tony Russo','New York, NY',2],['Derek Thompson','Phoenix, AZ',1]];
+ const lv=[[1,'Starter',0,''],[2,'Regular',3,'$100 bonus'],[3,'Pro',10,'New iPhone'],[4,'Captain',25,'$2,500 bonus'],[5,'Legend',100,'A car']];
+ const closes=3;
+ return `<div><div class="h1">National leaderboard</div><div class="sub">Claims this month. Resets Nov 1.</div></div>
+ <div class="card stack"><div class="row sp"><b>Level 2 · Regular</b><span class="small muted">${closes} of 10 paying customers</span></div>${meter(closes/10*100)}<div class="small">7 more paying customers to reach <b>Pro</b> and a new iPhone.</div></div>
+ <div class="list">${lv.map(([n,name,need,prize])=>li({icon:'trophy',ik:closes>=need?'good':'',t:`Level ${n} · ${name}`,m:`${need} paying customers${prize?' · '+prize:''}`,r:closes>=need?chip('Reached','good'):''})).join('')}</div>
+ <div class="list">${lb.map(([n,c,v],i)=>`<div class="li" style="${n.startsWith('Kody')?'background:var(--tint)':''}"><span class="num" style="width:24px;font:800 15px var(--display);color:${i<3?'var(--blue)':'var(--muted)'}">${i+1}</span><span class="grow"><span class="t" style="display:block">${esc(n)}${n.startsWith('Kody')?' · you':''}</span><span class="m">${c}</span></span><b class="num">${v}</b></div>`).join('')}</div>`;
+};
+
+/* ================= RSM (Bridgette) ================= */
+const RULES=[
+ {k:'t2m',t:'First talk → 1st meeting booked',unit:'days',g:2,a:5,why:'Every day of wait drops show rate. Book it on the first call.'},
+ {k:'mtgOut',t:'Meeting held within',unit:'days of booking',g:5,a:10,why:'A meeting 2 weeks out converts about half as often as one this week.'},
+ {k:'show',t:'Show rate',unit:'%',g:75,a:65,hi:true,why:'Below 65% means reminders or the booking script need work.'},
+ {k:'claimRate',t:'Visits that claim',unit:'%',g:12,a:8,hi:true,why:'Under 8% means the walk-in opener isn\'t landing.'}];
+function grade(rule,v){if(rule.hi)return v>=rule.g?'good':v>=rule.a?'warn':'bad';return v<=rule.g?'good':v<=rule.a?'warn':'bad'}
+function repVal(r,k){return k==='claimRate'?Math.round(r.claims/r.visits*1000)/10:r[k]}
+function teamVal(k){const rs=db.reps;if(k==='claimRate'){return Math.round(rs.reduce((s,r)=>s+r.claims,0)/rs.reduce((s,r)=>s+r.visits,0)*1000)/10}return Math.round(rs.reduce((s,r)=>s+r[k],0)/rs.length*10)/10}
+function dealFlags(d){const f=[];const b=d.meet?ago(d.first,d.meet):null;
+ if(!d.rep)f.push(['No rep in this state','bad']);
+ if(b!=null&&b>10)f.push([`1st meeting ${b} days after first talk`,'bad']);else if(b!=null&&b>5)f.push([`1st meeting ${b} days out`,'warn']);
+ if(d.stage==='Proposal'&&ago(d.last)>=7)f.push([`Proposal silent ${ago(d.last)} days`,'bad']);
+ if(d.stage==='New claim'&&ago(d.first)>3)f.push([`Claimed ${ago(d.first)} days ago, no contact`,'bad']);
+ return f;}
+V.rsm_pulse=()=>{
+ const red=db.deals.map(d=>({d,f:dealFlags(d)})).filter(x=>x.f.some(f=>f[1]==='bad'));
+ const mrrWk=db.reps.reduce((s,r)=>s+r.mrr,0);
+ return `<div><div class="hello">${hello()}, Bridgette.</div><div class="sub">${red.length} deals are losing odds right now. Fix those before anything else.</div></div>
+ <div class="kpis">${kpi('New MRR this month',$k(mrrWk),'Target $30k · on pace','good')}${kpi('Claims this month',db.reps.reduce((s,r)=>s+r.claims,0),'+18% vs Sep','good')}</div>
+ <div class="sec">${lbl('Speed rules · whole team')}<div class="list">${RULES.map(r=>{const v=teamVal(r.k),g=grade(r,v);return `<div class="rule"><span class="t">${r.t}</span><span>${chip(`${v}${r.unit==='%'?'%':' '+r.unit.split(' ')[0]}`,g)}</span><span class="why">Green ${r.hi?'≥':'≤'} ${r.g}${r.unit==='%'?'%':''} · red ${r.hi?'<':'>'} ${r.a}${r.unit==='%'?'%':''}. ${r.why}</span></div>`}).join('')}</div></div>
+ <div class="sec">${lbl('Red deals · pull these in',`<button data-a="tab" data-id="deals">All deals</button>`)}<div class="list">${red.map(({d,f})=>li({icon:'alert',ik:'bad',t:esc(d.name),m:`${d.rep?esc(RP(d.rep).name):'Unassigned'} · ${f.filter(x=>x[1]==='bad').map(x=>esc(x[0])).join(' · ')}`,a:'dealSheet',id:d.id})).join('')}</div></div>
+ <div class="sec">${lbl('Coach today')}<div class="list">${db.reps.filter(r=>RULES.some(x=>grade(x,repVal(r,x.k))==='bad')).map(r=>li({icon:'users',ik:'warn',t:esc(r.name),m:RULES.filter(x=>grade(x,repVal(r,x.k))==='bad').map(x=>`${x.t.split('→').pop().trim()}: ${repVal(r,x.k)}${x.unit==='%'?'%':'d'}`).join(' · '),a:'repSheet',id:r.id})).join('')}</div></div>`;
+};
+const TILES='AK 0 0,ME 11 0,WI 6 1,VT 10 1,NH 11 1,WA 1 2,ID 2 2,MT 3 2,ND 4 2,MN 5 2,IL 6 2,MI 7 2,NY 9 2,MA 10 2,OR 1 3,NV 2 3,WY 3 3,SD 4 3,IA 5 3,IN 6 3,OH 7 3,PA 8 3,NJ 9 3,CT 10 3,RI 11 3,CA 1 4,UT 2 4,CO 3 4,NE 4 4,MO 5 4,KY 6 4,WV 7 4,VA 8 4,MD 9 4,DE 10 4,AZ 2 5,NM 3 5,KS 4 5,AR 5 5,TN 6 5,NC 7 5,SC 8 5,DC 9 5,OK 4 6,LA 5 6,MS 6 6,AL 7 6,GA 8 6,HI 0 7,TX 4 7,FL 9 7'.split(',').map(s=>{const[a,b,c]=s.split(' ');return{st:a,x:+b,y:+c}});
+const DEMAND={IL:14,GA:9,CO:7,NV:6,NC:5,OR:4};
+function stHealth(st){const rs=db.reps.filter(r=>r.st===st);if(!rs.length)return DEMAND[st]?'u':'';const bad=rs.reduce((n,r)=>n+RULES.filter(x=>grade(x,repVal(r,x.k))==='bad').length,0)/rs.length;return bad>=2?'r':bad>=1?'a':'g'}
+V.rsm_map=()=>{
+ const sel=S.mapSel,rs=db.reps.filter(r=>r.st===sel),dl=db.deals.filter(d=>d.st===sel);
+ return `<div><div class="h1">Territories</div><div class="sub">Colored by funnel speed, not by size. Red outline means owners are claiming there and nobody covers it.</div></div>
+ <div class="card"><div class="tm">${TILES.map(t=>{const h=stHealth(t.st);return `<button class="tile ${h} ${sel===t.st?'sel':''}" style="grid-column:${t.x+1};grid-row:${t.y+1}" data-a="mapSel" data-id="${t.st}" aria-label="${t.st}">${t.st}</button>`}).join('')}</div>
+ <div class="leg" style="margin-top:12px"><span><i class="sw" style="background:var(--good)"></i>Fast</span><span><i class="sw" style="background:#e0a33a"></i>Slipping</span><span><i class="sw" style="background:var(--bad)"></i>Slow</span><span><i class="sw" style="box-shadow:inset 0 0 0 1.5px var(--bad)"></i>Demand, no rep</span></div></div>
+ <div class="sec">${lbl(sel+(rs.length?` · ${rs.length} rep${rs.length>1?'s':''}`:' · uncovered'))}
+ ${rs.length?`<div class="list">${rs.map(r=>li({icon:'users',t:esc(r.name),m:`${r.claims} claims · ${r.closes} closed · ${$(r.mrr)}/mo new`,a:'repSheet',id:r.id})).join('')}</div>`:`<div class="card stack"><div>${DEMAND[sel]?`<b>${DEMAND[sel]} owners</b> claimed pages in ${sel} this month with no rep to call them.`:'No claims or reps here yet.'}</div>${DEMAND[sel]?`<button class="btn pri" data-a="toast" data-id="Recruiting post drafted for ${sel}">Recruit a rep in ${sel}</button><button class="btn" data-a="toast" data-id="${DEMAND[sel]} leads routed to Kody's closer queue">Route these leads to a closer</button>`:''}</div>`}
+ ${dl.length?`<div class="list">${dl.map(d=>{const f=dealFlags(d);return li({icon:'funnel',ik:f.some(x=>x[1]==='bad')?'bad':'',t:esc(d.name),m:`${d.stage}${f.length?' · '+f.map(x=>esc(x[0])).join(' · '):''}`,a:'dealSheet',id:d.id})}).join('')}</div>`:''}</div>`;
+};
+V.rsm_reps=()=>`<div><div class="h1">Reps</div><div class="sub">This month. Each number is green, amber or red against the speed rules.</div></div>
+ <div class="list">${db.reps.map(r=>`<button class="li" data-a="repSheet" data-id="${r.id}" style="display:grid;gap:8px"><span class="row sp"><span><b>${esc(r.name)}</b> <span class="small muted">${esc(r.city)}</span></span><b class="num">${$(r.mrr)}</b></span>
+ <span class="row">${RULES.map(x=>{const v=repVal(r,x.k);return chip(`${x.k==='t2m'?'Book':x.k==='mtgOut'?'Meet':x.k==='show'?'Show':'Claim'} ${v}${x.unit==='%'?'%':'d'}`,grade(x,v))}).join('')}${chip(r.visits+' visits')}</span></button>`).join('')}</div>`;
+V.rsm_deals=()=>{const ord=['New claim','Meeting booked','Meeting held','Proposal','Won'];
+ return `<div><div class="h1">Deals</div><div class="sub">Sorted by stage. Red means the odds are dropping.</div></div>
+ ${ord.map(s=>{const ds=db.deals.filter(d=>d.stage===s);if(!ds.length)return '';return `<div class="sec">${lbl(s,`${$k(ds.reduce((a,d)=>a+d.val,0))}/mo`)}<div class="list">${ds.map(d=>{const f=dealFlags(d);return li({icon:'funnel',ik:f.some(x=>x[1]==='bad')?'bad':f.length?'warn':'good',t:esc(d.name),m:`${d.rep?esc(RP(d.rep).name):'Unassigned'} · first talk ${fd(d.first)}${d.meet?' · meeting '+fd(d.meet):''}${f.length?'<br>'+f.map(x=>chip(esc(x[0]),x[1])).join(' '):''}`,r:`<b class="num">${$(d.val)}</b>`,a:'dealSheet',id:d.id})}).join('')}</div></div>`}).join('')}`;};
+
+/* ================= DEAL MAKER (Bridgette) ================= */
+const POOL=30,REPMAX=15,PARTMAX=15;
+const PLANS=[[500,'Fix'],[1500,'Trust'],[3000,'Authority']];
+const KINDS=[['firstpct','% off first months'],['life','% off for life'],['free','Free month + minimum'],['bonus','Free add-on']];
+function pool(d,partnerPct=0,custLife=0){
+ const plan=d.plan||1500,annual=plan*12;let disc=0;
+ if(d.kind==='firstpct')disc=plan*d.amt/100*d.months;
+ else if(d.kind==='life')disc=plan*d.amt/100*12;
+ else if(d.kind==='free')disc=plan*d.months;
+ else if(d.kind==='bonus')disc=d.amt;
+ disc+=plan*custLife/100*12;
+ const dP=disc/annual*100,used=dP+partnerPct,reps=Math.max(0,Math.min(REPMAX,POOL-used)),kept=Math.max(0,POOL-used-reps);
+ return {plan,annual,disc,dP,pp:partnerPct,used,reps,step:reps/3,kept,over:used>POOL+1e-9};}
+const pf=v=>(Math.round(v*10)/10)+'%';
+function poolBar(p){
+ const seg=(v,c)=>v>0.01?`<i style="width:${Math.min(v,POOL)/POOL*100}%;background:${c}"></i>`:'';
+ const rows=[['Customer discount',p.dP,'var(--blue)'],['Partner',p.pp,'var(--coral)'],['Rep: intro',p.step,'var(--good)'],['Rep: booking',p.step,'color-mix(in srgb,var(--good) 65%,var(--card))'],['Rep: close',p.step,'color-mix(in srgb,var(--good) 38%,var(--card))'],['Kept by LAIR',p.kept,'var(--line-2)']];
+ return `<div class="pool ${p.over?'over':''}" role="img" aria-label="30% pool split">${rows.map(r=>seg(r[1],r[2])).join('')}</div>
+ <div class="poolrows">${rows.filter(r=>r[1]>0.01||r[0].startsWith('Rep')).map(r=>`<span><i class="sw" style="background:${r[2]}"></i>${r[0]}</span><b class="num">${pf(r[1])}</b><span class="num muted">${$(p.annual*r[1]/100)}</span>`).join('')}</div>`;}
+function hookText(d){
+ const m=d.months>1?`${d.months} months`:'month';
+ return d.kind==='firstpct'?(d.amt>=100?`Your first ${m} free`:`${d.amt}% off your first ${m}`):d.kind==='life'?`${d.amt}% off, for as long as you stay`:d.kind==='free'?`First ${m} free with a ${d.min}-month plan`:`Free press release (${$(d.amt)} value) when you start`;}
+function dealOut(){
+ const d=S.dl,pc=db.pcodes.find(x=>x.code===d.partner),p=pool(d,pc?pc.pct:0,pc?pc.cust:0);
+ const base=pool({kind:'firstpct',amt:0,months:1,plan:d.plan});
+ const freeBad=d.kind==='free'&&d.min<6;
+ const cut=d.closer==='self'?p.step:0,cutBase=d.closer==='self'?base.step:0;
+ const planN=PLANS.find(x=>x[0]===d.plan)[1];
+ return `<div class="offer"><div class="row sp"><span class="chip blue">${d.for==='Everyone'?'Public offer':'Just for '+esc(d.for)}</span><span class="chip warn">Ends in ${d.exp} day${d.exp>1?'s':''}</span></div>
+  <div class="offer-h">${esc(hookText(d))}</div><div class="small">${planN} plan, normally ${$(d.plan)}/mo.${d.cap>1&&d.for==='Everyone'?` Only ${d.cap} spots.`:''}${pc?` Code ${pc.code}.`:''}</div></div>
+ <div class="card stack"><div class="row sp"><b>The 30% pool</b><span class="small muted">first-year value ${$(p.annual)}</span></div>${poolBar(p)}
+  ${p.over?`<div class="warnbox bad">Over the 30% cap by ${pf(p.used-POOL)}. Lower the discount${pc?' or drop the partner code':''}.</div>`:''}
+  ${freeBad?`<div class="warnbox bad">A free month needs at least a 6-month minimum.</div>`:''}
+  ${!p.over&&p.reps<REPMAX?`<div class="warnbox warn">This deal takes ${pf(REPMAX-p.reps)} from the sales team. Each rep step drops from 5% to ${pf(p.step)}.</div>`:''}</div>
+ <div class="kpis"><div class="kpi ${cut<cutBase?'warn':'good'}"><div class="l">${d.closer==='self'?'Your cut as closer':'Closer\'s cut'}</div><div class="v">${$(p.annual*p.step/100)}</div><div class="s">${pf(p.step)} · was ${$(p.annual*base.step/100)} at 5%</div></div><div class="kpi"><div class="l">Customer saves</div><div class="v">${$(p.disc)}</div><div class="s">over the first year</div></div></div>`;}
+V.rsm_make=()=>{const d=S.dl;
+ const rng=(k,l,min,max,step,fmt)=>`<div class="rng"><div class="row"><label for="dl-${k}">${l}</label><b class="num" id="dlv-${k}">${fmt(d[k])}</b></div><input type="range" id="dl-${k}" data-in="dl" data-id="${k}" min="${min}" max="${max}" step="${step}" value="${d[k]}"></div>`;
+ const ctl={firstpct:rng('amt','Discount',10,100,5,v=>v+'%')+rng('months','For how many months',1,6,1,v=>v),
+  life:rng('amt','Discount for life',5,30,1,v=>v+'%'),
+  free:rng('months','Free months',1,3,1,v=>v)+rng('min','Minimum months they commit to',3,12,1,v=>v),
+  bonus:rng('amt','Add-on value',100,1000,50,v=>$(v))}[d.kind];
+ const open=db.deals.filter(x=>x.stage!=='Won');
+ return `<div><div class="hello">Make a deal.</div><div class="sub">Build any hook, on the spot. Discounts, partner codes and rep commissions share one 30% pool. The more the deal gives away, the less the sales team keeps.</div></div>
+ <div class="sec">${lbl('1 · The hook')}<div class="seg">${KINDS.map(([k,l])=>`<button data-a="dlKind" data-id="${k}" aria-pressed="${d.kind===k}">${l}</button>`).join('')}</div><div class="card stack">${ctl}</div></div>
+ <div class="sec">${lbl('2 · Urgency')}<div class="seg">${[1,3,7,14,30].map(n=>`<button data-a="dlSet" data-id="exp|${n}" aria-pressed="${d.exp===n}">${n===1?'24 hrs':n+' days'}</button>`).join('')}</div>
+  ${d.for==='Everyone'?`<div class="rng card">${''}<div class="row"><label for="dl-cap">Limited spots</label><b class="num" id="dlv-cap">${d.cap}</b></div><input type="range" id="dl-cap" data-in="dl" data-id="cap" min="1" max="50" step="1" value="${d.cap}"></div>`:''}</div>
+ <div class="sec">${lbl('3 · Who and what plan')}<div class="seg">${PLANS.map(([v,n])=>`<button data-a="dlSet" data-id="plan|${v}" aria-pressed="${d.plan===v}">${n} ${$k(v)}</button>`).join('')}</div>
+  <label class="f" for="dl-for">For<select id="dl-for" data-ch="dlfor"><option ${d.for==='Everyone'?'selected':''}>Everyone</option>${open.map(x=>`<option ${d.for===x.name?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+  <label class="f" for="dl-pc">Stack a partner code<select id="dl-pc" data-ch="dlpc"><option value="">None</option>${db.pcodes.map(c=>`<option value="${c.code}" ${d.partner===c.code?'selected':''}>${c.code} · ${c.pct}% to ${esc(c.who)}${c.cust?` · ${c.cust}% off for them`:''}</option>`).join('')}</select></label>
+  <div class="seg"><button data-a="dlSet" data-id="closer|self" aria-pressed="${d.closer==='self'}">I'm closing it</button><button data-a="dlSet" data-id="closer|rep" aria-pressed="${d.closer==='rep'}">A rep is closing</button></div></div>
+ <div id="dealOut" class="stack">${dealOut()}</div>
+ <button class="btn pri block" data-a="createDeal">${d.for==='Everyone'?'Create deal':'Create and text it to them'}</button>
+ <div class="sec">${lbl('Live deals',`${db.offers.length}`)}<div class="list">${db.offers.map(o=>{const p=pool({...o,plan:o.planN||1500});const left=ago(TODAY,o.exp);return li({icon:'bolt',ik:left<=1?'warn':'',t:esc(o.name),m:`${esc(o.for)} · ${o.used}/${o.cap} used · reps keep ${pf(p.reps)} ${left<=1?chip(left<=0?'Ends today':'Ends tomorrow','warn'):chip(left+' days left')}`,r:`<b class="num">${pf(p.used)}</b><div class="xs muted">of 30%</div>`})}).join('')}</div></div>
+ <div class="sec">${lbl('Partner codes',`<button data-a="newCode">+ New code</button>`)}<div class="list">${db.pcodes.map(c=>li({icon:'link',t:`${c.code} · ${esc(c.who)}`,m:`${esc(c.role)} · ${c.refs} referred · ${c.paying} paying · partner ${c.pct}%${c.cust?` + ${c.cust}% off for customer`:''}`,r:`<b class="num">${$(c.mrr*c.pct/100)}</b><div class="xs muted">/mo to them</div>`})).join('')}</div></div>`;};
+function dealUpdate(){const o=document.getElementById('dealOut');if(o)o.innerHTML=dealOut()}
+function shNewCode(){const c=S.pc;const p=pool({kind:'firstpct',amt:0,months:1,plan:1500},c.pct,c.cust);
+ return `<div><div class="h1">New partner code</div><div class="sub">Partners earn up to 15% of what their referrals pay, every month they stay. Anything you give the customer comes out of the same 30% pool.</div></div>
+ <label class="f" for="pc-who">Partner name<input id="pc-who" placeholder="e.g. Dana Reyes" value="${esc(c.who)}"></label>
+ <label class="f" for="pc-role">What they do<input id="pc-role" placeholder="e.g. Med spa consultant"></label>
+ <div class="card stack"><div class="rng"><div class="row"><label for="pc-pct">Partner gets</label><b class="num" id="pcv-pct">${c.pct}%</b></div><input type="range" id="pc-pct" data-in="pc" data-id="pct" min="1" max="15" step="1" value="${c.pct}"></div>
+ <div class="rng"><div class="row"><label for="pc-cust">Customer gets off, for life</label><b class="num" id="pcv-cust">${c.cust}%</b></div><input type="range" id="pc-cust" data-in="pc" data-id="cust" min="0" max="15" step="1" value="${c.cust}"></div></div>
+ <div id="pcOut" class="card stack">${poolBar(p)}</div>
+ <button class="btn pri block" data-a="saveCode">Create code</button>`;}
+
+/* ================= PARTNER PORTAL ================= */
+const PREFS=[
+ {name:'Bloom Med Spa',stage:'Paying',plan:3000,since:'2026-08-12',note:'Authority plan · month 3'},
+ {name:'Coastline Aesthetics',stage:'Paying',plan:1500,since:'2026-09-03',note:'Trust plan · month 2'},
+ {name:'Luna Skin Bar',stage:'Paying',plan:1500,since:'2026-10-02',note:'Trust plan · month 1'},
+ {name:'Avalon Wellness',stage:'Meeting booked',plan:0,since:'2026-10-26',note:'Meets with Kody Nov 4'},
+ {name:'Pure Glow Studio',stage:'Claimed',plan:0,since:'2026-10-28',note:'Claimed their free page. Booking email opened 2x.'},
+ {name:'Vida Laser',stage:'Signed up',plan:0,since:'2026-10-30',note:'Used your link today'}];
+const PPCT=15;
+V.partner_phome=()=>{
+ const pay=PREFS.filter(r=>r.stage==='Paying'),mo=pay.reduce((s,r)=>s+r.plan,0)*PPCT/100,pend=PREFS.length-pay.length;
+ return `<div><div class="hello">${hello()}, Dana.</div><div class="sub">You earn ${PPCT}% of what your referrals pay, every month they stay.</div></div>
+ <div class="card blue"><div class="muted small">Earning every month</div><div class="big-n" style="margin-top:4px">${$(mo)}</div><div class="muted small" style="margin-top:6px">From ${pay.length} paying businesses · next payout Nov 1</div></div>
+ <div class="kpis">${kpi('Earned so far',$(1575),'Since August')}${kpi('In the pipeline',pend,`+${$(pend*1800*PPCT/100*.4)}/mo if 40% convert`,'good')}</div>
+ <div class="sec">${lbl('Your monthly, next 6 months')}<div class="card">${cols([mo,mo,mo+270,mo+270,mo+540,mo+540],['Nov','Dec','Jan','Feb','Mar','Apr'],2)}<div class="xs muted" style="margin-top:8px">Solid bars are locked in. Light bars assume 1 new paying referral every 2 months.</div></div></div>
+ <div class="sec">${lbl('Do this today')}<div class="list">${li({icon:'chat',ik:'warn',t:'Nudge Pure Glow Studio',m:'Claimed 2 days ago, no meeting yet. A text from you doubles the odds.',a:'tab',id:'prefs'})}${li({icon:'send',t:'Share your code at 2 more businesses',m:'Partners who share weekly earn 4x more',a:'tab',id:'pshare'})}</div></div>`;};
+V.partner_prefs=()=>{const st=['Signed up','Claimed','Meeting booked','Paying'];
+ return `<div><div class="h1">Your referrals</div><div class="sub">LAIR handles the meeting, the sale and the work. You just make the intro.</div></div>
+ ${st.slice().reverse().map(s=>{const rs=PREFS.filter(r=>r.stage===s);if(!rs.length)return '';return `<div class="sec">${lbl(s,`${rs.length}`)}<div class="list">${rs.map(r=>li({icon:s==='Paying'?'cash':s==='Meeting booked'?'phone':'pin',ik:s==='Paying'?'good':'',t:esc(r.name),m:`${esc(r.note)} · since ${fd(r.since)}`,r:r.plan?`<b class="num">${$(r.plan*PPCT/100)}</b><div class="xs muted">/mo to you</div>`:`<button class="btn sm" data-a="toast" data-id="Text to ${esc(r.name)} copied">Nudge</button>`})).join('')}</div></div>`}).join('')}`;};
+const PMSG=[['Text','Hey! I\'ve been using Local AI Registry to see what ChatGPT says about businesses. Yours had a few things wrong. It\'s free to claim and fix: localairegistry.com/r/DANA15'],['Email','Subject: What AI says about your practice\n\nHi, quick one. When patients ask ChatGPT about you, some of the info is out of date. Local AI Registry shows you exactly what AI says and lets you fix it for free. Use my link and their team will walk you through it: localairegistry.com/r/DANA15'],['Instagram DM','Saw your new menu! Did you know AI still lists your old services? This fixes it for free: localairegistry.com/r/DANA15']];
+V.partner_pshare=()=>`<div class="card stack" style="text-align:center"><div class="xs muted">Your code</div><div class="big-n" style="letter-spacing:1px">DANA15</div><div class="row" style="justify-content:center"><input id="plink" readonly value="localairegistry.com/r/DANA15" style="max-width:280px"><button class="btn sm" data-a="copy" data-id="localairegistry.com/r/DANA15">Copy</button></div></div>
+ <div class="sec">${lbl('Ready to send')}${PMSG.map(([k,t])=>`<div class="card stack"><div class="row sp"><b>${k}</b><button class="btn sm" data-a="copyMsg" data-id="${esc(t)}">Copy</button></div><div class="small" style="white-space:pre-wrap">${esc(t)}</div></div>`).join('')}</div>
+ <div class="sec">${lbl('What top partners do')}<div class="card">${['Look up the business on LAIR first. Lead with one thing AI gets wrong about them.','Share right after a good moment: a finished consult, a training, a sale.','Send the link by text, not email. Owners open texts.','Don\'t sell the plan. LAIR\'s team does that. Your job is the free claim.','Check Referrals every Friday and nudge anyone stuck on "Claimed".'].map((x,k)=>`<div class="tip"><b>${k+1}</b><span>${x}</span></div>`).join('')}</div></div>`;
+V.partner_pgrow=()=>{const n=S.prRefs;const out=partnerCalc(n);
+ return `<div><div class="h1">Make it your full-time income</div><div class="sub">Your ${PPCT}% keeps paying every month a referral stays, so it stacks.</div></div>
+ <div class="card stack"><div class="rng"><div class="row"><label for="pr-n">Paying referrals you add per month</label><b class="num" id="prv">${n}</b></div><input type="range" id="pr-n" data-in="pr" min="1" max="15" step="1" value="${n}"></div></div>
+ <div class="card blue"><div class="muted small">Your monthly in 12 months</div><div class="big-n" id="prOut" style="margin-top:4px">${$(out)}</div><div class="muted small" style="margin-top:6px">Assumes a $1,800 average plan and 4% of customers leaving each month.</div></div>
+ <div class="sec">${lbl('Partner levels')}<div class="list">${[['Partner','Your code, 15% recurring, this portal','0'],['Gold','Co-branded landing page, priority meetings for your referrals','10 paying'],['Elite','Your own LAIR rep, quarterly strategy call with Steve, featured on the partners page','25 paying']].map(([t,m,r],k)=>li({icon:'trophy',ik:k===0?'good':'',t,m,r:chip(r==='0'?'You\'re here':r,k===0?'good':'')})).join('')}</div></div>`;};
+function partnerCalc(n){let c=3;for(let m=0;m<12;m++)c=c*.96+n;return c*1800*PPCT/100}
+
+/* ================= FINANCE (Eric) ================= */
+const STEPS=['Not chased','Reminder sent','Final notice sent','Work paused','Demand letter sent'];
+const WK_IN=[22400,9800,14100,8200,24600,10200,13500,9100,25300,10800,14200,9600,26100];
+const WK_OUT=[24800,6200,7400,5900,25100,6400,7100,6000,25600,6500,7300,6100,26200];
+function cashSeries(){let b=184200;return WK_IN.map((v,i)=>b=b+v-WK_OUT[i])}
+const LEAKS=[
+ {t:'Failed card payments',v:2000,m:'2 cards declined this month. Retries are still pending.',k:'bad',b:'Text a card update link'},
+ {t:'Free month without a minimum term',v:1500,m:'1 free month went out with no 6-month commitment.',k:'bad',b:'Add the minimum to their agreement'},
+ {t:'Deal discounts',v:3150,m:'7 at 50% off month 1, 12 on Founding 20 (20% for life).',k:'warn',b:'Review live deals',go:'rsm'},
+ {t:'Grandfathered below scope',v:1000,m:'Dr. Jeff Lisiecki pays $2,000 for Authority work priced at $3,000.',k:'warn',b:'Plan the re-price'},
+ {t:'Work outside the plan',v:900,m:'2 WordPress pages built for Luxurecovery. Not SEO work.',k:'warn',b:'Offer web management at $1,000/mo'},
+ {t:'Overflow contractor',v:1800,m:'Luke is covering work specialists couldn\'t fit.',k:'warn',b:'Rebalance accounts'}];
+V.cfo_margin=()=>{
+ const leak=LEAKS.reduce((a,l)=>a+l.v,0),mrr=41500;
+ return `<div><div class="hello">${hello()}, Eric.</div><div class="sub">Subscriptions cover costs. The job is keeping margin from leaking: ${$(leak)} slipped this month.</div></div>
+ <div class="kpis">${kpi('MRR',$(mrr),'+7.8% vs Sep','good')}${kpi('Gross margin','49%','Target 55%','warn')}${kpi('Margin leak',$(leak),`${(leak/mrr*100).toFixed(0)}% of MRR`,'bad')}${kpi('Net revenue kept','104%','Upgrades beat cancels','good')}</div>
+ <div class="sec">${lbl('Where margin leaks',`${$(leak)}/mo`)}<div class="list">${[...LEAKS].sort((a,b)=>(a.k==='bad'?0:1)-(b.k==='bad'?0:1)||b.v-a.v).map(l=>`<div class="li" style="display:grid;gap:8px"><span class="row sp" style="flex-wrap:nowrap"><b>${l.t}</b><b class="num" style="color:var(--${l.k==='bad'?'bad':'warn'})">${$(l.v)}</b></span><span class="small muted">${l.m}</span><span><button class="btn sm ${l.k==='bad'?'pri':''}" data-a="${l.go?'role':'toast'}" data-id="${l.go||'Done. Logged to this month\'s margin report.'}">${l.b}</button></span></div>`).join('')}</div></div>
+ <div class="sec">${lbl('Margin by plan')}<div class="list">${[['Fix',500,140],['Trust',1500,790],['Authority',3000,1530]].map(([n,p,c])=>{const m=Math.round((p-c)/p*100);return `<div class="li" style="display:grid;gap:6px"><span class="row sp"><b>${n} · ${$(p)}/mo</b><span class="num">${$(p-c)} kept · <b style="color:var(--${m<45?'warn':'good'})">${m}%</b></span></span>${meter(m,m<45?'warn':'good')}<span class="xs muted">Cost to serve ${$(c)}: specialist, reps, press and tools</span></div>`}).join('')}</div></div>
+ <div class="sec">${lbl('Accounts below the 40% floor')}<div class="list">${li({icon:'alert',ik:'bad',t:'Dr. Jeff Lisiecki',m:'31% margin · grandfathered rate',a:'p360',id:'dr-jeff-lisiecki'})}${li({icon:'alert',ik:'bad',t:'Luxurecovery',m:'34% margin · extra web work',a:'p360',id:'luxurecovery'})}</div></div>
+ <div class="kpis">${kpi('Cash today',$(184200),'All accounts')}${kpi('Collected on time','91%',$(12500)+' overdue','warn')}</div>`;};
+V.cfo_collect=()=>{
+ const b=[['Current',0,14],['1 to 30',1,30],['31 to 60',31,60],['61 to 90',61,90],['90+',91,999]];
+ const tot=k=>db.ar.filter(i=>{const d=ago(i.due);return d>=k[1]&&d<=k[2]}).reduce((a,i)=>a+i.amt,0);
+ const mx=Math.max(...b.map(tot))||1;
+ return `<div><div class="h1">Who owes us</div><div class="sub">Each client moves up the ladder: reminder, final notice, pause work, demand letter.</div></div>
+ <div class="card stack">${b.map(k=>{const v=tot(k);return `<div class="hb"><span>${k[0]} days</span><b class="num">${$(v)}</b>${meter(v/mx*100,k[1]>60?'bad':k[1]>30?'warn':'')}</div>`}).join('')}</div>
+ <div class="list">${[...db.ar].sort((x,y)=>ago(y.due)-ago(x.due)).map(i=>{const d=ago(i.due);return li({icon:'cash',ik:d>60?'bad':d>30?'warn':'',t:esc(i.client),m:`${d} days late · ${STEPS[i.step]}`,r:`<b class="num">${$(i.amt)}</b>`,a:'arSheet',id:i.id})}).join('')}</div>`;
+};
+V.cfo_pay=()=>{
+ const grps=[...new Set(db.ap.map(p=>p.grp))];
+ return `<div><div class="h1">Money going out</div><div class="sub">${$(db.ap.reduce((a,p)=>a+p.amt,0))} due in the next 30 days.</div></div>
+ ${grps.map(g=>`<div class="sec">${lbl(g)}<div class="list">${db.ap.filter(p=>p.grp===g).map(p=>`<div class="li"><span class="grow"><span class="t" style="display:block">${esc(p.who)}</span><span class="m">${esc(p.what)} · due ${fd(p.due)}</span></span><span class="r"><b class="num">${$(p.amt)}</b><div style="margin-top:4px">${p.ok?chip('Approved','good'):`<button class="btn sm pri" data-a="approve" data-id="${p.id}">Approve</button>`}</div></span></div>`).join('')}</div></div>`).join('')}`;
+};
+V.cfo_fore=()=>{
+ const mrr=[33500,36000,38500,41500],f=[41500,43900,46600,49100];
+ return `<div><div class="h1">Expected revenue</div><div class="sub">Retainers billed, plus what's likely to close. Churn risk comes off the top.</div></div>
+ <div class="kpis">${kpi('MRR now',$(41500),'+7.8% vs Sep','good')}${kpi('At risk',$(4500),'2 clients unhappy','bad')}</div>
+ <div class="sec">${lbl('MRR · last 4 months and next 3')}<div class="card">${line([...mrr,...f.slice(1)],{labels:['Jul','Aug','Sep','Oct','Nov','Dec','Jan'],proj:3})}</div></div>
+ <div class="sec">${lbl('By plan')}<div class="list">${[['Authority','$3,000',9,27000],['Trust','$1,500',7,10500],['Fix','$500',8,4000]].map(([n,p,c,v])=>li({t:n,m:`${c} clients at ${p}`,r:`<b class="num">${$(v)}</b>`})).join('')}</div></div>
+ <div class="sec">${lbl('Churn watch')}<div class="list">${li({icon:'alert',ik:'bad',t:'R.Ve Aesthetics',m:'3 approvals ignored 6 days, no GA4 access yet',r:'<b class="num">$3,000</b>'})}${li({icon:'alert',ik:'warn',t:'Elm Street Med Spa',m:'Billing dispute open',r:'<b class="num">$1,500</b>'})}</div></div>`;
+};
+
+/* ================= CTO / CPO (Clinton) ================= */
+const FUN=[['Profile page views',48210],['Tapped "Claim"',1930],['Entered email + phone',1412],['Verified the code',1101],['Finished 5-step setup',642],['Opened Pricing',211],['Upgraded',19]];
+V.cto_health=()=>{
+ const sv=[['localairegistry.com',99.98,1.9],['Claim flow + OTP',99.91,2.4],['Monthly reports',99.62,4.8],['API workers',100,.3]];
+ return `<div><div class="hello">${hello()}, Clinton.</div><div class="sub">Everything is up. Reports are slow on phones and that's where owners open them.</div></div>
+ <div class="kpis">${kpi('Uptime, 30 days','99.88%','1 incident','good')}${kpi('Errors, 24h','37','12 are OTP timeouts','warn')}</div>
+ <div class="sec">${lbl('Services · uptime and mobile load time')}<div class="list">${sv.map(([n,u,s])=>li({icon:'gauge',ik:s>3?'bad':u<99.9?'warn':'good',t:n,m:`${u}% up · ${s}s to load on 4G`,r:s>3?chip('Slow','bad'):chip('OK','good')})).join('')}</div></div>
+ <div class="sec">${lbl('Incidents')}<div class="card"><div class="tl"><div class="i"><div class="d">Oct 22</div><div><div class="k">Reports · 18 min</div>Report pages returned errors after a deploy. Rolled back.</div></div><div class="i"><div class="d">Oct 9</div><div><div class="k">OTP · 41 min</div>Text provider rate limit. Added email code fallback.</div></div></div></div></div>`;
+};
+V.cto_funnel=()=>{
+ return `<div><div class="h1">Where owners drop off</div><div class="sub">Last 30 days, unclaimed page to paid. The red step loses the most people.</div></div>
+ <div class="list">${FUN.map(([n,v],i)=>{const p=i?Math.round(v/FUN[i-1][1]*100):100;const bad=i===1||i===4||i===6;return `<div class="li" style="display:grid;gap:6px"><span class="row sp"><b>${n}</b><span class="num">${v.toLocaleString()}${i?` · <span style="color:${bad?'var(--bad)':'var(--muted)'}">${p}% kept</span>`:''}</span></span>${meter(v/FUN[0][1]*100*(i?4:1),bad?'bad':'')}</div>`}).join('')}</div>
+ <div class="xs muted">Bars after the first are scaled 4x so the small steps are visible.</div>
+ <div class="card stack"><b>Biggest leak: setup</b><div class="small">42% quit during the 5-step setup. Step 3 (pick 3 known-for) is where most stop. Try pre-filling it from their website.</div><button class="btn pri" data-a="toast" data-id="Added to the build queue">Add to build queue</button></div>`;
+};
+V.cto_insights=()=>{
+ const ins=[
+  {id:'price',lv:'bad',t:'41 owners opened Pricing twice and left',m:'They want something. It\'s either the price or a missing feature. Ask them.',b:'Build the outreach tool'},
+  {id:'otp',lv:'bad',t:'Android owners fail the code step 2x more',m:'22% of Android Chrome users never enter the text code. iPhone: 11%.',b:'See the error logs'},
+  {id:'report',lv:'warn',t:'Owners who open their report stay',m:'Clients who opened 2+ reports churn at 3%. Never opened: 19%.',b:'Text report links, not just email'},
+  {id:'rep',lv:'good',t:'Rep-claimed pages convert 4x',m:'Claims done with a rep in the room upgrade at 11%. Self-serve: 2.7%.',b:'Share with Bridgette'}];
+ return `<div><div class="h1">What to build next</div><div class="sub">Each card is a pattern in the product data with one thing to do about it.</div></div>
+ ${ins.map(x=>`<div class="card stack" style="${x.lv==='bad'?'border-color:color-mix(in srgb,var(--bad) 45%,var(--line))':''}"><div class="row">${chip(x.lv==='bad'?'Losing money':x.lv==='warn'?'Watch':'Working',x.lv)}</div><b style="font:700 17px var(--display)">${x.t}</b><div class="small">${x.m}</div><button class="btn ${x.id==='price'?'pri':''}" data-a="${x.id==='price'?'buildSheet':'toast'}" data-id="${x.id==='price'?'':'Done'}">${x.b}</button></div>`).join('')}`;
+};
+V.cto_ship=()=>{
+ const q=[['Pricing exit survey (1 question)','From insight · 41 owners','Mon'],['Pre-fill known-for from website','Setup leak · 42% drop','Wed'],['Caron work log → monthly report','Specialist ask · Date, title, link','Done'],['Report page speed on mobile','4.8s → under 2.5s','Next week'],['Email code fallback on Android','OTP fail rate','Next week']];
+ return `<div><div class="h1">Build queue</div><div class="sub">Ranked by money it protects or brings in.</div></div>
+ <div class="list">${q.map(([t,m,w],i)=>li({icon:w==='Done'?'check':'ship',ik:w==='Done'?'good':'',t:`${i+1}. ${t}`,m,r:chip(w,w==='Done'?'good':'blue')})).join('')}</div>`;
+};
+
+/* ================= GODMODE (Steve + Eric) ================= */
+function forecast(){const f=S.fc;let mrr=41500,cust=24;const out=[];
+ for(let m=0;m<12;m++){const nw=f.reps*f.visits*4.33*(f.claim/100)*(f.paid/100);cust=cust*(1-f.churn/100)+nw;mrr=mrr*(1-f.churn/100)+nw*f.plan;out.push({mrr,cust,nw})}return out}
+V.god_over=()=>{
+ return `<div><div class="hello">${hello()}, Steve.</div><div class="sub">MRR up 7.8% this month. Two things need a decision: Illinois has no rep and setup is leaking 42% of claims.</div></div>
+ <div class="kpis">${kpi('MRR',$(41500),'+$3,000 vs Sep','good')}${kpi('Paying businesses',24,'3 new this week','good')}${kpi('Claims, 30 days',1101,'642 finished setup')}${kpi('Gross margin','49%','$10,350 leaking this month','warn')}</div>
+ <div class="sec">${lbl('MRR, last 6 months')}<div class="card">${line([24100,27800,33500,36000,38500,41500],{labels:['May','Jun','Jul','Aug','Sep','Oct']})}</div></div>
+ <div class="sec">${lbl('One line per team · tap to view as them')}<div class="list">${[
+  ['rsm','Sales','4 red deals. Dermatex meeting was 14 days after first talk.','bad'],
+  ['rep','AIORS reps','61 claims this week, Kody #4 nationally.','good'],
+  ['spec','Specialists','R.Ve is 6 days late on approvals and missing GA4/GSC.','bad'],
+  ['cfo','Finance','Margin 49% vs 55% target. Biggest leak: failed cards and deal discounts.','warn'],
+  ['partner','Partners','3 codes live. DANA15 brought in $6,000/mo.','good'],
+  ['cto','Product','Pricing exits: 41 owners. Survey ships Monday.','warn'],
+  ['mkt','Marketing','Provider applications up 3x after Clutch post.','good'],
+  ['cs','Support','1 take-down request past 72h.','bad']].map(([r,t,m,k])=>li({icon:k==='good'?'check':'alert',ik:k,t,m,a:'role',id:r})).join('')}</div></div>`;
+};
+V.god_fore=()=>{
+ const f=S.fc,o=forecast(),end=o[11];const cost=end.mrr*(.35+.15);
+ const sl=(k,l,min,max,step,fmt)=>`<div class="rng"><div class="row"><label for="fc-${k}">${l}</label><b class="num" id="fv-${k}">${fmt(f[k])}</b></div><input type="range" id="fc-${k}" data-in="fc" data-id="${k}" min="${min}" max="${max}" step="${step}" value="${f[k]}"></div>`;
+ return `<div><div class="h1">Forecast</div><div class="sub">Move the levers. 12 months out, starting from today's ${$(41500)} MRR.</div></div>
+ <div class="card blue"><div class="muted small">MRR in 12 months</div><div class="big-n" id="fcEnd" style="margin-top:4px">${$(end.mrr)}</div><div class="muted small" id="fcSub" style="margin-top:6px">${Math.round(end.cust)} paying businesses · ${Math.ceil(end.cust/12)} specialists needed · gross margin after people ${$(end.mrr-cost)}/mo</div></div>
+ <div class="card" id="fcChart">${line(o.map(x=>x.mrr),{labels:['Nov','','Jan','','Mar','','May','','Jul','','Sep','Oct']})}</div>
+ <div class="card stack">${sl('reps','Active AIORS reps',2,100,1,v=>v)}${sl('visits','Visits per rep per week',5,80,1,v=>v)}${sl('claim','Visits that claim',2,30,1,v=>v+'%')}${sl('paid','Claims that become paying',2,40,1,v=>v+'%')}${sl('plan','Average plan',300,3000,100,v=>$(v))}${sl('churn','Monthly churn',0,15,.5,v=>v+'%')}</div>
+ <div class="xs muted">Specialists carry 12 accounts each. People cost assumes 35% to specialists and 15% to reps.</div>`;
+};
+function godUpdate(){const o=forecast(),end=o[11],cost=end.mrr*.5;
+ const g=id=>document.getElementById(id);if(!g('fcEnd'))return;
+ g('fcEnd').textContent=$(end.mrr);g('fcSub').textContent=`${Math.round(end.cust)} paying businesses · ${Math.ceil(end.cust/12)} specialists needed · gross margin after people ${$(end.mrr-cost)}/mo`;
+ g('fcChart').innerHTML=line(o.map(x=>x.mrr),{labels:['Nov','','Jan','','Mar','','May','','Jul','','Sep','Oct']});}
+V.god_alerts=()=>{
+ const al=[['bad','rsm','Illinois: 14 claims, no rep','Chicago Cornea claimed 9 days ago, nobody called.'],['bad','cs','Take-down request 76h old','Policy is 72h. Owner may go to Yelp or a lawyer.'],['bad','spec','R.Ve approvals 6 days late','Authority client, risk of churn.'],['bad','cfo','$2,000 in failed card payments','Retries pending. Send card update links.'],['bad','cs','Specialist B: avg reply 41 hours','Sunset Skin never got its October report.'],['warn','cto','Report pages 4.8s on phones','Owners open reports on phones.'],['warn','rsm','Derek (Phoenix) red on 3 of 4 rules','Needs coaching or a new territory.']];
+ return `<div><div class="h1">Everything red, everywhere</div><div class="sub">Pulled from every role. Tap to jump in as that person.</div></div>
+ <div class="list">${al.map(([k,r,t,m])=>li({icon:'alert',ik:k,t,m,a:'role',id:r})).join('')}</div>`;
+};
+V.god_team=()=>`<div><div class="h1">Team</div><div class="sub">Each person's one number that matters.</div></div>
+ <div class="list">${[['Caron Cooper','Specialist','Report work 72% done, closes Nov 1','warn','spec'],['Kody Muffoletto','AIORS rep','7 claims, 3 paying, books in 1.6 days','good','rep'],['Bridgette DeBrino','Sales + marketing','New MRR $21.5k of $30k target','good','rsm'],['Eric Sim','COO','49% gross margin, $10.4k leaking','warn','cfo'],['Clinton','Product','Setup leak 42%, fix in queue','warn','cto'],['Flávia Gottschalk','Growth','218 MQLs, cost per MQL $11','good','mkt']].map(([n,r,m,k,id])=>li({icon:'users',ik:k,t:`${n} · <span class="muted" style="font-weight:500">${r}</span>`,m,a:'role',id})).join('')}</div>`;
+
+/* ================= MARKETING (Flávia) ================= */
+const PERS={
+ biz:{n:'Businesses',st:[['Visited a profile',48210],['Claimed (MQL)',1101],['Met with sales (SQL)',214],['Paying',24]],src:[['Google search (unclaimed pages)',612],['AIORS reps in person',301],['Notice of Record email',121],['Referral links',67]],camp:[['Notice of Record · new DBA filers','Email','38% open · 121 claims','good'],['Med spa landing page','Web','4.1% claim rate','good'],['Plastic surgeon explainer video','YouTube','2,310 views · 9 claims','warn']]},
+ prov:{n:'AEO providers',st:[['Saw For Specialists page',3920],['Applied (MQL)',186],['Passed vetting',41],['Active with accounts',6]],src:[['Clutch + G2 profiles',71],['LinkedIn posts',58],['Referrals from Caron',22],['Agency audit reports',35]],camp:[['"Get paid monthly to do SEO" LinkedIn','Social','186 applies','good'],['Agency audit exposés (Range, MEGA)','Web','35 agencies applied','good'],['Clutch profile','Directory','Up 3x since post','good']]},
+ rep:{n:'Sales reps',st:[['Saw the rep app listing',8400],['Installed (MQL)',640],['Finished onboarding',212],['First claim',58]],src:[['Merchant services field reps',240],['Indeed + ZipRecruiter',190],['Rep referrals',130],['TikTok "side income" posts',80]],camp:[['Poach merchant services reps','Email + SMS','12% install rate','good'],['"An hour here and there" TikTok','Social','80 installs, 4 claims','warn'],['Rep-gets-rep bonus','In app','130 installs','good']]}};
+function persSeg(){return `<div class="seg">${Object.entries(PERS).map(([k,p])=>`<button data-a="persona" data-id="${k}" aria-pressed="${S.persona===k}">${p.n}</button>`).join('')}</div>`}
+V.mkt_mql=()=>{
+ const p=PERS[S.persona];const mx=p.st[0][1];
+ return `${persSeg()}<div><div class="h1">${p.n} funnel</div><div class="sub">Last 30 days. MQL is the second step for each audience.</div></div>
+ <div class="kpis">${kpi('MQLs',p.st[1][1].toLocaleString(),'+21% vs Sep','good')}${kpi('MQL → next step',Math.round(p.st[2][1]/p.st[1][1]*100)+'%','Target 25%',p.st[2][1]/p.st[1][1]<.2?'warn':'good')}</div>
+ <div class="list">${p.st.map(([n,v],i)=>`<div class="li" style="display:grid;gap:6px"><span class="row sp"><b>${n}</b><span class="num">${v.toLocaleString()}${i?` · ${Math.round(v/p.st[i-1][1]*1000)/10}%`:''}</span></span>${meter(Math.max(2,v/mx*100))}</div>`).join('')}</div>
+ <div class="sec">${lbl('Where MQLs came from')}<div class="card stack">${p.src.map(([n,v])=>`<div class="hb"><span>${n}</span><b class="num">${v}</b>${meter(v/p.src[0][1]*100)}</div>`).join('')}</div></div>`;
+};
+V.mkt_camp=()=>{const p=PERS[S.persona];return `${persSeg()}<div class="list">${p.camp.map(([n,c,r,k])=>li({icon:'chart',ik:k,t:n,m:`${c} · ${r}`})).join('')}</div><button class="btn pri block" data-a="tab" data-id="send">${ic('plus',18)}New campaign for ${PERS[S.persona].n.toLowerCase()}</button>`};
+V.mkt_send=()=>{const msg={biz:'Your business has a public record on Local AI Registry, and AI is reading it. Claim it free to fix anything that\'s wrong: {link}',prov:'We pay SEO and AEO specialists monthly to look after local businesses. You do the work, we bring the clients: {link}',rep:'Walk into local businesses, show them what AI gets wrong, help them claim a free page. Earn 15% every month they pay: {link}'}[S.persona];
+ return `${persSeg()}<div class="stack"><label class="f" for="snd-ch">Channel<select id="snd-ch"><option>Email</option><option>SMS</option><option>Both</option></select></label>
+ <label class="f" for="snd-aud">Who<select id="snd-aud">${({biz:['Unclaimed med spas in CA (2,140)','Claimed, no meeting yet (387)','Paying, no review yet (11)'],prov:['Applied, not vetted (145)','Agencies from audit reports (35)'],rep:['Installed, no claim yet (154)','Merchant services reps (1,200)']}[S.persona]).map(o=>`<option>${o}</option>`).join('')}</select></label>
+ <label class="f" for="snd-body">Message<textarea id="snd-body">${esc(msg)}</textarea></label>
+ <button class="btn pri block" data-a="toast" data-id="Scheduled for Mon 9:00 AM. Steve gets the preview first.">Schedule</button><div class="xs muted">Nothing sends until Steve approves the preview.</div></div>`};
+
+/* ================= CUSTOMER SERVICE ================= */
+V.cs_queue=()=>{
+ const open=db.tickets.filter(t=>!t.done&&!t.routed),rt=db.tickets.filter(t=>!t.done&&t.routed);
+ return `<div><div class="h1">Support queue</div><div class="sub">You handle free owners, delete requests, pricing questions and tech issues. Paying clients go straight to their specialist and sales rep.</div></div>
+ <div class="kpis">${kpi('Open',open.length,`${open.filter(t=>t.hrs>24).length} past 24h`,open.some(t=>t.hrs>72)?'bad':'warn')}${kpi('Avg first reply','17h','Last 30 days','good')}</div>
+ <div class="list">${open.sort((a,b)=>b.hrs-a.hrs).map(t=>li({icon:{Tech:'bolt',Pricing:'cash','Page fix':'alert',Delete:'doc'}[t.cat]||'inbox',ik:t.hrs>72?'bad':t.hrs>24?'warn':'',t:esc(t.kind),m:`${esc(t.who)} · ${t.cat} · ${t.hrs}h${t.assign?' · with '+esc(t.assign):''}`,r:t.hrs>72?chip('Past 72h','bad'):t.hrs>24?chip('Over 24h','warn'):'',a:'ticket',id:t.id})).join('')||'<div class="empty">Queue is clear.</div>'}</div>
+ <div class="sec">${lbl('Paid clients · routed to their specialist')}<div class="list">${rt.map(t=>li({icon:'eye',ik:t.hrs>48?'bad':t.hrs>24?'warn':'',t:esc(t.kind),m:`${esc(t.who)} · with ${esc(t.routed)} · ${t.hrs}h, no reply yet`,a:'tab',id:'watch'})).join('')}</div><div class="xs muted">You don't answer these. You watch them, and flag the specialist if they sit.</div></div>`;};
+const SPECS=[
+ {n:'Caron Cooper',acc:8,reply:19,late:[['R.Ve Aesthetics','3 approvals waiting 6 days'],['Commonwealth Eye Surgery','Owner question unanswered 26h']],report:72},
+ {n:'Specialist B',acc:13,reply:41,late:[['Sunset Skin Co.','October report never sent (52h)'],['Harbor Vision Center','No contact in 19 days']],report:58},
+ {n:'Specialist C',acc:9,reply:11,late:[],report:94}];
+V.cs_watch=()=>`<div><div class="h1">Provider watch</div><div class="sub">If a specialist falls behind, clients feel it before we do. Flag it early.</div></div>
+ ${SPECS.map(s=>{const k=s.reply>36||s.report<65?'bad':s.late.length?'warn':'good';return `<div class="card stack" style="${k==='bad'?'border-color:color-mix(in srgb,var(--bad) 45%,var(--line))':''}"><div class="row sp"><b style="font:700 17px var(--display)">${esc(s.n)}</b>${chip(k==='bad'?'Falling behind':k==='warn'?'Watch':'On track',k)}</div>
+ <div class="row">${chip(s.acc+' accounts')}${chip('Avg reply '+s.reply+'h',s.reply>36?'bad':s.reply>24?'warn':'good')}${chip('Report work '+s.report+'%',s.report<65?'bad':s.report<85?'warn':'good')}</div>
+ ${s.late.map(([c,w])=>`<div class="small">• <b>${esc(c)}</b>: ${esc(w)}</div>`).join('')}
+ ${s.late.length?`<div class="row"><button class="btn sm" data-a="toast" data-id="Nudge sent to ${esc(s.n)}">Nudge ${esc(s.n.split(' ')[0])}</button>${k==='bad'?`<button class="btn sm danger" data-a="toast" data-id="Escalated to Eric">Escalate to Eric</button>`:''}</div>`:''}</div>`}).join('')}`;
+const OPPS={
+ press:[['Reporter wants experts on how AI assistants pick local businesses','Qwoted · national business outlet','Due Nov 2','Steve as the AI search expert','bad'],['Med spa trade publication: 2027 marketing trends roundup','Press Ranger','Due Nov 6','Quote on AI search for med spas','warn'],['Podcast guest slot: local SEO in the AI era','Qwoted','Due Nov 10','30-minute interview',''],['Data story: "What AI gets wrong about local businesses"','Pitch from LAIR\'s own stat sheet','Anytime','Exclusive to one outlet first',''],['The Silicon Review profile article','Paid placement, agreed in August','Publishing end of November','Confirmed','good']],
+ conf:[['MJBizCon','Las Vegas · cannabis dispensary owners','Dec 1 to 4, 2026','Walk the floor with 2 reps. Dispensaries are a proven vertical.','bad'],['Vegas Cosmetic Surgery & Aesthetic Dermatology','Las Vegas · plastic surgeons','Spring 2027 · check date','Top pick for the plastic surgeon focus. Book a dinner, not a booth.','warn'],['AmSpa Medical Spa Show','Med spa owners','2027 · check date','Owners, not injectors. Best room for the free claim pitch.',''],['The Aesthetic Show','Las Vegas · injectors and owners','Listed from Jul 8, 2027','Big floor. Send reps with the one-pager.','']],
+ ideas:[['Botox and bubbly nights with partner med spas','Kerrie runs them, reps sign up attendees\' practices','Med','High'],['AI Local Accuracy Report','Flagship data story, pitched to journalists and AI researchers','High','High'],['Notice of Record mailers to new business filers','Already working by email. Test a printed version.','Low','Med'],['Doctor faces landing pages','KOLs who trusted the team, each with their approval','Med','High'],['Wikidata + Crunchbase entity push','Makes LAIR itself easier for AI to cite','Low','Med'],['"What AI says about you" live audits on Instagram','Run 3 audits on camera per week','Low','Med']]};
+V.mkt_opps=()=>{const sg=S.oppSeg;
+ const seg=`<div class="seg">${[['press','Press'],['conf','Conferences'],['ideas','Ideas']].map(([k,l])=>`<button data-a="oppSeg" data-id="${k}" aria-pressed="${sg===k}">${l}</button>`).join('')}</div>`;
+ if(sg==='ideas')return seg+`<div class="sub">Ranked by impact for the effort.</div><div class="list">${OPPS.ideas.map(([t,m,e,i])=>li({icon:'bulb',ik:i==='High'?'good':'',t:esc(t),m:`${esc(m)}<br>${chip('Effort: '+e)} ${chip('Impact: '+i,i==='High'?'good':'')}`,a:'toast',id:'Added to the marketing plan'})).join('')}</div>`;
+ const L=OPPS[sg];
+ return seg+`<div class="sub">${sg==='press'?'Open requests from Qwoted and Press Ranger, plus pitches we own. Sample requests.':'Where our buyers gather. Dates marked "check date" are not confirmed yet.'}</div>
+ <div class="list">${L.map(([t,src,when,why,k])=>`<div class="li" style="display:grid;gap:6px"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><b>${esc(t)}</b>${chip(esc(when),k)}</span><span class="small muted">${esc(src)}</span><span class="small">${esc(why)}</span><span class="row"><button class="btn sm ${k==='bad'?'pri':''}" data-a="toast" data-id="${sg==='press'?'Pitch outline added for Steve to review':'Added to the events calendar'}">${sg==='press'?'Draft pitch':'Plan it'}</button></span></div>`).join('')}</div>`;};
+V.cs_look=()=>`<div><div class="h1">Look up a business</div><div class="sub">Tap any business for the full 360: every message, where they are, who owns them.</div></div>
+ <div class="list">${[...db.accts.map(a=>[a.name,`${a.tier} · ${$(a.mrr)}/mo · Specialist: Caron`]),['Glow Lab Aesthetics','Stuck claiming · rep: Kody'],['Mission Grove Dental','Unclaimed · 1 visitor flag']].map(([n,m])=>li({icon:'store',t:esc(n),m:esc(m),a:'p360',id:slug(n)})).join('')}</div>`;
+V.cs_macros=()=>`<div><div class="h1">Saved replies</div><div class="sub">Plain language. Edit before sending.</div></div><div class="list">${MAC.map(m=>li({icon:'book',t:m[0],m:esc(m[1].slice(0,70))+'…'})).join('')}</div>`;
+const MAC=[['Code not arriving','Sorry about that. I just sent a code to your email instead. It works the same way. If it doesn\'t show in 2 minutes, check spam.'],['Wrong info on page','Thanks for flagging this. We\'ve corrected it on your page. AI tools can take days to weeks to pick up the change.'],['Pricing question','Fix ($500/mo) submits you to directories every day. Trust ($1,500/mo) adds your Google profile, review replies and press releases. Authority ($3,000/mo) adds your website and articles. No contract on any plan. Want me to book 15 minutes with our team?'],['Take my page down','We understand. Your page is a public record built from public sources, so it stays up, but you can claim it free and control what it says: {claim_link}. Or reply and I\'ll set up a quick call.'],['Delete my account','Done. Your login is deleted and you won\'t get more emails. Your public page stays, as it\'s built from public records. You can claim it again anytime.']];
+
+/* ================= sheets ================= */
+const SH={newCode:shNewCode};SH.wallet=()=>shWallet();
+SH.nudge=({id})=>{const[aid,kind]=id.split('|');const a=A(aid);const miss=Object.entries(a.access).filter(([,v])=>!v).map(([k])=>k);
+ const txt={access:`Hi ${a.owner.split(' ').slice(-1)[0]==='Owner'?'there':a.owner}, it's Caron from Local AI Registry. To start the work we still need access to: ${miss.join(', ')}. Here's a 2-minute guide: localairegistry.com/access. Want me to hop on a call and do it with you?`,
+  appr:`Hi ${a.owner}, Caron here. You have ${a.appr} drafts waiting for a quick yes or edit. Nothing posts without you. Tap to review: localairegistry.com/approve`,
+  text:`Hi ${a.owner}, it's Caron from Local AI Registry. `}[kind];
+ return `<div><div class="h1">Text ${esc(a.owner)}</div><div class="sub">${esc(a.name)} · ${esc(a.phone)}</div></div><label class="f" for="nd">Message<textarea id="nd">${esc(txt)}</textarea></label>
+ <div class="row"><button class="btn pri" data-a="sent" data-id="${aid}|Text">Send text</button><button class="btn" data-a="sent" data-id="${aid}|Email">Send as email</button><button class="btn ghost" data-a="close">Cancel</button></div><div class="xs muted">Logged to the account timeline either way.</div>`};
+SH.logWork=({id})=>`<div><div class="h1">Add work to a report</div><div class="sub">Shows in the client's monthly report with this date, title and link.</div></div>
+ <label class="f" for="lw-a">Account<select id="lw-a">${db.accts.map(a=>`<option value="${a.id}" ${a.id===id?'selected':''}>${esc(a.name)}</option>`).join('')}</select></label>
+ <label class="f" for="lw-t">Type<select id="lw-t">${W8.map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></label>
+ <label class="f" for="lw-d">Date<input id="lw-d" type="date" value="${TODAY}"></label>
+ <label class="f" for="lw-ti">Title<input id="lw-ti" placeholder="e.g. Botox aftercare: what to avoid for 24 hours"></label>
+ <label class="f" for="lw-l">Link<small>Blog URL, off-page placement, Google Doc or Sheet</small><input id="lw-l" placeholder="https://"></label>
+ <label class="f" for="lw-f">Or upload a file<small>PDF, Excel or Word</small><input id="lw-f" type="file" accept=".pdf,.xlsx,.xls,.csv,.docx,.doc"></label>
+ <button class="btn pri block" data-a="saveWork">Add to report</button>`;
+SH.visit=({id})=>{const n=db.nearby.find(x=>x.id===id);const st=S.vstep||0;
+ const steps=[
+  `<div class="lbl">Step 1 of 3 · Say this</div><div class="script">"Hey, quick one. I was looking for a ${n.kind.toLowerCase()} near here and asked ChatGPT. It said you ${n.wrong.toLowerCase().includes('hours')?'had different hours':'do things you might not'}. Is that right?"</div><div class="small muted">Then show them: ${esc(n.wrong)}</div><button class="btn pri block" data-a="vnext">They're listening</button>`,
+  `<div class="lbl">Step 2 of 3 · Show their page</div><div class="card stack"><div class="row sp"><b>${esc(n.name)}</b>${chip('Unclaimed','bad')}</div><div class="row"><span class="big-n" style="font-size:36px">${n.score}</span><span class="small muted">AI Score out of 100</span></div><div class="small">${esc(n.wrong)}</div></div><div class="script" style="font-size:19px">"It's a free page. You can fix it in two minutes and AI starts reading the right info."</div><button class="btn pri block" data-a="vnext">They want to fix it</button>`,
+  `<div class="lbl">Step 3 of 3 · Claim it with them</div><label class="f" for="cl-e">Owner email<input id="cl-e" type="email" placeholder="owner@business.com"></label><label class="f" for="cl-p">Owner mobile<input id="cl-p" type="tel" placeholder="(951) 555-0100"></label><div class="small muted">They get a code by text. You're saved as the lead source.</div><button class="btn pri block" data-a="claimed" data-id="${n.id}">Send their code</button>`];
+ return `<div class="row sp"><div><div class="h1">${esc(n.name)}</div><div class="sub">${n.kind} · ${n.dist}</div></div><button class="btn ghost" data-a="close">Skip</button></div>${steps[st]}<button class="btn ghost" data-a="notint" data-id="${n.id}">Not interested · log visit</button>`};
+SH.leadSheet=({id})=>{const l=db.leads.find(x=>x.id===id);return `<div class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><div><div class="h1">${esc(l.name)}</div><div class="sub">Claimed ${fd(l.date)} · ${esc(l.auto)}</div></div><button class="btn sm" data-a="p360" data-id="${slug(l.name)}">360</button></div>
+ <div class="list">${li({icon:'pin',ik:'good',t:'Claimed their page',m:'5% · you are the lead source',r:chip('Yours','good')})}${li({icon:'phone',ik:l.stage!=='claimed'?'good':'',t:'Meeting with sales',m:l.stage==='claimed'?'Auto email is asking them to book':'Booked'+(l.meet?' for '+fd(l.meet):''),r:l.stage!=='claimed'?chip('Yours','good'):''})}${li({icon:'cash',ik:l.stage==='closed'?'good':'',t:'They pay',m:l.closer==='self'?'You close it: +5%':'Handed to a closer'})}</div>
+ ${l.stage!=='closed'?`<div class="seg"><button data-a="closer" data-id="${l.id}|self" aria-pressed="${l.closer==='self'}">I'll close it</button><button data-a="closer" data-id="${l.id}|hand" aria-pressed="${l.closer==='hand'}">Hand to a closer</button></div>`:''}
+ ${l.stage==='claimed'?`<button class="btn pri block" data-a="toast" data-id="Text sent with Kody's booking link">Text them my booking link</button>`:''}`};
+SH.repSheet=({id})=>{const r=RP(id);return `<div><div class="h1">${esc(r.name)}</div><div class="sub">${esc(r.city)} · ${r.visits} visits · ${r.claims} claims · ${r.closes} paying</div></div>
+ <div class="list">${RULES.map(x=>{const v=repVal(r,x.k),g=grade(x,v);return `<div class="rule"><span class="t">${x.t}</span>${chip(v+(x.unit==='%'?'%':' d'),g)}${g!=='good'?`<span class="why">${x.why}</span>`:''}</div>`}).join('')}</div>
+ <label class="f" for="cn">Coaching note<textarea id="cn">${RULES.some(x=>grade(x,repVal(r,x.k))==='bad')?`${r.name.split(' ')[0]}, your meetings are landing ${r.mtgOut} days out. Book inside the claim visit: open your calendar on the spot and offer tomorrow or the day after.`:'Great month. Keep booking inside the visit.'}</textarea></label>
+ <button class="btn pri block" data-a="toast" data-id="Sent to ${esc(r.name)} in the rep app">Send in the rep app</button>`};
+SH.dealSheet=({id})=>{const d=db.deals.find(x=>x.id===id),f=dealFlags(d);return `<div><div class="h1">${esc(d.name)}</div><div class="sub">${d.stage} · ${$(d.val)}/mo · ${d.rep?esc(RP(d.rep).name):'No rep'}</div></div>
+ <div class="row">${f.map(x=>chip(esc(x[0]),x[1])).join('')||chip('On track','good')}</div>
+ <div class="card"><div class="tl"><div class="i"><div class="d">${fd(d.first)}</div><div><div class="k">First talk</div>Claimed page, rep call</div></div>${d.meet?`<div class="i"><div class="d">${fd(d.meet)}</div><div><div class="k">1st meeting</div>${ago(d.first,d.meet)} days after first talk</div></div>`:''}<div class="i"><div class="d">${fd(d.last)}</div><div><div class="k">Last touch</div>${ago(d.last)} days ago</div></div></div></div>
+ <div class="row"><button class="btn" data-a="p360" data-id="${slug(d.name)}">${ic('eye',16)}360 view</button><button class="btn pri" data-a="toast" data-id="Asked rep to move the meeting into this week">Pull the meeting in</button><button class="btn" data-a="toast" data-id="Reassigned">Reassign</button></div>`};
+SH.arSheet=({id})=>{const i=db.ar.find(x=>x.id===id),d=ago(i.due),nx=Math.min(4,i.step+1);
+ const letters=['',`Hi, a quick reminder that invoice for ${$(i.amt)} was due ${fd(i.due)}. You can pay here: {pay_link}. Thank you!`,
+  `This is a final notice. ${$(i.amt)} is now ${d} days past due. If we don't receive payment within 7 days, work on your account will pause.`,
+  `We've paused work on your account because ${$(i.amt)} is ${d} days past due. Your public page stays up. Pay here to resume: {pay_link}.`,
+  `RE: Demand for payment, ${i.client}\n\nBlind LLC, doing business as Local AI Registry, demands payment of ${$(i.amt)} for services rendered, due ${fd(i.due)}. Payment must be received within 10 days of this letter. If not, we may pursue collection, including small claims court, without further notice.\n\nEric Sim, COO\nLocal AI Registry · 9891 Irvine Center Dr, Irvine, CA 92618`];
+ return `<div><div class="h1">${esc(i.client)}</div><div class="sub">${$(i.amt)} · ${d} days late · ${STEPS[i.step]}</div></div>
+ <div class="row">${STEPS.map((s,k)=>chip(s,k<=i.step?(k>=3?'bad':'warn'):'')).join('')}</div>
+ ${i.step<4?`<div class="lbl">Next: ${STEPS[nx].replace(' sent','')}</div><div class="mail">${esc(letters[nx])}</div><div class="row"><button class="btn pri" data-a="arNext" data-id="${i.id}">${nx===4?'Send demand letter':nx===3?'Pause work + notify':'Send'}</button><button class="btn" data-a="toast" data-id="Payment plan offered">Offer a payment plan</button></div>${nx===4?'<div class="xs muted">Not legal advice. Check the letter with counsel before the first one goes out.</div>':''}`:`<div class="card">Demand letter sent. Next step is small claims, outside this app.</div>`}`};
+SH.buildSheet=()=>`<div><div class="h1">Pricing exit survey</div><div class="sub">For the 41 owners who opened Pricing 2+ times and didn't upgrade.</div></div>
+ <div class="card stack"><b>What they see (text + email, one tap)</b><div class="script" style="font-size:19px">"You looked at our plans. What would make it a yes?"</div><div class="row">${chip('Price is too high')}${chip('Missing a feature')}${chip('Not sure it works')}${chip('Bad timing')}</div><div class="small muted">"Missing a feature" opens one text box. "Price" asks what they'd pay.</div></div>
+ <div class="card stack"><b>What you get</b><div class="small">Answers land in Insights, grouped. Bridgette's reps see the answer before their next call. Anyone who says "price" gets the $1/mo AI report offer.</div></div>
+ <button class="btn pri block" data-a="toast" data-id="Added to the build queue for Monday">Add to build queue</button>`;
+SH.ticket=({id})=>{const t=db.tickets.find(x=>x.id===id);const m=MAC[t.cat==='Tech'?0:t.cat==='Page fix'?1:t.cat==='Pricing'?2:t.kind.includes('page down')?3:t.cat==='Delete'?4:1];
+ return `<div><div class="h1">${esc(t.kind)}</div><div class="sub">${esc(t.who)} · ${t.ch} · ${t.hrs}h waiting</div></div><div class="mail">${esc(t.txt)}</div>
+ <label class="f" for="tk">Reply<textarea id="tk">${esc(m[1])}</textarea></label>
+ <label class="f" for="tka">Also send to<select id="tka"><option value="">Nobody</option>${['Clinton','Eric','Kody','Bridgette'].map(p=>`<option ${t.assign===p?'selected':''}>${p}</option>`).join('')}</select></label>
+ <div class="row"><button class="btn pri" data-a="resolve" data-id="${t.id}">Send + close</button><button class="btn" data-a="close">Save draft</button></div>`};
+
+/* ================= 360 view ================= */
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const PIPE=['Found','Claimed','Meeting booked','Meeting held','Proposal','Paying'];
+const DSTAGE={'New claim':1,'Meeting booked':2,'Meeting held':3,'Proposal':4,'Won':5};
+const addD=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const RICH={
+ 'dermatex-hair-replacement':{type:'Hair replacement clinic',loc:'Laguna Hills, CA',site:'dermatexhair.com',staff:'6 to 10',rev:'$1M to $3M (est.)',rating:'4.8 · 190 Google reviews',ai:29,platform:'Older custom site, slow on phones',agency:'No SEO agency found',ads:'Google Ads on hair replacement terms',social:'Instagram 3.8k, posts weekly',
+  people:[['Owner','Decision maker','Signs off on spend. Prefers a call over email.'],['Office manager','Gatekeeper, books meetings','Answers the main line. Moved the first meeting to Oct 28.']],
+  met:['Inbound, then a call','Found their unclaimed LAIR page on Google. Kody called the same day.','2026-10-14'],
+  comms:[['2026-10-28','Meeting','out','First meeting. Owner wants pricing in writing.','Held · 34 min'],['2026-10-21','Email','in','Office manager: "Can we do the 28th instead?"','Reply'],['2026-10-20','Email','out','Proposal: website rebuild + LAIR retainer','Opened 2x · clicked pricing'],['2026-10-15','Email','out','Your AI visibility audit','Opened 4x'],['2026-10-14','Text','out','Kody: here\'s my calendar for a 30-minute walkthrough','Read'],['2026-10-14','Call','out','First talk. Interested in fixing what AI says about them.','12 min']],
+  news:[['Oct 22','New before and after reel, about 14k views','Instagram'],['Sep','Started Google Ads on hair replacement searches','Ads library'],['Aug','Second consult room added, per new Google photos','Google']],
+  tips:['They already pay for Google Ads. Show them AI answers skip ads entirely.','The owner asked for pricing in writing. Send a one-page summary, not the full proposal.','The first meeting landed 14 days after the first call. Set a decision date on the next call so the yes doesn\'t take another 14.'],
+  obj:[['"We already get leads from ads."','Ads stop the day you stop paying. Your AI record keeps working.'],['"A new website is too much right now."','Start with the retainer this month. The rebuild can wait a quarter.']],
+  best:'Tue to Thu, 10 to 11 AM. The office manager screens the line before 10.'},
+ 'r-ve-aesthetics':{type:'Med spa, physician led',loc:'Huntington, NY',site:'rveaesthetics.com',staff:'5 to 8',rev:'$1M to $2M (est.)',rating:'4.9 · 260 Google reviews',ai:58,platform:'WordPress',agency:'LAIR Authority, Caron',ads:'None found',social:'Instagram 6.2k',
+  people:[['Dr. Osborne Williams','Owner, physician','Approves all content. In clinic until 5 PM.'],['Front desk lead','Day to day','Fastest route to access and approvals.']],
+  met:['Sales meeting','Signed Authority, handed to Caron','2026-10-06'],
+  news:[['Oct','Added Morpheus8 to the menu','Instagram'],['Sep','4 new 5-star Google reviews','Google']],
+  tips:['He approves in batches. Send all 3 drafts in one text, not 3 emails.','Ask the front desk lead to add Caron to GA4 and Search Console. It takes them 3 minutes.','Bring up the patient\'s Morpheus8 question. Owners answer fast when it\'s a real patient.'],
+  obj:[['"I haven\'t had time to review."','Reply OK and we post. Nothing goes live without a yes.']],
+  best:'Weekdays after 5 PM, by text.'},
+ 'nutrichem':{type:'Compounding pharmacy + naturopathic clinic',loc:'Ottawa, ON',site:'nutrichem.com',staff:'40 to 60',rev:'$5M to $10M (est.)',rating:'4.6 · 300+ Google reviews',ai:47,platform:'Custom site',agency:'None found',ads:'Seasonal Google Ads',social:'Facebook, Instagram',
+  people:[['Tom Miron','Main contact','Signed the Authority plan with Kody.'],['Web or IT contact','Not known yet','Ask Tom who holds the website and Google logins.']],
+  met:['Rep visit','Kody met them and closed it himself','2026-10-09'],
+  news:[['Oct','Flu season immune support push on the homepage','Website']],
+  tips:['Bigger team, so logins sit with IT. Ask Tom for a direct intro.','Canadian business: lean on Google and Bing proof, not Yelp.'],
+  obj:[['"Our IT team handles the website."','Great. Can you intro me? I need 15 minutes with them.']],
+  best:'Mornings, Eastern time.'},
+ 'glow-lab-aesthetics':{type:'Med spa, nurse injector owned',loc:'Riverside, CA',site:'Instagram only',staff:'2 to 4',rev:'Under $500k (est.)',rating:'4.9 · 61 Google reviews',ai:22,platform:'No website',agency:'None',ads:'None found',social:'Instagram 2.1k, very active',
+  people:[['Owner','Nurse injector','On the floor all day. Catch her between appointments.']],
+  met:['Walk-in','Kody\'s nearby map. Started a claim, stuck at the text code.','2026-10-30'],
+  news:[['Oct','Running a "Botox and bubbly" night on Instagram','Instagram']],
+  tips:['No website means AI only knows her from Instagram and reviews. That\'s the pitch.','She tried to claim 3 times and the code never came. Fix that first, then sell.'],
+  obj:[['"I\'m too small for this."','Small is why AI can\'t find you. The free page fixes that today.']],
+  best:'Before 10 AM, in person.'},
+ 'chicago-cornea-consultants':{type:'Cornea and cataract practice',loc:'Chicago, IL',site:'chicagocornea.com',staff:'20 to 40',rev:'$5M+ (est.)',rating:'4.7 · 400+ Google reviews',ai:44,platform:'WordPress',agency:'Unknown',ads:'None found',social:'Facebook',
+  people:[['Practice administrator','Likely decision maker','Owns vendor contracts at most multi-doctor practices.'],['Marketing coordinator','Possible champion','Ask for them by title on the first call.']],
+  met:['Self-serve claim','Claimed their page from Google. No rep covers Illinois.','2026-10-21'],
+  news:[['Oct','LAIR built them an AI visibility audit','LAIR']],
+  tips:['Nobody has called in 9 days. Call today, or the claim goes cold.','Multi-doctor practice: ask for the administrator, not a doctor.'],
+  obj:[['"We have a marketing person."','Good. This gives them the AI side they can\'t see today.']],
+  best:'Tue to Thu, 8 to 9 AM Central.'}};
+function ents(){
+ const m=new Map();const put=(name,kind,ref,sub)=>{const k=slug(name);if(!m.has(k))m.set(k,{key:k,name,kinds:[],refs:{},sub});const e=m.get(k);if(!e.kinds.includes(kind))e.kinds.push(kind);Object.assign(e.refs,ref);if(sub&&kind==='Client')e.sub=sub};
+ db.accts.forEach(a=>put(a.name,'Client',{acct:a.id},`${a.tier} · Caron`));
+ db.deals.forEach(d=>put(d.name,d.stage==='Won'?'Client':'Prospect',{deal:d.id},`${d.stage} · ${d.rep?RP(d.rep).name:'no rep'}`));
+ db.leads.forEach(l=>put(l.name,l.stage==='closed'?'Client':'Lead',{lead:l.id},`${{claimed:'Claimed',booked:'Meeting booked',closed:'Paying'}[l.stage]} · Kody`));
+ db.nearby.forEach(n=>put(n.name,'Not claimed',{near:n.id},`${n.kind} · ${n.dist} from Kody`));
+ db.ar.forEach(i=>put(i.client,'Billing',{ar:i.id},`${$(i.amt)} overdue`));
+ db.tickets.filter(t=>!t.who.startsWith('Anonymous')).forEach(t=>put(t.who,'Support',{ticket:t.id},`Ticket: ${t.kind}`));
+ return [...m.values()];}
+function prof(key){
+ const e=ents().find(x=>x.key===key);if(!e)return null;const r=RICH[key]||{};const f=e.refs;
+ const a=f.acct&&A(f.acct),d=f.deal&&db.deals.find(x=>x.id===f.deal),l=f.lead&&db.leads.find(x=>x.id===f.lead),n=f.near&&db.nearby.find(x=>x.id===f.near),i=f.ar&&db.ar.find(x=>x.id===f.ar),t=f.ticket&&db.tickets.find(x=>x.id===f.ticket);
+ let stage=0;if(n)stage=0;if(l)stage={claimed:1,booked:2,closed:5}[l.stage];if(d)stage=Math.max(stage,DSTAGE[d.stage]);if(a||i)stage=5;
+ let comms=r.comms?[...r.comms]:[];
+ if(!r.comms){
+  if(a)a.comms.forEach(([dt,k,tx])=>comms.push([dt,k==='Inbox'?'Message':k,k==='Inbox'||k==='Edit'?'in':'out',tx,k==='Report'?'Delivered':'']));
+  if(l){comms.push([l.date,'In person','out','Claimed their page with Kody','']);comms.push([l.meet&&l.stage==='booked'?addD(l.date,1):l.date,'Email','out','Auto email: book a meeting',l.auto]);}
+  if(d){comms.push([d.first,'Call','out',`First talk with ${d.rep?RP(d.rep).name:'nobody yet'}`,'']);if(d.last!==d.first)comms.push([d.last,'Email','out','Follow-up','Opened']);}
+  if(i)comms.push([i.due,'Email','out',`Invoice ${$(i.amt)} · ${STEPS[i.step]}`,'Unpaid']);}
+ if(t)comms.push([TODAY,t.ch==='Chat'?'Chat':'Email','in',t.txt,`${t.hrs}h waiting`]);
+ comms.sort((x,y)=>y[0].localeCompare(x[0]));
+ const last=comms.find(c=>c[0]<=TODAY)?.[0]||null;
+ // next action + deadline
+ let next,due;
+ if(stage===0){next='Get them to claim their page';due=null}
+ else if(stage===1){const c=l?.date||d?.first;next='Book the first meeting';due=addD(c,2)}
+ else if(stage===2){const m2=l?.meet||d?.meet;next='Hold the first meeting';due=m2}
+ else if(stage===3){next='Send the proposal';due=addD(d?.last||last,1)}
+ else if(stage===4){next='Get a yes or no';due=addD(d?.last||last,7)}
+ else if(a&&a.appr){next=`Get ${a.appr} approvals`;due=addD(a.apprOld,3)}
+ else if(a&&Object.values(a.access).some(v=>!v)){next='Get website and Google access';due=addD(a.asked||a.start,3)}
+ else if(i){next=`Collect ${$(i.amt)}`;due=i.due}
+ else{next='Monthly check-in';due=addD(last||TODAY,30)}
+ const met=r.met||(n?['Not met yet','On Kody\'s nearby map','']:l?['Walk-in','Kody visited and helped them claim',l.date]:d?['Claimed page',`${d.rep?RP(d.rep).name+' called after the claim':'Claimed from Google, no rep yet'}`,d.first]:a?['Sales handoff','Closed by sales, handed to Caron',a.start]:['Unknown','','']);
+ const owner=a?'Caron Cooper (specialist)':d?.rep?RP(d.rep).name:l?'Kody Muffoletto':n?'Kody Muffoletto':d?'Unassigned':'Eric Sim';
+ return {e,r,a,d,l,n,i,t,stage,comms,last,next,due,met,owner,val:a?.mrr||d?.val||l?.plan||i?.amt||0};}
+function searchRes(q){
+ const all=ents();q=(q||'').trim().toLowerCase();
+ const hit=q?all.filter(e=>(e.name+' '+e.kinds.join(' ')+' '+(e.sub||'')+' '+(RICH[e.key]?.loc||'')+' '+(RICH[e.key]?.people||[]).map(p=>p[0]).join(' ')).toLowerCase().includes(q)):all.filter(e=>RICH[e.key]);
+ if(!hit.length)return `<div class="empty">No business matches "${esc(q)}".</div>`;
+ const grp=q?[...new Set(hit.map(e=>e.kinds[0]))]:['Pinned'];
+ return grp.map(g=>`<div class="qgrp">${g}</div><div class="list">${hit.filter(e=>!q||e.kinds[0]===g).slice(0,12).map(e=>{const p=prof(e.key);const dl=p.due?ago(TODAY,p.due):null;return li({icon:e.kinds.includes('Client')?'store':e.kinds.includes('Not claimed')?'pin':'users',ik:dl!=null&&dl<0?'bad':'',t:esc(e.name),m:`${PIPE[p.stage]} · ${esc(e.sub||'')}${dl!=null&&dl<0?' '+chip('Overdue','bad'):''}`,a:'p360',id:e.key})}).join('')}</div>`).join('');}
+const MSGI={Email:'inbox',Text:'chat',Call:'phone','In person':'pin',Meeting:'users',Message:'chat',Chat:'chat',Approval:'check',Edit:'doc',Report:'doc',Handoff:'brief'};
+SH.search=()=>`<div class="qin row" style="flex-wrap:nowrap"><input id="q" type="search" placeholder="Business, person, city or phone" aria-label="Search every business" autocomplete="off"><button class="btn ghost" data-a="close">Close</button></div><div id="qres">${searchRes('')}</div>`;
+SH.p360=({id})=>{const p=prof(id);if(!p)return '<div class="empty">Not found</div>';const r=p.r;
+ const since=p.last?ago(p.last):null;const left=p.due?ago(TODAY,p.due):null;
+ const sk=since==null?'':since>14?'bad':since>7?'warn':'good';const lk=left==null?'':left<0?'bad':left<=1?'warn':'good';
+ const facts=[['Type',r.type||(p.n?p.n.kind:p.a?p.a.tier+' plan client':'')],['Location',r.loc||p.a?.city||''],['Website',r.site||''],['Size',r.staff?r.staff+' staff · '+r.rev:''],['Reviews',r.rating||''],['AI Score',(r.ai??p.n?.score)!=null?`${r.ai??p.n.score} / 100`:''],['Site platform',r.platform||''],['Current agency',r.agency||''],['Ads',r.ads||''],['Social',r.social||''],['Owner',p.owner],['Worth',p.val?$(p.val)+(p.i?' overdue':'/mo'):'']].filter(x=>x[1]);
+ const tips=r.tips||[['Lead with what AI gets wrong about them, not with LAIR.'],['Book the meeting on the first call. Every day without one lowers the odds.'],['Confirm the meeting the day before by text.'],['Send the proposal the same day, while it\'s warm.'],['Call, don\'t email. Ask what\'s stopping a yes.'],['Text the report link. Owners who open reports stay.']][p.stage];
+ return `<div class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><div class="row">${p.e.kinds.map(k=>chip(k,k==='Client'?'good':k==='Billing'||k==='Support'?'warn':'blue')).join('')}</div><div class="h1" style="margin-top:6px">${esc(p.e.name)}</div><div class="sub">${esc([r.loc||p.a?.city,p.owner].filter(Boolean).join(' · '))}</div></div><button class="btn ghost" data-a="close">Close</button></div>
+ <div class="pipe">${PIPE.map((s,k)=>`<div class="${k<p.stage?'on':''} ${k===p.stage?'cur':''}"><i></i>${s}</div>`).join('')}</div>
+ <div class="clocks"><div class="clock ${sk}"><div class="xs muted">Since we last talked</div><div class="n">${since==null?'Never':since===0?'Today':since+'<small> days</small>'}</div><div class="w">${p.last?fd(p.last)+' · '+esc(p.comms[0][1]):'No contact yet'}</div></div>
+  <div class="clock ${lk}"><div class="xs muted">${left!=null&&left<0?'Overdue':'Time left'}</div><div class="n">${left==null?'No clock':left<0?-left+'<small> days late</small>':left===0?'Today':left+'<small> days</small>'}</div><div class="w">${esc(p.next)}${p.due?' · by '+fd(p.due):''}</div></div></div>
+ <div class="row"><button class="btn pri sm" data-a="toast" data-id="Text to ${esc(p.e.name)} logged">${ic('chat',16)}Text</button><button class="btn sm" data-a="toast" data-id="Email draft opened">${ic('inbox',16)}Email</button><button class="btn sm" data-a="toast" data-id="Booking link sent">${ic('phone',16)}Book meeting</button><button class="btn sm" data-a="toast" data-id="Note saved to timeline">${ic('plus',16)}Note</button></div>
+ <div class="sec">${lbl('Where we met')}<div class="card"><b>${esc(p.met[0])}</b>${p.met[2]?` · <span class="muted">${fd(p.met[2])}</span>`:''}<div class="small" style="margin-top:4px">${esc(p.met[1])}</div></div></div>
+ <div class="sec">${lbl('Every text, email and call',`${p.comms.length}`)}<div class="card">${p.comms.length?p.comms.map(([dt,ch,dir,tx,st])=>`<div class="msg ${dir}"><span class="b">${ic(MSGI[ch]||'chat')}</span><div style="min-width:0"><div class="h"><b style="color:var(--ink-2)">${esc(ch)}</b><span>${dir==='in'?'from them':'from us'}</span><span>· ${fd(dt)}</span>${st?chip(esc(st),/Opened|Read|Held|Reply|Delivered|Connected/.test(st)?'good':/Unpaid|waiting/.test(st)?'warn':''):''}</div><div style="margin-top:2px">${esc(tx)}</div></div></div>`).join(''):'<div class="empty">Nothing sent yet.</div>'}</div></div>
+ <div class="sec">${lbl('Who they are',r.type?'<span class="xs muted" style="text-transform:none;letter-spacing:0">Enriched by Clay · sample</span>':`<button data-a="toast" data-id="Clay enrichment started. Fields fill in about a minute.">Enrich with Clay</button>`)}<div class="card"><dl class="facts">${facts.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div></div>
+ ${r.people?`<div class="sec">${lbl('People')}<div class="card">${r.people.map(([n2,role,note])=>`<div class="person"><span class="av">${esc(n2.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase())}</span><div><b>${esc(n2)}</b> <span class="small muted">${esc(role)}</span><div class="small">${esc(note)}</div></div></div>`).join('')}</div></div>`:''}
+ ${r.news?`<div class="sec">${lbl('News and activity')}<div class="list">${r.news.map(([dt,tx,src])=>li({icon:'eye',t:esc(tx),m:`${dt} · ${src}`})).join('')}</div></div>`:''}
+ <div class="sec">${lbl('How to close them')}<div class="card">${tips.map((x,k)=>`<div class="tip"><b>${k+1}</b><span>${esc(Array.isArray(x)?x[0]:x)}</span></div>`).join('')}${r.best?`<div class="tip"><b>${ic('phone',16)}</b><span><b style="color:var(--ink);font:600 14.5px var(--body)">Best time:</b> ${esc(r.best)}</span></div>`:''}</div></div>
+ ${r.obj?`<div class="sec">${lbl('What they\'ll say, what you say')}<div class="card">${r.obj.map(([o,ans])=>`<div class="obj"><q>${esc(o)}</q><div class="small" style="margin-top:3px">${esc(ans)}</div></div>`).join('')}</div></div>`:''}
+ ${!r.type?`<div class="xs muted">Background, news and tips fill in once Clay enriches this business.</div>`:''}`;};
+
+/* ================= WALLETS + REFERRAL CODES (every role) ================= */
+const TEAM_PCT=5;
+const REFS={
+ spec:{code:'CARON5',pay:()=>['Specialist payout · Nov 1',db.accts.reduce((a,x)=>a+x.mrr*SHARE,0),'spec','wallet'],list:[['Seattle Smile Co.','Paying',1500,'2026-09-14'],['Rainier Laser Clinic','Meeting booked',0,'2026-10-27']]},
+ rep:{code:'KODY5',pay:()=>['Rep commissions (5% intro, 5% booking, 5% close)',repMonthly(),'rep','earn'],list:[['Inland Empire Ortho','Paying',3000,'2026-08-20']]},
+ rsm:{code:'BRIDGETTE5',list:[['Palm Beach Aesthetics','Paying',3000,'2026-07-08'],['Boca Brow Studio','Paying',500,'2026-09-02'],['Jupiter Family Dental','Claimed',0,'2026-10-29']]},
+ cfo:{code:'ERIC5',list:[['Riverside Family Chiropractic','Paying',1500,'2026-10-05']]},
+ cto:{code:'CLINTON5',list:[]},
+ god:{code:'STEVE5',list:[['Irvine Spectrum Med Spa','Paying',3000,'2026-06-11'],['Newport Lash Lounge','Paying',1500,'2026-08-30'],['Tustin Dental Arts','Proposal',0,'2026-10-24']]},
+ mkt:{code:'FLAVIA5',list:[['Clínica Bela, Miami','Signed up',0,'2026-10-30']]},
+ cs:{code:'HELP5',list:[]},
+ partner:{code:'DANA15',pct:15,pay:null,list:null}};
+function wal(role){const w=REFS[role],pct=w.pct||TEAM_PCT;
+ const list=w.list||PREFS.map(r=>[r.name,r.stage,r.plan,r.since]);
+ const refMo=list.filter(x=>x[1]==='Paying').reduce((a,x)=>a+x[2]*pct/100,0);
+ const pay=w.pay?w.pay():null;
+ const pend=list.filter(x=>x[1]!=='Paying').length;
+ return {code:w.code,pct,list,refMo,pay,pend,total:refMo+(pay?pay[1]:0)};}
+function shWallet(){const r=R(),w=wal(S.role);const link='localairegistry.com/r/'+w.code;
+ const msg=`Hey! Local AI Registry shows what ChatGPT and Google AI say about your business, and lets you fix it for free. Use my link: ${link}`;
+ return `<div class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><div><div class="h1">${esc(r.first==='team'?'Support desk':r.first)}'s wallet</div><div class="sub">Everyone at LAIR earns ${w.pct}% of what their referrals pay, every month they stay.</div></div><button class="btn ghost" data-a="close">Close</button></div>
+ <div class="card blue"><div class="muted small">Coming to you each month</div><div class="big-n" style="margin-top:4px">${$(w.total)}</div><div class="muted small" style="margin-top:6px">Paid on the 1st · direct deposit ··· 4417</div></div>
+ <div class="list">${w.pay?li({icon:'brief',t:esc(w.pay[0]),r:`<b class="num">${$(w.pay[1])}</b>`,a:'walletGo',id:w.pay[2]+'|'+w.pay[3]}):''}${li({icon:'link',ik:'good',t:`Referrals · ${w.pct}% of what they pay`,m:`${w.list.filter(x=>x[1]==='Paying').length} paying · ${w.pend} in progress`,r:`<b class="num">${$(w.refMo)}</b>`,chev:false})}</div>
+ <div class="card stack" style="text-align:center"><div class="xs muted">Your referral code</div><div class="big-n" style="letter-spacing:1px;font-size:38px">${w.code}</div><div class="row" style="justify-content:center;flex-wrap:nowrap"><input id="wlink" readonly value="${link}" style="max-width:290px"><button class="btn sm pri" data-a="copyMsg" data-id="${link}">Copy</button></div><button class="btn sm" data-a="copyMsg" data-id="${esc(msg)}">Copy a ready-to-send text</button></div>
+ <div class="sec">${lbl('Your referrals',`${w.list.length}`)}${w.list.length?`<div class="list">${w.list.map(([n,st,plan,d])=>li({icon:st==='Paying'?'cash':'pin',ik:st==='Paying'?'good':'',t:esc(n),m:`${st} · since ${fd(d)}`,r:plan&&st==='Paying'?`<b class="num">${$(plan*w.pct/100)}</b><div class="xs muted">/mo</div>`:chip(st),chev:false})).join('')}</div>`:`<div class="card empty">No referrals yet. Every business owner you know is a lead: dentists, med spas, your gym, your vet.</div>`}</div>
+ ${w.pend?`<div class="small muted">If your ${w.pend} in-progress referral${w.pend>1?'s':''} start on a typical $1,800 plan, you add about ${$(w.pend*1800*w.pct/100)}/mo.</div>`:''}
+ <div class="xs muted">Referral shares come out of the same 30% pool as deals and rep commissions. LAIR's team handles the meeting, sale and work.</div>`;}
+
+/* ================= render ================= */
+function renderDemo(){document.getElementById('demo').innerHTML=`<div class="dtop"><span class="dtag">Prototype</span><span>LAIR OS. Pick a role to see the app the way that person would. Sample data: real account names, made-up numbers.</span></div>
+ <div class="dtypes" role="group" aria-label="Switch role">${ROLES.map(r=>`<button class="dt" data-a="role" data-id="${r.id}" aria-pressed="${S.role===r.id}"><small>${r.k}</small><b>${esc(r.person)}</b></button>`).join('')}</div>`}
+function badge(t){if(S.role==='spec'&&t==='today')return specItems().filter(i=>i.lv==='bad').length;if(S.role==='rsm'&&t==='pulse')return db.deals.filter(d=>dealFlags(d).some(f=>f[1]==='bad')).length;if(S.role==='cfo'&&t==='collect')return db.ar.filter(i=>ago(i.due)>60).length;if(S.role==='cs'&&t==='queue')return db.tickets.filter(x=>!x.done&&!x.routed&&x.hrs>24).length;if(S.role==='cs'&&t==='watch')return SPECS.filter(x=>x.reply>36||x.report<65).length;if(S.role==='god'&&t==='alerts')return 4;if(S.role==='rep'&&t==='leads')return db.leads.filter(l=>l.stage==='claimed'&&ago(l.date)>=5).length;return 0}
+function render(){
+ renderDemo();const r=R();
+ document.getElementById('hdr').innerHTML=`<div class="brand">${MARK}<div style="min-width:0;display:grid"><b>Local AI Registry</b><span>${esc(r.title)}</span></div></div><button class="me" data-a="wallet" aria-label="Open my wallet"><span class="wamt">${ic('wallet',15)}${$k(wal(S.role).total)}</span><span class="av">${r.ini}</span></button><button class="qbar" data-a="search">${ic('search')}<span>Search any business, person or city</span></button>`;
+ document.getElementById('tabs').innerHTML=TABS[S.role].map(([k,l,i])=>{const b=badge(k);return `<button class="tb" data-a="tab" data-id="${k}" ${tab()===k?'aria-current="page"':''}>${ic(i)}<span>${l}</span>${b?`<span class="bd">${b}</span>`:''}</button>`}).join('');
+ document.getElementById('main').innerHTML=(V[S.role+'_'+tab()]||(()=>''))();
+ renderSheet();
+}
+function renderSheet(){const el=document.getElementById('sheet');if(!S.sheet){el.innerHTML='';return}el.innerHTML=`<div class="ov" data-a="ovc"><div class="sh ${['search','p360','wallet'].includes(S.sheet.k)?'full':''}" role="dialog" aria-modal="true"><div class="grab"></div>${SH[S.sheet.k](S.sheet)}</div></div>`}
+let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,2800)}
+function open(k,id){S.sheet={k,id};renderSheet()}
+function close(){S.sheet=null;S.vstep=0;renderSheet()}
+
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,id=el.dataset.id||'';
+ if(a==='ovc'&&e.target!==el)return;
+ const go={
+  role:()=>{S.role=id;S.detail=null;close();try{history.replaceState(null,'','#'+id)}catch(_){}render();window.scrollTo(0,0)},
+  tab:()=>{S.tab[S.role]=id;S.detail=null;close();render();window.scrollTo(0,0)},
+  openAcct:()=>{S.tab.spec='accts';S.detail=id;render();window.scrollTo(0,0)},
+  back:()=>{S.detail=null;render()},
+  nudge:()=>open('nudge',id),
+  sent:()=>{const[aid,ch]=id.split('|');const a=A(aid);a.comms.unshift([TODAY,ch,(document.getElementById('nd')?.value||'').slice(0,90)+'…']);close();render();toast(`${ch} logged to ${a.name}`)},
+  logWork:()=>open('logWork',id),
+  saveWork:()=>{const g=x=>document.getElementById(x);const t=g('lw-ti').value.trim();if(!t){g('lw-ti').focus();toast('Add a title first');return}
+   const f=g('lw-f').files[0];const ac=A(g('lw-a').value),ty=g('lw-t').value;
+   db.log.unshift({acct:ac.id,type:ty,date:g('lw-d').value||TODAY,title:t,link:g('lw-l').value.trim()||(f?f.name:'no link')});if(ac.work[ty]<2)ac.work[ty]=2;close();render();toast(`Added. It shows in ${ac.name}'s November report.`)},
+  storeSeg:()=>{S.storeSeg=id;render()},
+  copy:()=>{try{navigator.clipboard.writeText(id).then(()=>toast('Link copied'),()=>{document.getElementById('reflink').select();toast('Selected. Copy it from here.')})}catch(_){document.getElementById('reflink').select()}},
+  hours:()=>{S.hours=+id;render()},
+  goOnline:()=>{S.online=true;render();toast('You\'re online. 5 businesses near you.')},
+  goOffline:()=>{S.online=false;render();toast(`Shift saved: ${S.shift.v} visits, ${S.shift.c} claims`)},
+  visit:()=>{S.vstep=0;open('visit',id)},
+  vnext:()=>{S.vstep=(S.vstep||0)+1;renderSheet()},
+  claimed:()=>{const n=db.nearby.find(x=>x.id===id);db.nearby=db.nearby.filter(x=>x.id!==id);db.leads.unshift({id:'k'+Date.now(),name:n.name,stage:'claimed',date:TODAY,auto:'Code sent · booking email goes out after they verify',closer:'hand',plan:0});S.shift.v++;S.shift.c++;close();render();toast(`${n.name} claimed. You're the lead source.`)},
+  notint:()=>{db.nearby=db.nearby.filter(x=>x.id!==id);S.shift.v++;close();render();toast('Visit logged')},
+  leadSheet:()=>open('leadSheet',id),
+  closer:()=>{const[lid,v]=id.split('|');db.leads.find(x=>x.id===lid).closer=v;renderSheet();render()},
+  mapSel:()=>{S.mapSel=id;render()},
+  repSheet:()=>open('repSheet',id),dealSheet:()=>open('dealSheet',id),arSheet:()=>open('arSheet',id),buildSheet:()=>open('buildSheet',''),ticket:()=>open('ticket',id),
+  arNext:()=>{const i=db.ar.find(x=>x.id===id);i.step=Math.min(4,i.step+1);renderSheet();render();toast(`${STEPS[i.step]} to ${i.client}`)},
+  approve:()=>{db.ap.find(x=>x.id===id).ok=true;render();toast('Approved for payout')},
+  persona:()=>{S.persona=id;render()},
+  resolve:()=>{db.tickets.find(x=>x.id===id).done=true;close();render();toast('Reply sent, ticket closed')},
+  toast:()=>{toast(id);},
+  dlKind:()=>{const d=S.dl;d.kind=id;Object.assign(d,{firstpct:{amt:50,months:1},life:{amt:15,months:0},free:{amt:100,months:1,min:6},bonus:{amt:400,months:0}}[id]);render()},
+  dlSet:()=>{const[k,v]=id.split('|');S.dl[k]=isNaN(+v)?v:+v;render()},
+  createDeal:()=>{const d=S.dl,pc=db.pcodes.find(x=>x.code===d.partner),p=pool(d,pc?pc.pct:0,pc?pc.cust:0);if(p.over){toast('Over the 30% cap. Lower the discount first.');return}if(d.kind==='free'&&d.min<6){toast('A free month needs a 6-month minimum.');return}
+   db.offers.unshift({id:'o'+Date.now(),name:hookText(d),kind:d.kind,amt:d.amt,months:d.months,min:d.min,exp:addD(TODAY,d.exp),planN:d.plan,for:d.for,used:0,cap:d.for==='Everyone'?d.cap:1});render();toast(d.for==='Everyone'?'Deal is live. Reps see it in their app now.':'Deal created. Text with the link is ready for '+d.for)},
+  newCode:()=>{S.pc={who:'',pct:10,cust:0};open('newCode','')},
+  saveCode:()=>{const who=document.getElementById('pc-who').value.trim();if(!who){document.getElementById('pc-who').focus();toast('Add the partner\'s name');return}const code=who.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+S.pc.pct;db.pcodes.push({code,who,role:document.getElementById('pc-role').value.trim()||'Partner',pct:S.pc.pct,cust:S.pc.cust,refs:0,paying:0,mrr:0});close();render();toast('Code '+code+' created. Partner portal invite sent.')},
+  oppSeg:()=>{S.oppSeg=id;render()},
+  copyMsg:()=>{try{navigator.clipboard.writeText(id).then(()=>toast('Copied'),()=>toast('Copy blocked here. Select the text instead.'))}catch(_){toast('Select the text to copy')}},
+  wallet:()=>{open('wallet','');const sh=document.querySelector('.sh');if(sh)sh.scrollTop=0},
+  walletGo:()=>{const[r2,t2]=id.split('|');close();S.role=r2;S.tab[r2]=t2;S.detail=null;render();window.scrollTo(0,0)},
+  search:()=>{open('search','');setTimeout(()=>document.getElementById('q')?.focus(),40)},
+  p360:()=>{open('p360',id);const s=document.querySelector('.sh');if(s)s.scrollTop=0},
+  close:()=>close(),ovc:()=>close()};
+ go[a]&&go[a]();
+});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
+document.addEventListener('input',e=>{const el=e.target;if(el.id==='q'){document.getElementById('qres').innerHTML=searchRes(el.value);return}
+ if(el.dataset.in==='dl'){const k=el.dataset.id;S.dl[k]=+el.value;const lb=document.getElementById('dlv-'+k);if(lb)lb.textContent=k==='amt'?(S.dl.kind==='bonus'?$(S.dl[k]):S.dl[k]+'%'):S.dl[k];dealUpdate();return}
+ if(el.dataset.in==='pc'){const k=el.dataset.id;S.pc[k]=+el.value;document.getElementById('pcv-'+k).textContent=S.pc[k]+'%';document.getElementById('pcOut').innerHTML=poolBar(pool({kind:'firstpct',amt:0,months:1,plan:1500},S.pc.pct,S.pc.cust));return}
+ if(el.dataset.in==='pr'){S.prRefs=+el.value;document.getElementById('prv').textContent=S.prRefs;document.getElementById('prOut').textContent=$(partnerCalc(S.prRefs));return}if(el.dataset.in==='fc'){S.fc[el.dataset.id]=+el.value;const k=el.dataset.id,f=S.fc[k];document.getElementById('fv-'+k).textContent=k==='plan'?$(f):['claim','paid','churn'].includes(k)?f+'%':f;godUpdate()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.sheet)close();if(e.key==='/'&&!S.sheet&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();open('search','');setTimeout(()=>document.getElementById('q')?.focus(),40)}});
+const h0=(location.hash||'').slice(1);if(ROLES.some(r=>r.id===h0))S.role=h0;
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(ROLES.some(r=>r.id===h)&&h!==S.role){S.role=h;S.detail=null;render()}});
+render();
+</script>
+
+</body></html>
