@@ -366,10 +366,10 @@ const ROLES=[
 const TABS={
  spec:[['today','Today','home'],['accts','Accounts','brief'],['work','Work','tool'],['wallet','Wallet','wallet'],['store','Profile','store']],
  rep:[['go','Go','bolt'],['leads','Leads','users'],['earn','Earnings','wallet'],['ranks','Ranks','trophy']],
- rsm:[['make','Make deal','bolt'],['pulse','Pulse','gauge'],['deals','Pipeline','funnel'],['map','Map','map'],['reps','Reps','users']],
+ rsm:[['make','Make deal','bolt'],['pulse','Pulse','gauge'],['deals','Pipeline','funnel'],['map','Map','map'],['reps','Reps','users'],['tips','Coach','bulb']],
  cfo:[['margin','Margin','gauge'],['collect','Collect','alert'],['pay','Pay out','send'],['fore','Forecast','chart']],
  cto:[['health','Health','gauge'],['funnel','Funnel','funnel'],['insights','Insights','bulb'],['ship','Build','ship']],
- god:[['over','Overview','eye'],['fore','Forecast','sliders'],['alerts','Alerts','alert'],['team','Team','users']],
+ god:[['over','Overview','eye'],['fore','Forecast','sliders'],['alerts','Alerts','alert'],['team','People','users']],
  mkt:[['mql','MQLs','funnel'],['opps','Opportunities','bulb'],['camp','Campaigns','chart'],['send','New send','send']],
  cs:[['queue','Queue','inbox'],['watch','Provider watch','eye'],['look','Look up','search'],['macros','Macros','book']],
  partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pshare','Share','send'],['pgrow','Go full time','trophy']]};
@@ -847,8 +847,61 @@ V.god_alerts=()=>{
  return `<div><div class="h1">Everything red, everywhere</div><div class="sub">Pulled from every role. Tap to jump in as that person.</div></div>
  <div class="list">${al.map(([k,r,t,m])=>li({icon:'alert',ik:k,t,m,a:'role',id:r})).join('')}</div>`;
 };
-V.god_team=()=>`<div><div class="h1">Team</div><div class="sub">Each person's one number that matters.</div></div>
- <div class="list">${[['Caron Cooper','Specialist','Report work 72% done, closes Nov 1','warn','spec'],['Kody Muffoletto','AIORS rep','7 claims, 3 paying, books in 1.6 days','good','rep'],['Bridgette DeBrino','Sales + marketing','New MRR $21.5k of $30k target','good','rsm'],['Eric Sim','COO','49% gross margin, $10.4k leaking','warn','cfo'],['Clinton','Product','Setup leak 42%, fix in queue','warn','cto'],['Flávia Gottschalk','Growth','218 MQLs, cost per MQL $11','good','mkt']].map(([n,r,m,k,id])=>li({icon:'users',ik:k,t:`${n} · <span class="muted" style="font-weight:500">${r}</span>`,m,a:'role',id})).join('')}</div>`;
+/* ================= COACH (Bridgette) ================= */
+const PLAYBOOK={
+ coach:[['Coach one number at a time','Pick the one red rule per rep and work only that for two weeks. Five fixes at once means none stick.'],['Ride along once a week','Join one walk-in or listen to one call per rep. You\'ll see in 10 minutes what a dashboard hides.'],['Praise in public, coach in private','Wins go in the team channel. Corrections go in a 1:1 or a DM.'],['Ask before you tell','"What would you do differently?" gets more change than "Here\'s what you did wrong."']],
+ pipe:[['Every deal needs a next step with a date','No date means no deal. Ask for it on every pipeline review.'],['Review pipeline every Monday, 15 minutes per rep','Same three questions: what moved, what\'s stuck, what do you need from me.'],['Close out stale deals','No touch in 30 days and no next step? Mark it lost and free up the rep\'s head space.'],['Book the meeting inside the claim visit','Our fastest reps book before they leave the building. That\'s the single biggest lever on show rate.']],
+ deals:[['Urgency needs a real reason','End of month, limited spots, a price change. Fake deadlines teach customers to wait for the next one.'],['Lead with the smallest give','Start with the free claim and a short-term hook. Save the deep discount for the close, not the pitch.'],['Never give without getting','Trade the discount for something: a 6-month minimum, a case study, a referral or a review.'],['Watch the 30% pool','Every point of discount comes out of the reps\' cut. Deep deals are fine when they close fast.']],
+ hire:[['Always be recruiting','Most 1099 reps go quiet within 90 days. Keep 2 new reps in onboarding at all times.'],['Hire people who already walk in','Merchant services and medical device reps already know the doors. Ask for referrals from your best reps.'],['First week is a ride-along','New reps should watch 5 walk-ins before they do one alone. Their first claim should come in week one.']],
+ rhythm:[['Monday: pipeline','15 minutes per rep. Next steps and dates only.'],['Wednesday: deal clinic','Bring the stuck deals. Build the deal together in Make deal.'],['Friday: wins','Post every claim and close in the team channel. Celebrate first claims, not just closes.'],['Monthly: leaderboard reset','Announce the top 3 and the next prize level on the 1st.']]};
+const PBSEG=[['coach','Coaching'],['pipe','Pipeline'],['deals','Deals'],['hire','Hiring'],['rhythm','Weekly rhythm']];
+V.rsm_tips=()=>{const sg=S.pbSeg||'coach';
+ const best=[...db.reps].sort((a,b)=>a.t2m-b.t2m)[0],worst=[...db.reps].sort((a,b)=>b.t2m-a.t2m)[0];
+ const ins=[
+  {k:'bad',t:`${worst.name.split(' ')[0]} books in ${worst.t2m} days. ${best.name.split(' ')[0]} books in ${best.t2m}.`,m:`${best.name.split(' ')[0]}'s show rate is ${best.show}%, ${worst.name.split(' ')[0]}'s is ${worst.show}%. Pair them for a ride-along this week.`,b:'Set up the ride-along'},
+  {k:'warn',t:'Meetings more than 10 days out show half as often',m:'4 of your open deals have meetings 10+ days out. Pull them into this week.',b:'See those deals',go:'deals'},
+  {k:'good',t:'Rep-claimed pages convert 4x better than self-serve',m:'11% of rep claims upgrade vs 2.7% self-serve. More walk-ins beats more ads.',b:'Share with the team'},
+  {k:'good',t:'"50% off month 1" closed 7 this month',m:'It costs about 4 points of the 30% pool on Trust. The lifetime 20% deal costs 20 points. Use the short hook first.',b:'Make a deal',go:'make'},
+  {k:'warn',t:'Illinois has 14 claims and no rep',m:'That\'s about $2,500/mo in pipeline sitting untouched. Recruiting one rep there pays for itself in month one.',b:'See the map',go:'map'}];
+ return `<div><div class="hello">Coach the team.</div><div class="sub">What your numbers say this week, and the playbook to act on it.</div></div>
+ <div class="sec">${lbl('This week\'s insights')}<div class="list">${ins.map(x=>`<div class="li" style="display:grid;gap:6px"><span class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:10px"><span class="ic ${x.k}" style="width:30px;height:30px">${ic(x.k==='good'?'check':x.k==='bad'?'alert':'bulb',16)}</span><b>${esc(x.t)}</b></span><span class="small">${esc(x.m)}</span><span><button class="btn sm" data-a="${x.go?'tab':'toast'}" data-id="${x.go||'Done'}">${x.b}</button></span></div>`).join('')}</div></div>
+ <div class="sec">${lbl('Your 1:1 agenda, 15 minutes')}<div class="card">${['What did you win this week?','Which deal is stuck, and what\'s the next step and date?','Your one number to fix: the red speed rule','What do you need from me?'].map((x,k)=>`<div class="tip"><b>${k+1}</b><span>${x}</span></div>`).join('')}</div></div>
+ <div class="sec">${lbl('Sales manager playbook')}<div class="seg">${PBSEG.map(([k,l])=>`<button data-a="pbSeg" data-id="${k}" aria-pressed="${sg===k}">${l}</button>`).join('')}</div><div class="card">${PLAYBOOK[sg].map(([t,m],k)=>`<div class="obj"><q>${esc(t)}</q><div class="small" style="margin-top:3px">${esc(m)}</div></div>`).join('')}</div></div>`;};
+
+/* ================= PEOPLE (Godmode) ================= */
+const URO={god:'Godmode',spec:'Specialist',rep:'AIORS rep',rsm:'Sales manager',mkt:'Marketing',cfo:'Finance',cs:'Support',cto:'CTO / CPO',partner:'Referral partner'};
+const UACC={god:['Everything, every role, View as owner','Nothing hidden'],spec:['Their assigned accounts, all messages to those owners, report work, their wallet','Other specialists\' pay, finance, deals'],rep:['Nearby businesses, their own leads and commissions, leaderboard','Client billing, other reps\' leads'],rsm:['All reps, pipeline, territories, Make deal, partner codes','Payroll and specialist pay'],mkt:['MQL funnels, campaigns, press, conferences','Client billing, commissions'],cfo:['Revenue, margin, collections, payouts, all commissions','Nothing financial hidden'],cs:['Free owners, tickets, provider watch, page fixes','Commissions, finance'],cto:['Product health, funnels, insights, build queue','Commissions and pay'],partner:['Only their own referrals and wallet','Everything internal']};
+db.users=[
+ {n:'Steve Lee',e:'steve@localairegistry.com',r:'god',type:'Owner',st:'Active',last:'Now'},
+ {n:'Eric Sim',e:'eric@localairegistry.com',r:'god',extra:'Finance, Support',type:'W-2',st:'Active',last:'2h ago'},
+ {n:'Bridgette DeBrino',e:'bridgette@localairegistry.com',r:'rsm',extra:'Marketing',type:'W-2',st:'Active',last:'1h ago'},
+ {n:'Caron Cooper',e:'caron@localairegistry.com',r:'spec',type:'W-2',st:'Active',last:'Today'},
+ {n:'Clinton',e:'clinton@localairegistry.com',r:'cto',type:'Contractor',st:'Active',last:'Today'},
+ {n:'Kody Muffoletto',e:'kody@localairegistry.com',r:'rep',type:'1099',st:'Active',last:'Today'},
+ {n:'Laney Millard',e:'laney@localairegistry.com',r:'rep',type:'1099',st:'Active',last:'Yesterday'},
+ {n:'Flávia Gottschalk',e:'flavia@localairegistry.com',r:'mkt',type:'Contractor',st:'Active',last:'Yesterday'},
+ {n:'Kerrie Quinby',e:'kerrie@localairegistry.com',r:'mkt',extra:'Conferences, partners',type:'W-2',st:'Active',last:'2 days ago'},
+ {n:'Audrey Campbell',e:'audrey@localairegistry.com',r:'partner',extra:'Partner program',type:'W-2',st:'Active',last:'3 days ago'},
+ {n:'Dana Reyes',e:'dana@example.com',r:'partner',type:'Partner',st:'Active',last:'Today'}];
+V.god_team=()=>{const f=S.uf||'all';const us=db.users.filter(u=>f==='all'||u.r===f);
+ return `<div class="row sp"><div><div class="h1">People</div><div class="sub">${db.users.length} people · ${db.users.filter(u=>u.st==='Invited').length} invites pending</div></div><button class="btn pri sm" data-a="addUser">${ic('plus',16)}Add person</button></div>
+ <div class="seg">${[['all','All'],...Object.entries(URO)].map(([k,l])=>`<button data-a="uf" data-id="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
+ <div class="list">${us.map(u=>li({icon:'users',ik:u.st==='Invited'?'warn':u.st==='Off'?'bad':'',t:`${esc(u.n)}`,m:`${URO[u.r]}${u.extra?' + '+esc(u.extra):''} · ${u.type} · ${u.st==='Active'?'active '+u.last:u.st}`,r:chip(u.st,u.st==='Active'?'good':u.st==='Invited'?'warn':'bad'),a:'userSheet',id:u.e})).join('')}</div>`;};
+function auPreview(r){const a=UACC[r]||UACC.rep;return `<div class="card stack"><b>What a ${URO[r]} sees</b><div class="small"><span style="color:var(--good);font-weight:600">Sees:</span> ${esc(a[0])}</div><div class="small"><span style="color:var(--bad);font-weight:600">Hidden:</span> ${esc(a[1])}</div><div class="small muted">${r==='partner'?'Gets a partner code at the rate you set (max 15%).':'Gets a personal referral code at 5%.'}</div></div>`}
+function shAddUser(){return `<div class="row sp"><div class="h1">Add a person</div><button class="btn ghost" data-a="close">Cancel</button></div>
+ <label class="f" for="au-n">Full name<input id="au-n" placeholder="e.g. Jordan Lee"></label>
+ <label class="f" for="au-e">Email<input id="au-e" type="email" placeholder="jordan@localairegistry.com"></label>
+ <label class="f" for="au-p">Mobile<small>For the invite text and sign-in codes</small><input id="au-p" type="tel" placeholder="(949) 555-0100"></label>
+ <label class="f" for="au-r">Role<select id="au-r" data-ch="aurole">${Object.entries(URO).map(([k,l])=>`<option value="${k}" ${k==='rep'?'selected':''}>${l}</option>`).join('')}</select></label>
+ <label class="f" for="au-t">How they're paid<select id="au-t"><option>1099</option><option>W-2</option><option>Contractor</option><option>Partner</option></select></label>
+ <label class="f" for="au-x">Territory, accounts or manager<small>Optional. e.g. "Orange County", "8 accounts from Caron", "Reports to Bridgette"</small><input id="au-x"></label>
+ <div id="auPrev">${auPreview('rep')}</div>
+ <button class="btn pri block" data-a="saveUser">Send invite</button><div class="xs muted">They get a text and email to set up their own sign-in. You never set or see their password.</div>`}
+function shUser({id}){const u=db.users.find(x=>x.e===id);return `<div class="row sp"><div><div class="h1">${esc(u.n)}</div><div class="sub">${esc(u.e)} · ${u.type}</div></div><button class="btn ghost" data-a="close">Close</button></div>
+ <label class="f" for="uu-r">Role<select id="uu-r" data-ch="urole" data-id="${esc(u.e)}">${Object.entries(URO).map(([k,l])=>`<option value="${k}" ${u.r===k?'selected':''}>${l}</option>`).join('')}</select></label>
+ <div id="auPrev">${auPreview(u.r)}</div>
+ <div class="row"><button class="btn" data-a="role" data-id="${u.r}">${ic('eye',16)}See their view</button>${u.st==='Invited'?`<button class="btn" data-a="toast" data-id="Invite resent to ${esc(u.n)}">Resend invite</button>`:''}${u.r!=='god'||u.n!=='Steve Lee'?`<button class="btn danger" data-a="userOff" data-id="${esc(u.e)}">${u.st==='Off'?'Turn back on':'Turn off access'}</button>`:''}</div>
+ <div class="xs muted">Turning off access signs them out everywhere. Their referrals and history stay.</div>`}
 
 /* ================= MARKETING (Flávia) ================= */
 const PERS={
@@ -935,7 +988,7 @@ V.cs_macros=()=>`<div><div class="h1">Saved replies</div><div class="sub">Plain 
 const MAC=[['Code not arriving','Sorry about that. I just sent a code to your email instead. It works the same way. If it doesn\'t show in 2 minutes, check spam.'],['Wrong info on page','Thanks for flagging this. We\'ve corrected it on your page. AI tools can take days to weeks to pick up the change.'],['Pricing question','Fix ($500/mo) submits you to directories every day. Trust ($1,500/mo) adds your Google profile, review replies and press releases. Authority ($3,000/mo) adds your website and articles. No contract on any plan. Want me to book 15 minutes with our team?'],['Take my page down','We understand. Your page is a public record built from public sources, so it stays up, but you can claim it free and control what it says: {claim_link}. Or reply and I\'ll set up a quick call.'],['Delete my account','Done. Your login is deleted and you won\'t get more emails. Your public page stays, as it\'s built from public records. You can claim it again anytime.']];
 
 /* ================= sheets ================= */
-const SH={newCode:shNewCode};SH.wallet=()=>shWallet();
+const SH={newCode:shNewCode,addUser:shAddUser,userSheet:shUser};SH.wallet=()=>shWallet();
 SH.nudge=({id})=>{const[aid,kind]=id.split('|');const a=A(aid);const miss=Object.entries(a.access).filter(([,v])=>!v).map(([k])=>k);
  const txt={access:`Hi ${a.owner.split(' ').slice(-1)[0]==='Owner'?'there':a.owner}, it's Caron from Local AI Registry. To start the work we still need access to: ${miss.join(', ')}. Here's a 2-minute guide: localairegistry.com/access. Want me to hop on a call and do it with you?`,
   appr:`Hi ${a.owner}, Caron here. You have ${a.appr} drafts waiting for a quick yes or edit. Nothing posts without you. Tap to review: localairegistry.com/approve`,
@@ -1216,6 +1269,13 @@ document.addEventListener('click',e=>{
   newCode:()=>{S.pc={who:'',pct:10,cust:0};open('newCode','')},
   saveCode:()=>{const who=document.getElementById('pc-who').value.trim();if(!who){document.getElementById('pc-who').focus();toast('Add the partner\'s name');return}const code=who.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+S.pc.pct;db.pcodes.push({code,who,role:document.getElementById('pc-role').value.trim()||'Partner',pct:S.pc.pct,cust:S.pc.cust,refs:0,paying:0,mrr:0});close();render();toast('Code '+code+' created. Partner portal invite sent.')},
   oppSeg:()=>{S.oppSeg=id;render()},
+  pbSeg:()=>{S.pbSeg=id;render()},
+  uf:()=>{S.uf=id;render()},
+  addUser:()=>open('addUser',''),
+  userSheet:()=>open('userSheet',id),
+  saveUser:()=>{const g=x=>document.getElementById(x);const n=g('au-n').value.trim(),e=g('au-e').value.trim();if(!n){g('au-n').focus();toast('Add their name');return}if(!/.+@.+\..+/.test(e)){g('au-e').focus();toast('Add a valid email');return}
+   const r=g('au-r').value;db.users.push({n,e,r,type:g('au-t').value,extra:g('au-x').value.trim(),st:'Invited',last:''});const code=n.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+(r==='partner'?'10':'5');close();S.uf='all';render();toast(`Invite sent to ${n}. Referral code ${code} is ready.`)},
+  userOff:()=>{const u=db.users.find(x=>x.e===id);u.st=u.st==='Off'?'Active':'Off';u.last=u.last||'just now';close();render();toast(u.st==='Off'?`${u.n} is signed out everywhere`:`${u.n} can sign in again`)},
   confInd:()=>{S.confInd=id;S.confSt=null;render()},
   confSt:()=>{S.confSt=S.confSt===id?null:id;render()},
   copyMsg:()=>{try{navigator.clipboard.writeText(id).then(()=>toast('Copied'),()=>toast('Copy blocked here. Select the text instead.'))}catch(_){toast('Select the text to copy')}},
@@ -1229,7 +1289,7 @@ document.addEventListener('click',e=>{
   close:()=>close(),ovc:()=>close()};
  go[a]&&go[a]();
 });
-document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='aurole'){document.getElementById('auPrev').innerHTML=auPreview(el.value)}if(el.dataset.ch==='urole'){const u=db.users.find(x=>x.e===el.dataset.id);u.r=el.value;document.getElementById('auPrev').innerHTML=auPreview(el.value);render();toast(`${u.n} is now ${URO[u.r]}`)}if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
 document.addEventListener('input',e=>{const el=e.target;if(el.id==='q'){document.getElementById('qres').innerHTML=searchRes(el.value);return}
  if(el.dataset.in==='dl'){const k=el.dataset.id;S.dl[k]=+el.value;const lb=document.getElementById('dlv-'+k);if(lb)lb.textContent=k==='amt'?(S.dl.kind==='bonus'?$(S.dl[k]):S.dl[k]+'%'):S.dl[k];dealUpdate();return}
  if(el.dataset.in==='pc'){const k=el.dataset.id;S.pc[k]=+el.value;document.getElementById('pcv-'+k).textContent=S.pc[k]+'%';document.getElementById('pcOut').innerHTML=poolBar(pool({kind:'firstpct',amt:0,months:1,plan:1500},S.pc.pct,S.pc.cust));return}
