@@ -222,6 +222,9 @@ svg.chart text{fill:var(--muted);font:500 10.5px var(--body)}
 .me:hover{border-color:var(--blue)}
 .me .av{margin:0;width:30px;height:30px}
 .wamt{display:inline-flex;align-items:center;gap:5px;font:700 13.5px var(--display);color:var(--good);font-variant-numeric:tabular-nums}
+.asbar{position:sticky;top:-8px;z-index:3;background:var(--ink);color:var(--paper);border-radius:12px;padding:8px 8px 8px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 0 0 6px var(--paper)}
+.asbar .grow{flex:1;min-width:0}
+.msg.sys .b{background:var(--paper-2);color:var(--ink-2)}
 .empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
 .pool{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--paper-2)}
 .pool i{display:block;height:100%;border-right:2px solid var(--card)}
@@ -1032,6 +1035,48 @@ function searchRes(q){
  const grp=q?[...new Set(hit.map(e=>e.kinds[0]))]:['Pinned'];
  return grp.map(g=>`<div class="qgrp">${g}</div><div class="list">${hit.filter(e=>!q||e.kinds[0]===g).slice(0,12).map(e=>{const p=prof(e.key);const dl=p.due?ago(TODAY,p.due):null;return li({icon:e.kinds.includes('Client')?'store':e.kinds.includes('Not claimed')?'pin':'users',ik:dl!=null&&dl<0?'bad':'',t:esc(e.name),m:`${PIPE[p.stage]} · ${esc(e.sub||'')}${dl!=null&&dl<0?' '+chip('Overdue','bad'):''}`,a:'p360',id:e.key})}).join('')}</div>`).join('');}
 const MSGI={Email:'inbox',Text:'chat',Call:'phone','In person':'pin',Meeting:'users',Message:'chat',Chat:'chat',Approval:'check',Edit:'doc',Report:'doc',Handoff:'brief'};
+/* ---- system messages + view as owner ---- */
+function sysMsgs(p){const out=[],add=(d,t,ch,tpl,tx,st,k,otp)=>out.push({d,t,ch,tpl,tx,st,k,otp:!!otp});const key=p.e.key;
+ if(key==='glow-lab-aesthetics'){add('2026-10-30','10:11 AM','Text','Claim code','Your Local AI Registry code is 5•••••','Failed: carrier filtered','bad',1);add('2026-10-30','10:06 AM','Text','Claim code','Your Local AI Registry code is 3•••••','Failed: carrier filtered','bad',1);add('2026-10-30','10:02 AM','Text','Claim code','Your Local AI Registry code is 9•••••','Failed: carrier filtered','bad',1);add('2026-10-30','10:01 AM','Email','Claim started','Finish claiming Glow Lab Aesthetics','Opened','good');return out}
+ if(p.stage===0&&p.n){add('2026-10-27','8:00 AM','Email','Local question alert','A local asked a question about your business','Not opened','warn');add('2026-10-20','8:00 AM','Email','Notice of Record','Your business has a public record on Local AI Registry','Opened 1x','good');return out}
+ const cd=p.l?.date||p.d?.first||p.a?.start||p.i?.due;
+ if(cd&&!p.i){add(cd,'9:14 AM','Text','Claim code','Your Local AI Registry code is 4•••••','Delivered','good',1);add(cd,'9:16 AM','Email','Claim confirmed','Your page is claimed. Here\'s what to do next.','Opened','good');
+  if(p.stage<5)add(addD(cd,1),'8:00 AM','Email','Book a walkthrough',`Pick a time with ${p.d?.rep?RP(p.d.rep).name.split(' ')[0]:'Kody'}`,p.l?.auto?.includes('opened')?'Opened 3x':'Opened','good');}
+ const mt=p.l?.meet||p.d?.meet;
+ if(p.stage>=2&&mt&&p.stage<5){add(addD(mt,-3),'8:00 AM','Email','Meeting confirmed',`Your walkthrough is on ${fd(mt)}`,'Opened','good');add(addD(mt,-1),'5:00 PM','Text','Meeting reminder',`Reminder: your Local AI Registry call is tomorrow`,'Delivered','good');}
+ if(p.stage===4)add(p.d.last,'11:30 AM','Email','Proposal ready','Your proposal from Local AI Registry','Opened 2x · clicked pricing','good');
+ db.offers.filter(o=>o.for===p.e.name).forEach(o=>add(TODAY,'9:00 AM','Text','Deal offer',`${o.name}. Ends ${fd(o.exp)}.`,'Delivered','good'));
+ if(p.a){add('2026-10-28','7:42 AM','Text','Login code','Your Local AI Registry login code is 7•••••','Delivered','good',1);
+  if(p.a.appr)add(p.a.apprOld,'9:00 AM','Text','Approval request',`${p.a.appr} drafts are waiting for your OK`,'Delivered · no action',ago(p.a.apprOld)>3?'bad':'warn');
+  add('2026-10-01','6:00 AM','Email','Monthly report','Your October report is ready','Opened','good');add('2026-10-01','6:01 AM','Email','Receipt',`Payment received: ${$(p.a.mrr)}`,'Delivered','good');}
+ if(p.i){add(p.i.due,'6:00 AM','Email','Payment failed',`We couldn't charge your card for ${$(p.i.amt)}`,'Opened','warn');add(addD(p.i.due,3),'6:00 AM','Text','Update your card','Your payment didn\'t go through. Update your card here.','Delivered','warn');if(ago(p.i.due)>30)add(addD(p.i.due,30),'6:00 AM','Email','Past due notice',`${$(p.i.amt)} is 30 days past due`,'Bounced','bad');}
+ return out;}
+function msgLog(p){const f=S.msgf||'all';const sys=sysMsgs(p);
+ const team=p.comms.map(([d,ch,dir,tx,st])=>({d,t:'',ch,dir,tx,st,team:1}));
+ let all=[...team,...sys.map(x=>({...x,dir:'out'}))].sort((a,b)=>(b.d+(b.t||'')).localeCompare(a.d+(a.t||'')));
+ const n={all:all.length,team:team.length,sys:sys.length,otp:sys.filter(x=>x.otp).length};
+ if(f==='team')all=all.filter(x=>x.team);if(f==='sys')all=all.filter(x=>!x.team);if(f==='otp')all=all.filter(x=>x.otp);
+ const row=x=>x.team?`<div class="msg ${x.dir}"><span class="b">${ic(MSGI[x.ch]||'chat')}</span><div style="min-width:0"><div class="h"><b style="color:var(--ink-2)">${esc(x.ch)}</b><span>${x.dir==='in'?'from them':'from our team'}</span><span>· ${fd(x.d)}</span>${x.st?chip(esc(x.st),/Opened|Read|Held|Reply|Delivered|Connected/.test(x.st)?'good':/Unpaid|waiting/.test(x.st)?'warn':''):''}</div><div style="margin-top:2px">${esc(x.tx)}</div></div></div>`
+  :`<div class="msg sys"><span class="b">${ic(x.otp?'key':x.ch==='Text'?'chat':'inbox')}</span><div style="min-width:0"><div class="h"><b style="color:var(--ink-2)">${esc(x.ch)}</b>${chip('Auto','blue')}<span>${esc(x.tpl)}</span><span>· ${fd(x.d)} ${x.t}</span></div><div style="margin-top:2px">${esc(x.tx)}</div><div class="row" style="margin-top:5px">${chip(esc(x.st),x.k)}${x.k==='bad'||x.otp?`<button class="btn sm" data-a="toast" data-id="${x.otp?'New code sent by '+(x.k==='bad'?'email instead':'text'):'Resent'}">${x.k==='bad'?(x.otp?'Send code by email':'Resend'):'Resend code'}</button>`:''}</div></div></div>`;
+ return `<div class="sec">${lbl('Every message, team and system',`${n.all}`)}<div class="seg">${[['all','All',n.all],['team','Team',n.team],['sys','System',n.sys],['otp','Codes',n.otp]].map(([k,l,c])=>`<button data-a="msgf" data-id="${k}" aria-pressed="${f===k}">${l} ${c}</button>`).join('')}</div><div class="card">${all.length?all.map(row).join(''):'<div class="empty">Nothing here yet.</div>'}</div><div class="xs muted">Codes are masked. System messages are everything the platform sends on its own: claim codes, login codes, reminders, reports, receipts, offers.</div></div>`;}
+function canViewAs(p){return p.stage>=1}
+function ownerName(p){const pp=p.r.people?.[0]?.[0];return p.a?.owner||(pp&&pp!=='Owner'?pp:'the owner')}
+SH.asOwner=({id})=>{const p=prof(id);const o=S.otab||'dash';const who=ownerName(p);
+ const tabs=[['dash','Dashboard'],['inbox','Inbox'],['premium','Premium'],['billing','Billing'],['settings','Settings']];
+ const steps=['Basics','Services','Pick 3 known for','Team','Links','Verify with Google'];const done=p.a?6:Math.min(4,p.stage+1);
+ const sys=sysMsgs(p).filter(x=>!x.otp);
+ const act=t=>`data-a="toast" data-id="${esc(t)} Logged as Steve acting for ${esc(who)}."`;
+ const body={
+  dash:`<div class="card stack"><div class="row sp"><b>Finish your page</b><span class="small muted">${done} of 6</span></div>${meter(done/6*100,done===6?'good':'')}<div class="list">${steps.map((s2,k)=>li({icon:k<done?'check':'plus',ik:k<done?'good':'',t:s2,m:k<done?'Done':'Not done yet',chev:false})).join('')}</div></div>
+   <div class="kpis">${kpi('AI Score',(p.r.ai??58)+' / 100',p.a?'+6 this month':'Claim and confirm to raise it',p.a?'good':'warn')}${kpi('Questions from locals',p.a?2:1,'1 unanswered','warn')}</div>
+   ${p.a?`<div class="card stack"><b>Make sure AI shows your correct info</b><div class="small">Add the "Verified on Local AI Registry" badge and the code snippet to your website.</div><button class="btn sm" ${act('Badge code copied.')}>Copy badge code</button></div>`:`<div class="card stack"><b>Kody invited you to a 30-minute walkthrough</b><div class="small">See what AI says about you and how to fix it.</div><button class="btn pri sm" ${act('Walkthrough booked for Tue 10 AM.')}>Pick a time</button></div>`}`,
+  inbox:`<div class="list">${li({icon:'chat',ik:'warn',t:'Question: "Do you take walk-ins on Saturdays?"',m:'From a local · 2 days ago · unanswered',chev:false})}${li({icon:'pin',t:'Booking request: Thu afternoon',m:'From a visitor · 4 days ago',chev:false})}</div><div class="lbl">From Local AI Registry</div><div class="list">${sys.map(x=>li({icon:x.ch==='Text'?'chat':'inbox',t:esc(x.tx),m:`${x.ch} · ${fd(x.d)}`,chev:false})).join('')||'<div class="empty">No messages</div>'}</div>`,
+  premium:p.a?`<div class="sub">${p.a.appr?`${p.a.appr} drafts waiting for ${esc(who)}'s OK.`:'Nothing waiting for approval.'}</div><div class="list">${Array.from({length:p.a.appr||0},(_,k)=>`<div class="li" style="display:grid;gap:8px"><b>${['Google post: Morpheus8 is here','Google post: holiday hours','Review reply to Jen M.'][k%3]}</b><span class="small muted">Drafted by Caron · ${fd(p.a.apprOld)}</span><span class="row"><button class="btn sm pri" ${act('Approved.')}>Approve</button><button class="btn sm" ${act('Opened editor.')}>Edit</button></span></div>`).join('')}</div>`:`<div class="card stack"><b>Premium is locked</b><div class="small">Upgrade to have LAIR do the work. You only approve.</div><div class="row">${PLANS.map(([v,n])=>chip(`${n} ${$(v)}/mo`)).join('')}</div></div>`,
+  billing:p.a||p.i?`${p.i?`<div class="warnbox bad">Payment failed. ${$(p.i.amt)} is ${ago(p.i.due)} days past due.</div>`:''}<div class="card"><dl class="facts"><dt>Plan</dt><dd>${p.a?p.a.tier+' · '+$(p.a.mrr)+'/mo':'Paid plan'}</dd><dt>Card</dt><dd>Visa ending 4242</dd><dt>Next bill</dt><dd>Nov 1</dd></dl></div><button class="btn" ${act('Card update link texted to the owner. Card numbers can only be entered by them.')}>Send card update link</button>`:`<div class="card">Free plan. No card on file.</div>`,
+  settings:`<div class="list">${li({icon:'link',t:'Google Business Profile',m:p.a?'Connected':'Not connected',chev:false})}${li({icon:'doc',t:'Download their data',m:'Zip of page, posts and reports',a:'toast',id:'Export started. Link goes to the owner\'s email.',chev:false})}${li({icon:'alert',ik:'bad',t:'Delete account',m:'Only the owner can do this. Send them the delete link instead.',a:'toast',id:'Delete link sent to the owner.',chev:false})}</div>`};
+ return `<div class="asbar"><span class="grow small">Viewing as <b>${esc(p.e.name)}</b> · ${esc(who)}</span><button class="btn sm" data-a="p360" data-id="${id}">Exit</button></div>
+ <div class="seg">${tabs.map(([k,l])=>`<button data-a="otab" data-id="${id}|${k}" aria-pressed="${o===k}">${l}</button>`).join('')}</div>${body[o]}
+ <div class="xs muted">Everything you do here is logged as you, acting for the owner. You can't enter passwords or card numbers for them.</div>`;};
 SH.search=()=>`<div class="qin row" style="flex-wrap:nowrap"><input id="q" type="search" placeholder="Business, person, city or phone" aria-label="Search every business" autocomplete="off"><button class="btn ghost" data-a="close">Close</button></div><div id="qres">${searchRes('')}</div>`;
 SH.p360=({id})=>{const p=prof(id);if(!p)return '<div class="empty">Not found</div>';const r=p.r;
  const since=p.last?ago(p.last):null;const left=p.due?ago(TODAY,p.due):null;
@@ -1042,9 +1087,9 @@ SH.p360=({id})=>{const p=prof(id);if(!p)return '<div class="empty">Not found</di
  <div class="pipe">${PIPE.map((s,k)=>`<div class="${k<p.stage?'on':''} ${k===p.stage?'cur':''}"><i></i>${s}</div>`).join('')}</div>
  <div class="clocks"><div class="clock ${sk}"><div class="xs muted">Since we last talked</div><div class="n">${since==null?'Never':since===0?'Today':since+'<small> days</small>'}</div><div class="w">${p.last?fd(p.last)+' · '+esc(p.comms[0][1]):'No contact yet'}</div></div>
   <div class="clock ${lk}"><div class="xs muted">${left!=null&&left<0?'Overdue':'Time left'}</div><div class="n">${left==null?'No clock':left<0?-left+'<small> days late</small>':left===0?'Today':left+'<small> days</small>'}</div><div class="w">${esc(p.next)}${p.due?' · by '+fd(p.due):''}</div></div></div>
- <div class="row"><button class="btn pri sm" data-a="toast" data-id="Text to ${esc(p.e.name)} logged">${ic('chat',16)}Text</button><button class="btn sm" data-a="toast" data-id="Email draft opened">${ic('inbox',16)}Email</button><button class="btn sm" data-a="toast" data-id="Booking link sent">${ic('phone',16)}Book meeting</button><button class="btn sm" data-a="toast" data-id="Note saved to timeline">${ic('plus',16)}Note</button></div>
+ <div class="row"><button class="btn pri sm" data-a="toast" data-id="Text to ${esc(p.e.name)} logged">${ic('chat',16)}Text</button><button class="btn sm" data-a="toast" data-id="Email draft opened">${ic('inbox',16)}Email</button><button class="btn sm" data-a="toast" data-id="Booking link sent">${ic('phone',16)}Book meeting</button><button class="btn sm" data-a="toast" data-id="Note saved to timeline">${ic('plus',16)}Note</button>${canViewAs(p)?`<button class="btn sm ink" data-a="asOwner" data-id="${p.e.key}">${ic('eye',16)}View as owner</button>`:`<span class="xs muted">Not claimed yet, so there's no owner view.</span>`}</div>
  <div class="sec">${lbl('Where we met')}<div class="card"><b>${esc(p.met[0])}</b>${p.met[2]?` · <span class="muted">${fd(p.met[2])}</span>`:''}<div class="small" style="margin-top:4px">${esc(p.met[1])}</div></div></div>
- <div class="sec">${lbl('Every text, email and call',`${p.comms.length}`)}<div class="card">${p.comms.length?p.comms.map(([dt,ch,dir,tx,st])=>`<div class="msg ${dir}"><span class="b">${ic(MSGI[ch]||'chat')}</span><div style="min-width:0"><div class="h"><b style="color:var(--ink-2)">${esc(ch)}</b><span>${dir==='in'?'from them':'from us'}</span><span>· ${fd(dt)}</span>${st?chip(esc(st),/Opened|Read|Held|Reply|Delivered|Connected/.test(st)?'good':/Unpaid|waiting/.test(st)?'warn':''):''}</div><div style="margin-top:2px">${esc(tx)}</div></div></div>`).join(''):'<div class="empty">Nothing sent yet.</div>'}</div></div>
+ ${msgLog(p)}
  <div class="sec">${lbl('Who they are',r.type?'<span class="xs muted" style="text-transform:none;letter-spacing:0">Enriched by Clay · sample</span>':`<button data-a="toast" data-id="Clay enrichment started. Fields fill in about a minute.">Enrich with Clay</button>`)}<div class="card"><dl class="facts">${facts.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div></div>
  ${r.people?`<div class="sec">${lbl('People')}<div class="card">${r.people.map(([n2,role,note])=>`<div class="person"><span class="av">${esc(n2.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase())}</span><div><b>${esc(n2)}</b> <span class="small muted">${esc(role)}</span><div class="small">${esc(note)}</div></div></div>`).join('')}</div></div>`:''}
  ${r.news?`<div class="sec">${lbl('News and activity')}<div class="list">${r.news.map(([dt,tx,src])=>li({icon:'eye',t:esc(tx),m:`${dt} · ${src}`})).join('')}</div></div>`:''}
@@ -1091,7 +1136,7 @@ function render(){
  document.getElementById('main').innerHTML=(V[S.role+'_'+tab()]||(()=>''))();
  renderSheet();
 }
-function renderSheet(){const el=document.getElementById('sheet');if(!S.sheet){el.innerHTML='';return}el.innerHTML=`<div class="ov" data-a="ovc"><div class="sh ${['search','p360','wallet'].includes(S.sheet.k)?'full':''}" role="dialog" aria-modal="true"><div class="grab"></div>${SH[S.sheet.k](S.sheet)}</div></div>`}
+function renderSheet(){const el=document.getElementById('sheet');if(!S.sheet){el.innerHTML='';return}el.innerHTML=`<div class="ov" data-a="ovc"><div class="sh ${['search','p360','wallet','asOwner'].includes(S.sheet.k)?'full':''}" role="dialog" aria-modal="true"><div class="grab"></div>${SH[S.sheet.k](S.sheet)}</div></div>`}
 let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,2800)}
 function open(k,id){S.sheet={k,id};renderSheet()}
 function close(){S.sheet=null;S.vstep=0;renderSheet()}
@@ -1138,8 +1183,11 @@ document.addEventListener('click',e=>{
   copyMsg:()=>{try{navigator.clipboard.writeText(id).then(()=>toast('Copied'),()=>toast('Copy blocked here. Select the text instead.'))}catch(_){toast('Select the text to copy')}},
   wallet:()=>{open('wallet','');const sh=document.querySelector('.sh');if(sh)sh.scrollTop=0},
   walletGo:()=>{const[r2,t2]=id.split('|');close();S.role=r2;S.tab[r2]=t2;S.detail=null;render();window.scrollTo(0,0)},
+  msgf:()=>{S.msgf=id;const sh=document.querySelector('.sh'),y=sh?sh.scrollTop:0;renderSheet();const s2=document.querySelector('.sh');if(s2)s2.scrollTop=y},
+  asOwner:()=>{S.otab='dash';open('asOwner',id)},
+  otab:()=>{const[k,t]=id.split('|');S.otab=t;open('asOwner',k)},
   search:()=>{open('search','');setTimeout(()=>document.getElementById('q')?.focus(),40)},
-  p360:()=>{open('p360',id);const s=document.querySelector('.sh');if(s)s.scrollTop=0},
+  p360:()=>{S.msgf='all';open('p360',id);const s=document.querySelector('.sh');if(s)s.scrollTop=0},
   close:()=>close(),ovc:()=>close()};
  go[a]&&go[a]();
 });
