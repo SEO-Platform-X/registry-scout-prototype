@@ -225,6 +225,9 @@ svg.chart text{fill:var(--muted);font:500 10.5px var(--body)}
 .asbar{position:sticky;top:-8px;z-index:3;background:var(--ink);color:var(--paper);border-radius:12px;padding:8px 8px 8px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 0 0 6px var(--paper)}
 .asbar .grow{flex:1;min-width:0}
 .msg.sys .b{background:var(--paper-2);color:var(--ink-2)}
+.tile.c1{background:color-mix(in srgb,var(--blue) 45%,var(--card));color:#fff}
+.tile.c2{background:var(--blue);color:#fff}
+.tile sup{font-size:8px;margin-left:1px}
 .empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
 .pool{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--paper-2)}
 .pool i{display:block;height:100%;border-right:2px solid var(--card)}
@@ -887,9 +890,42 @@ const OPPS={
  press:[['Reporter wants experts on how AI assistants pick local businesses','Qwoted · national business outlet','Due Nov 2','Steve as the AI search expert','bad'],['Med spa trade publication: 2027 marketing trends roundup','Press Ranger','Due Nov 6','Quote on AI search for med spas','warn'],['Podcast guest slot: local SEO in the AI era','Qwoted','Due Nov 10','30-minute interview',''],['Data story: "What AI gets wrong about local businesses"','Pitch from LAIR\'s own stat sheet','Anytime','Exclusive to one outlet first',''],['The Silicon Review profile article','Paid placement, agreed in August','Publishing end of November','Confirmed','good']],
  conf:[['MJBizCon','Las Vegas · cannabis dispensary owners','Dec 1 to 4, 2026','Walk the floor with 2 reps. Dispensaries are a proven vertical.','bad'],['Vegas Cosmetic Surgery & Aesthetic Dermatology','Las Vegas · plastic surgeons','Spring 2027 · check date','Top pick for the plastic surgeon focus. Book a dinner, not a booth.','warn'],['AmSpa Medical Spa Show','Med spa owners','2027 · check date','Owners, not injectors. Best room for the free claim pitch.',''],['The Aesthetic Show','Las Vegas · injectors and owners','Listed from Jul 8, 2027','Big floor. Send reps with the one-pager.','']],
  ideas:[['Botox and bubbly nights with partner med spas','Kerrie runs them, reps sign up attendees\' practices','Med','High'],['AI Local Accuracy Report','Flagship data story, pitched to journalists and AI researchers','High','High'],['Notice of Record mailers to new business filers','Already working by email. Test a printed version.','Low','Med'],['Doctor faces landing pages','KOLs who trusted the team, each with their approval','Med','High'],['Wikidata + Crunchbase entity push','Makes LAIR itself easier for AI to cite','Low','Med'],['"What AI says about you" live audits on Instagram','Run 3 audits on camera per week','Low','Med']]};
+const CONFS=[
+ {n:'MJBizCon',ind:['Dispensaries'],city:'Las Vegas, NV',st:'NV',s:'2026-12-01',e:'2026-12-04',ok:1,note:'Biggest room of dispensary owners. Walk the floor with 2 reps.'},
+ {n:'VMX',ind:['Vets'],city:'Orlando, FL',st:'FL',s:'2027-01-16',e:'2027-01-20',ok:1,note:'Largest vet show. Practice owners and managers.'},
+ {n:'Chicago Midwinter Meeting',ind:['Dentists'],city:'Chicago, IL',st:'IL',s:'2027-02-25',e:'2027-02-27',ok:1,note:'Big Midwest dental crowd. Illinois has no rep yet, so pair it with recruiting.'},
+ {n:'WVC Vegas',ind:['Vets'],city:'Las Vegas, NV',st:'NV',s:'2027-02-28',e:'2027-03-03',ok:1,note:'Second big vet show. Pick VMX or WVC, not both.'},
+ {n:'Hinman Dental Meeting',ind:['Dentists'],city:'Atlanta, GA',st:'GA',when:'March 2027',ok:0,note:'Southeast dentists. Date not confirmed yet.'},
+ {n:'AAD Annual Meeting',ind:['Dermatology','Med spas'],city:'San Francisco, CA',st:'CA',s:'2027-03-19',e:'2027-03-23',ok:1,note:'Dermatologists, many with cosmetic practices.'},
+ {n:'The Aesthetic Meeting',ind:['Plastic surgeons'],city:'Miami Beach, FL',st:'FL',s:'2027-04-15',e:'2027-04-18',ok:1,note:'The Aesthetic Society\'s main show. Top pick for plastic surgeons.'},
+ {n:'AmSpa Medical Spa Show',ind:['Med spas'],city:'Venue not announced (2026 was Las Vegas)',st:'NV',s:'2027-04-15',e:'2027-04-18',ok:1,venue:0,note:'Med spa owners, not just injectors. Best room for the free claim pitch.'},
+ {n:'Vegas Cosmetic Surgery & Aesthetic Dermatology',ind:['Plastic surgeons','Dermatology'],city:'Las Vegas, NV',st:'NV',when:'Spring 2027',ok:0,note:'Surgeons and derms. Book a dinner, not a booth.'},
+ {n:'Vision Expo',ind:['Eye care'],city:'Orlando, FL',st:'FL',when:'2027',ok:0,note:'Optometry and optical. Date not confirmed yet.'},
+ {n:'The Aesthetic Show',ind:['Med spas'],city:'Las Vegas, NV',st:'NV',s:'2027-07-08',e:'',ok:1,note:'Big floor of injectors and owners. Send reps with the one-pager.'},
+ {n:'WVC Nashville',ind:['Vets'],city:'Nashville, TN',st:'TN',s:'2027-08-21',e:'2027-08-24',ok:1,note:'Smaller vet show. Good for a regional rep push.'}];
+const CIND=['Dispensaries','Vets','Dentists','Plastic surgeons','Med spas','Dermatology','Eye care'];
+function confRange(c){if(!c.s)return c.when;const a=D(c.s);if(!c.e)return `From ${fd(c.s)}, ${a.getFullYear()}`;const b=D(c.e);return a.getMonth()===b.getMonth()?`${MON[a.getMonth()]} ${a.getDate()} to ${b.getDate()}, ${b.getFullYear()}`:`${fd(c.s)} to ${fd(c.e)}, ${b.getFullYear()}`}
+function confView(){
+ const ind=S.confInd||'all',st=S.confSt||null;
+ const byInd=CONFS.filter(c=>ind==='all'||c.ind.includes(ind));
+ const cnt={};byInd.forEach(c=>cnt[c.st]=(cnt[c.st]||0)+1);
+ const list=byInd.filter(c=>!st||c.st===st).sort((a,b)=>(a.s||'2099').localeCompare(b.s||'2099'));
+ const clash=c=>c.s&&list.find(o=>o!==c&&o.s&&o.s<= (c.e||c.s)&&(o.e||o.s)>=c.s);
+ return `<div class="sub">Where our customers gather. Tap an industry, then a state.</div>
+ <div class="seg">${[['all','All'],...CIND.map(x=>[x,x])].map(([k,l])=>`<button data-a="confInd" data-id="${k}" aria-pressed="${ind===k}">${l}</button>`).join('')}</div>
+ <div class="card"><div class="tm">${TILES.map(t=>{const n=cnt[t.st]||0;return `<button class="tile ${n>1?'c2':n?'c1':''} ${st===t.st?'sel':''}" style="grid-column:${t.x+1};grid-row:${t.y+1}" data-a="confSt" data-id="${t.st}" aria-label="${t.st}, ${n} conferences">${t.st}${n?`<sup>${n}</sup>`:''}</button>`}).join('')}</div>
+ <div class="leg" style="margin-top:12px"><span><i class="sw" style="background:color-mix(in srgb,var(--blue) 45%,var(--card))"></i>1 conference</span><span><i class="sw" style="background:var(--blue)"></i>2 or more</span>${st?`<button class="btn ghost" data-a="confSt" data-id="${st}">Show all states</button>`:''}</div></div>
+ ${lbl(`${list.length} conference${list.length===1?'':'s'}${st?' in '+st:''}${ind!=='all'?' · '+ind:''}`)}
+ <div class="list">${list.map(c=>{const away=c.s?ago(TODAY,c.s):null;const cl=clash(c);return `<div class="li" style="display:grid;gap:6px"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><b>${esc(c.n)}</b>${chip(esc(confRange(c)),c.ok?(away!=null&&away<45?'bad':'good'):'warn')}</span>
+  <span class="small muted">${esc(c.city)}${away!=null?` · ${away} days away`:''}</span>
+  <span class="row">${c.ind.map(x=>chip(x,'blue')).join('')}${c.ok?(c.venue===0?chip('Venue not announced','warn'):''):chip('Check date','warn')}${cl?chip('Same week as '+esc(cl.n),'warn'):''}</span>
+  <span class="small">${esc(c.note)}</span>
+  <span class="row"><button class="btn sm pri" data-a="toast" data-id="${esc(c.n)} added to the events calendar">Plan it</button><button class="btn sm" data-a="toast" data-id="Asked Kerrie to price ${esc(c.n)}">Get pricing</button><button class="btn sm" data-a="toast" data-id="Rep sign-up opened for ${esc(c.n)}">Send reps</button></span></div>`}).join('')||'<div class="empty">No conferences here yet for this industry.</div>'}</div>
+ <div class="xs muted">Dates come from each organizer's site or event listings. "Check date" means it isn't confirmed yet.</div>`;}
 V.mkt_opps=()=>{const sg=S.oppSeg;
  const seg=`<div class="seg">${[['press','Press'],['conf','Conferences'],['ideas','Ideas']].map(([k,l])=>`<button data-a="oppSeg" data-id="${k}" aria-pressed="${sg===k}">${l}</button>`).join('')}</div>`;
  if(sg==='ideas')return seg+`<div class="sub">Ranked by impact for the effort.</div><div class="list">${OPPS.ideas.map(([t,m,e,i])=>li({icon:'bulb',ik:i==='High'?'good':'',t:esc(t),m:`${esc(m)}<br>${chip('Effort: '+e)} ${chip('Impact: '+i,i==='High'?'good':'')}`,a:'toast',id:'Added to the marketing plan'})).join('')}</div>`;
+ if(sg==='conf')return seg+confView();
  const L=OPPS[sg];
  return seg+`<div class="sub">${sg==='press'?'Open requests from Qwoted and Press Ranger, plus pitches we own. Sample requests.':'Where our buyers gather. Dates marked "check date" are not confirmed yet.'}</div>
  <div class="list">${L.map(([t,src,when,why,k])=>`<div class="li" style="display:grid;gap:6px"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><b>${esc(t)}</b>${chip(esc(when),k)}</span><span class="small muted">${esc(src)}</span><span class="small">${esc(why)}</span><span class="row"><button class="btn sm ${k==='bad'?'pri':''}" data-a="toast" data-id="${sg==='press'?'Pitch outline added for Steve to review':'Added to the events calendar'}">${sg==='press'?'Draft pitch':'Plan it'}</button></span></div>`).join('')}</div>`;};
@@ -1180,6 +1216,8 @@ document.addEventListener('click',e=>{
   newCode:()=>{S.pc={who:'',pct:10,cust:0};open('newCode','')},
   saveCode:()=>{const who=document.getElementById('pc-who').value.trim();if(!who){document.getElementById('pc-who').focus();toast('Add the partner\'s name');return}const code=who.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+S.pc.pct;db.pcodes.push({code,who,role:document.getElementById('pc-role').value.trim()||'Partner',pct:S.pc.pct,cust:S.pc.cust,refs:0,paying:0,mrr:0});close();render();toast('Code '+code+' created. Partner portal invite sent.')},
   oppSeg:()=>{S.oppSeg=id;render()},
+  confInd:()=>{S.confInd=id;S.confSt=null;render()},
+  confSt:()=>{S.confSt=S.confSt===id?null:id;render()},
   copyMsg:()=>{try{navigator.clipboard.writeText(id).then(()=>toast('Copied'),()=>toast('Copy blocked here. Select the text instead.'))}catch(_){toast('Select the text to copy')}},
   wallet:()=>{open('wallet','');const sh=document.querySelector('.sh');if(sh)sh.scrollTop=0},
   walletGo:()=>{const[r2,t2]=id.split('|');close();S.role=r2;S.tab[r2]=t2;S.detail=null;render();window.scrollTo(0,0)},
