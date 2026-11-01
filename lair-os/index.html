@@ -231,6 +231,26 @@ svg.chart text{fill:var(--muted);font:500 10.5px var(--body)}
 .cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .cgrid span{background:var(--paper-2);border-radius:10px;padding:7px 6px;font-size:11px;color:var(--muted);text-align:center;display:grid;line-height:1.25}
 .cgrid b{font:800 15px var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
+.pv2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pv{background:#0B1A2E;color:#fff;border-radius:8px;padding:10px;display:flex;gap:8px;font-family:var(--body);line-height:1.2;min-width:0;text-align:left}
+.pv b{font:700 12.5px var(--display);display:block}.pv span{font-size:10px;display:block;opacity:.85}.pv .tiny{font-size:8.5px;letter-spacing:.06em;opacity:.7;margin-top:4px}
+.card-f{aspect-ratio:1.75;flex-direction:column;justify-content:space-between}.card-b{aspect-ratio:1.75;background:#fff;color:#0B1A2E;border:1px solid #d8d2c3;align-items:center;justify-content:space-between}
+.post{background:#F4F1EA;color:#0B1A2E;border:1px solid #d8d2c3;align-items:center;justify-content:space-between}.post b{font-size:14px}
+.tent{flex-direction:column;align-items:center;text-align:center;background:#1F4FE0}.tent svg{border-radius:4px}
+.one{flex-direction:column;background:#fff;color:#0B1A2E;border:1px solid #d8d2c3;aspect-ratio:.8;max-width:160px;margin:0 auto}.one i{display:block;height:5px;border-radius:3px;background:#E7EDFC;width:100%}
+.shirt{background:transparent;justify-content:center}.stick{background:transparent;justify-content:center}.stick>div{width:110px;height:110px;border-radius:50%;background:#1F4FE0;display:grid;place-items:center;align-content:center;text-align:center;gap:2px}
+.banner{background:#1F4FE0;flex-direction:column;align-items:center;text-align:center;padding:14px}.banner b{font-size:17px}
+.kitgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kitem{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:8px;display:grid;gap:6px;text-align:left;align-content:start}
+.kitem:hover{border-color:var(--blue)}.kitem>b{font-size:14px}.kitem>span{font-size:12px;color:var(--muted)}
+.pubpg{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:16px;display:grid;gap:12px}
+.stephd{display:flex;align-items:center;gap:10px;font:700 18px var(--display)}.stephd span{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:14px;flex:0 0 auto}
+.cmp3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.cmp3>div{border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:1px;font-size:12px;background:var(--card);min-width:0}
+.cmp3>div.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}.cmp3 b{font:800 15px var(--display)}.cmp3 small{color:var(--muted);font-size:10.5px;margin-bottom:4px}.cmp3 .chip{white-space:normal;font-size:10.5px}
+.bigpick{display:flex;gap:14px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:16px;width:100%}
+.bigpick:hover{border-color:var(--blue)}.bigpick b{font:700 17px var(--display);display:block}.bigpick span span{font-size:14px;color:var(--ink-2)}
+details>summary{cursor:pointer;list-style:none}details>summary::-webkit-details-marker{display:none}details>summary::after{content:" ▾";color:var(--muted)}
+.easy .main{font-size:16.5px}.easy .small{font-size:15px}.easy .xs{font-size:13px}.easy .btn{padding:12px 16px;font-size:15.5px}.easy .btn.sm{padding:9px 13px;font-size:14.5px}.easy .hello{font-size:38px}.easy .tb{font-size:12.5px}
 .empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
 .pool{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--paper-2)}
 .pool i{display:block;height:100%;border-right:2px solid var(--card)}
@@ -369,15 +389,15 @@ const ROLES=[
  {id:'partner',k:'Referral partner',person:'Dana Reyes',ini:'DR',title:'Partner portal · code DANA15',first:'Dana'}];
 const TABS={
  spec:[['today','Today','home'],['accts','Accounts','brief'],['work','Work','tool'],['wallet','Wallet','wallet'],['store','Profile','store']],
- rep:[['go','Go','bolt'],['leads','Leads','users'],['earn','Earnings','wallet'],['ranks','Ranks','trophy']],
+ rep:[['go','Go','bolt'],['leads','Leads','users'],['earn','Earnings','wallet'],['ranks','Ranks','trophy'],['kit','My kit','store']],
  rsm:[['make','Make deal','bolt'],['pulse','Pulse','gauge'],['deals','Pipeline','funnel'],['map','Map','map'],['reps','Reps','users'],['tips','Coach','bulb']],
  cfo:[['margin','Margin','gauge'],['collect','Collect','alert'],['pay','Pay out','send'],['fore','Forecast','chart']],
  cto:[['health','Health','gauge'],['funnel','Funnel','funnel'],['insights','Insights','bulb'],['ship','Build','ship']],
  god:[['over','Overview','eye'],['fore','Forecast','sliders'],['alerts','Alerts','alert'],['team','People','users']],
- mkt:[['mql','MQLs','funnel'],['opps','Opportunities','bulb'],['camp','Campaigns','chart'],['send','New send','send']],
+ mkt:[['mql','MQLs','funnel'],['opps','Opportunities','bulb'],['camp','Campaigns','chart'],['send','New send','send'],['brand','Print','ship']],
  cs:[['queue','Queue','inbox'],['watch','Provider watch','eye'],['look','Look up','search'],['macros','Macros','book']],
- people:[['shows','Shows','map'],['plan','Plan','brief'],['travel','Travel','send'],['team','Team','users']],
- partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pshare','Share','send'],['pgrow','Go full time','trophy']]};
+ people:[['phome','Home','home'],['shows','Shows','map'],['plan','Plan','brief'],['invite','Invite','send'],['team','Team','users']],
+ partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pshare','Share','send'],['kit','My kit','store'],['pgrow','Go full time','trophy']]};
 
 /* ================= data (sample) ================= */
 const W8=[['technical','Technical fixes'],['llms','llms.txt'],['cannibal','Cannibalization'],['topical','Topical map'],['crawl','Crawl budget'],['schema','Schema'],['onsite','Articles & blogs'],['offpage','Backlinks']];
@@ -430,12 +450,12 @@ function seed(){return {
   {id:'k6',name:'Canyon Lake Vet',stage:'closed',date:'2026-09-21',auto:'Paid · Trust',closer:'hand',plan:1500},
   {id:'k7',name:'Corona Laser Clinic',stage:'closed',date:'2026-08-30',auto:'Paid · Fix',closer:'self',plan:500}],
  reps:[
-  {id:'kody',name:'Kody Muffoletto',city:'Riverside, CA',st:'CA',visits:58,claims:7,t2m:1.6,mtgOut:6,show:82,closes:3,mrr:5000},
-  {id:'mari',name:'Marisol Vega',city:'San Diego, CA',st:'CA',visits:44,claims:5,t2m:3.4,mtgOut:9,show:71,closes:2,mrr:3000},
+  {id:'kody',name:'Kody Muffoletto',city:'Riverside, CA',st:'CA',visits:58,claims:7,t2m:1.6,mtgOut:6,show:82,closes:1,mrr:3000},
+  {id:'mari',name:'Marisol Vega',city:'San Diego, CA',st:'CA',visits:44,claims:5,t2m:3.4,mtgOut:9,show:71,closes:0,mrr:0},
   {id:'derek',name:'Derek Thompson',city:'Phoenix, AZ',st:'AZ',visits:21,claims:1,t2m:8.5,mtgOut:14,show:50,closes:0,mrr:0},
-  {id:'aal',name:'Aaliyah Brooks',city:'Miami, FL',st:'FL',visits:63,claims:9,t2m:1.2,mtgOut:4,show:88,closes:4,mrr:7500},
+  {id:'aal',name:'Aaliyah Brooks',city:'Miami, FL',st:'FL',visits:63,claims:9,t2m:1.2,mtgOut:4,show:88,closes:1,mrr:1500},
   {id:'sam',name:'Sam Patel',city:'Dallas, TX',st:'TX',visits:38,claims:3,t2m:5.1,mtgOut:11,show:64,closes:1,mrr:1500},
-  {id:'jor',name:'Jordan Kim',city:'Seattle, WA',st:'WA',visits:40,claims:4,t2m:2.2,mtgOut:7,show:75,closes:2,mrr:4500},
+  {id:'jor',name:'Jordan Kim',city:'Seattle, WA',st:'WA',visits:40,claims:4,t2m:2.2,mtgOut:7,show:75,closes:0,mrr:0},
   {id:'tony',name:'Tony Russo',city:'New York, NY',st:'NY',visits:29,claims:2,t2m:6.8,mtgOut:13,show:58,closes:0,mrr:0}],
  deals:[
   {id:'d1',name:'Dermatex Hair Replacement',rep:'kody',st:'CA',first:'2026-10-14',meet:'2026-10-28',stage:'Proposal',val:3000,last:'2026-10-21'},
@@ -472,8 +492,8 @@ function seed(){return {
   {id:'T-417',who:'Commonwealth Eye Surgery',kind:'Wrong doctor name in replies',cat:'Paid client',ch:'Email',hrs:26,txt:'Two review replies use the wrong doctor. Can you fix today?',routed:'Caron Cooper'},
   {id:'T-412',who:'Sunset Skin Co.',kind:'Where is my report?',cat:'Paid client',ch:'Email',hrs:52,txt:'I never got October\'s report.',routed:'Specialist B'}],
  offers:[
-  {id:'o1',name:'October flash: 50% off month 1',kind:'firstpct',amt:50,months:1,min:0,exp:'2026-10-31',plan:'Any plan',planN:1500,for:'Everyone',used:7,cap:20},
-  {id:'o2',name:'Founding 20: 20% off for life',kind:'life',amt:20,months:0,min:0,exp:'2026-11-15',plan:'Trust and up',planN:1500,for:'Everyone',used:12,cap:20},
+  {id:'o1',name:'October flash: 50% off month 1',kind:'firstpct',amt:50,months:1,min:0,exp:'2026-10-31',plan:'Any plan',planN:1500,for:'Everyone',used:2,cap:20},
+  {id:'o2',name:'Founding 20: 20% off for life',kind:'life',amt:20,months:0,min:0,exp:'2026-11-15',plan:'Trust and up',planN:1500,for:'Everyone',used:1,cap:20},
   {id:'o3',name:'Dermatex: first month free, 6-month minimum',kind:'free',amt:100,months:1,min:6,exp:'2026-11-03',plan:'Authority',planN:3000,for:'Dermatex Hair Replacement',used:0,cap:1}],
  pcodes:[
   {code:'DANA15',who:'Dana Reyes',role:'Med spa consultant',pct:15,cust:0,refs:6,paying:3,mrr:6000},
@@ -548,9 +568,9 @@ V.spec_wallet=()=>{
  const mo=db.accts.reduce((s,a)=>s+a.mrr*SHARE,0);
  const fc=[mo,mo+1050,mo+1050,mo+1575];
  return `<div class="card blue"><div class="muted small">Next payout · Nov 1</div><div class="big-n" style="margin-top:4px">${$(mo)}</div><div class="muted small" style="margin-top:6px">${db.accts.length} accounts at 35% of each retainer</div></div>
- <div class="kpis">${kpi('Paid this year',$(52880),'Jan to Oct')}${kpi('Referral bonuses',$(1000),'2 paid, 1 pending','good')}</div>
+ <div class="kpis">${kpi('Paid this year',$(52880),'Jan to Oct')}${kpi('Referral earnings',$(75)+'/mo','1 paying, 1 in progress','good')}</div>
  <div class="sec">${lbl('Forecast if every account stays')}<div class="card">${cols(fc,['Nov','Dec','Jan','Feb'],1)}<div class="xs muted" style="margin-top:8px">Dec adds NutriChem's full month. Feb assumes one referral closes.</div></div></div>
- <div class="sec">${lbl('Your referral link')}<div class="card stack"><div class="small">Send this to any business. You get $500 when they stay 60 days on a paid plan.</div><div class="row"><input id="reflink" readonly value="localairegistry.com/r/caron"><button class="btn sm" data-a="copy" data-id="localairegistry.com/r/caron">Copy</button></div></div></div>
+ <div class="sec">${lbl('Your referral link')}<div class="card stack"><div class="small">Send this to any business. You earn 5% of what they pay, every month they stay. Code CARON5.</div><div class="row"><input id="reflink" readonly value="localairegistry.com/r/CARON5"><button class="btn sm" data-a="copy" data-id="localairegistry.com/r/CARON5">Copy</button></div></div></div>
  <div class="sec">${lbl('Per account')}<div class="list">${db.accts.map(a=>li({t:esc(a.name),m:`${a.tier} · ${$(a.mrr)}/mo retainer`,r:`<b class="num">${$(a.mrr*SHARE)}</b>`})).join('')}</div></div>
  <div class="sec">${lbl('Payout method')}<div class="card row sp"><span>Direct deposit ··· 4417</span><button class="btn sm">Change</button></div></div>`;
 };
@@ -628,7 +648,7 @@ V.rsm_pulse=()=>{
  const red=db.deals.map(d=>({d,f:dealFlags(d)})).filter(x=>x.f.some(f=>f[1]==='bad'));
  const mrrWk=db.reps.reduce((s,r)=>s+r.mrr,0);
  return `<div><div class="hello">${hello()}, Bridgette.</div><div class="sub">${red.length} deals are losing odds right now. Fix those before anything else.</div></div>
- <div class="kpis">${kpi('New MRR this month',$k(mrrWk),'Target $30k · on pace','good')}${kpi('Claims this month',db.reps.reduce((s,r)=>s+r.claims,0),'+18% vs Sep','good')}</div>
+ <div class="kpis">${kpi('New MRR this month',$k(mrrWk),'Target $10k · behind pace','warn')}${kpi('Claims this month',db.reps.reduce((s,r)=>s+r.claims,0),'+18% vs Sep','good')}</div>
  <div class="sec">${lbl('Speed rules · whole team')}<div class="list">${RULES.map(r=>{const v=teamVal(r.k),g=grade(r,v);return `<div class="rule"><span class="t">${r.t}</span><span>${chip(`${v}${r.unit==='%'?'%':' '+r.unit.split(' ')[0]}`,g)}</span><span class="why">Green ${r.hi?'≥':'≤'} ${r.g}${r.unit==='%'?'%':''} · red ${r.hi?'<':'>'} ${r.a}${r.unit==='%'?'%':''}. ${r.why}</span></div>`}).join('')}</div></div>
  <div class="sec">${lbl('Red deals · pull these in',`<button data-a="tab" data-id="deals">All deals</button>`)}<div class="list">${red.map(({d,f})=>li({icon:'alert',ik:'bad',t:esc(d.name),m:`${d.rep?esc(RP(d.rep).name):'Unassigned'} · ${f.filter(x=>x[1]==='bad').map(x=>esc(x[0])).join(' · ')}`,a:'dealSheet',id:d.id})).join('')}</div></div>
  <div class="sec">${lbl('Coach today')}<div class="list">${db.reps.filter(r=>RULES.some(x=>grade(x,repVal(r,x.k))==='bad')).map(r=>li({icon:'users',ik:'warn',t:esc(r.name),m:RULES.filter(x=>grade(x,repVal(r,x.k))==='bad').map(x=>`${x.t.split('→').pop().trim()}: ${repVal(r,x.k)}${x.unit==='%'?'%':'d'}`).join(' · '),a:'repSheet',id:r.id})).join('')}</div></div>`;
@@ -755,7 +775,7 @@ function cashSeries(){let b=184200;return WK_IN.map((v,i)=>b=b+v-WK_OUT[i])}
 const LEAKS=[
  {t:'Failed card payments',v:2000,m:'2 cards declined this month. Retries are still pending.',k:'bad',b:'Text a card update link'},
  {t:'Free month without a minimum term',v:1500,m:'1 free month went out with no 6-month commitment.',k:'bad',b:'Add the minimum to their agreement'},
- {t:'Deal discounts',v:3150,m:'7 at 50% off month 1, 12 on Founding 20 (20% for life).',k:'warn',b:'Review live deals',go:'rsm'},
+ {t:'Deal discounts',v:1800,m:'2 at 50% off month 1, 1 on Founding 20 (20% for life).',k:'warn',b:'Review live deals',go:'rsm'},
  {t:'Grandfathered below scope',v:1000,m:'Dr. Jeff Lisiecki pays $2,000 for Authority work priced at $3,000.',k:'warn',b:'Plan the re-price'},
  {t:'Work outside the plan',v:900,m:'2 WordPress pages built for Luxurecovery. Not SEO work.',k:'warn',b:'Offer web management at $1,000/mo'},
  {t:'Overflow contractor',v:1800,m:'Luke is covering work specialists couldn\'t fit.',k:'warn',b:'Rebalance accounts'}];
@@ -790,7 +810,7 @@ V.cfo_fore=()=>{
 };
 
 /* ================= CTO / CPO (Clinton) ================= */
-const FUN=[['Profile page views',48210],['Tapped "Claim"',1930],['Entered email + phone',1412],['Verified the code',1101],['Finished 5-step setup',642],['Opened Pricing',211],['Upgraded',19]];
+const FUN=[['Profile page views',48210],['Tapped "Claim"',1930],['Entered email + phone',1412],['Verified the code',1101],['Finished 5-step setup',642],['Opened Pricing',211],['Upgraded',3]];
 V.cto_health=()=>{
  const sv=[['localairegistry.com',99.98,1.9],['Claim flow + OTP',99.91,2.4],['Monthly reports',99.62,4.8],['API workers',100,.3]];
  return `<div><div class="hello">${hello()}, Clinton.</div><div class="sub">Everything is up. Reports are slow on phones and that's where owners open them.</div></div>
@@ -824,15 +844,15 @@ function forecast(){const f=S.fc;let mrr=41500,cust=24;const out=[];
  for(let m=0;m<12;m++){const nw=f.reps*f.visits*4.33*(f.claim/100)*(f.paid/100);cust=cust*(1-f.churn/100)+nw;mrr=mrr*(1-f.churn/100)+nw*f.plan;out.push({mrr,cust,nw})}return out}
 V.god_over=()=>{
  return `<div><div class="hello">${hello()}, Steve.</div><div class="sub">MRR up 7.8% this month. Two things need a decision: Illinois has no rep and setup is leaking 42% of claims.</div></div>
- <div class="kpis">${kpi('MRR',$(41500),'+$3,000 vs Sep','good')}${kpi('Paying businesses',24,'3 new this week','good')}${kpi('Claims, 30 days',1101,'642 finished setup')}${kpi('Gross margin','49%','$10,350 leaking this month','warn')}</div>
+ <div class="kpis">${kpi('MRR',$(41500),'+$3,000 vs Sep','good')}${kpi('Paying businesses',24,'3 new this month','good')}${kpi('Claims, 30 days',1101,'642 finished setup')}${kpi('Gross margin','49%','$9,000 leaking this month','warn')}</div>
  <div class="sec">${lbl('MRR, last 6 months')}<div class="card">${line([24100,27800,33500,36000,38500,41500],{labels:['May','Jun','Jul','Aug','Sep','Oct']})}</div></div>
  <div class="sec">${lbl('One line per team · tap to view as them')}<div class="list">${[
   ['rsm','Sales','4 red deals. Dermatex meeting was 14 days after first talk.','bad'],
-  ['rep','AIORS reps','61 claims this week, Kody #4 nationally.','good'],
+  ['rep','AIORS reps','31 claims this month, Kody #4 nationally.','good'],
   ['spec','Specialists','R.Ve is 6 days late on approvals and missing GA4/GSC.','bad'],
   ['cfo','Finance','Margin 49% vs 55% target. Biggest leak: failed cards and deal discounts.','warn'],
   ['partner','Partners','3 codes live. DANA15 brought in $6,000/mo.','good'],
-  ['people','People & Partnerships','MJBizCon Dec 1: 2 booth reps invited, not onboarded. Feb has 2 trips back to back.','warn'],
+  ['people','People & Partnerships','MJBizCon Dec 1: 2 booth reps haven\'t signed up, booth kit waiting on Eric.','warn'],
   ['cto','Product','Pricing exits: 41 owners. Survey ships Monday.','warn'],
   ['mkt','Marketing','Provider applications up 3x after Clutch post.','good'],
   ['cs','Support','1 take-down request past 72h.','bad']].map(([r,t,m,k])=>li({icon:k==='good'?'check':'alert',ik:k,t,m,a:'role',id:r})).join('')}</div></div>`;
@@ -869,7 +889,7 @@ V.rsm_tips=()=>{const sg=S.pbSeg||'coach';
   {k:'bad',t:`${worst.name.split(' ')[0]} books in ${worst.t2m} days. ${best.name.split(' ')[0]} books in ${best.t2m}.`,m:`${best.name.split(' ')[0]}'s show rate is ${best.show}%, ${worst.name.split(' ')[0]}'s is ${worst.show}%. Pair them for a ride-along this week.`,b:'Set up the ride-along'},
   {k:'warn',t:'Meetings more than 10 days out show half as often',m:'4 of your open deals have meetings 10+ days out. Pull them into this week.',b:'See those deals',go:'deals'},
   {k:'good',t:'Rep-claimed pages convert 4x better than self-serve',m:'11% of rep claims upgrade vs 2.7% self-serve. More walk-ins beats more ads.',b:'Share with the team'},
-  {k:'good',t:'"50% off month 1" closed 7 this month',m:'It costs about 4 points of the 30% pool on Trust. The lifetime 20% deal costs 20 points. Use the short hook first.',b:'Make a deal',go:'make'},
+  {k:'good',t:'"50% off month 1" closed 2 of 3 new customers this month',m:'It costs about 4 points of the 30% pool on Trust. The lifetime 20% deal costs 20 points. Use the short hook first.',b:'Make a deal',go:'make'},
   {k:'warn',t:'Illinois has 14 claims and no rep',m:'That\'s about $2,500/mo in pipeline sitting untouched. Recruiting one rep there pays for itself in month one.',b:'See the map',go:'map'}];
  return `<div><div class="hello">Coach the team.</div><div class="sub">What your numbers say this week, and the playbook to act on it.</div></div>
  <div class="sec">${lbl('This week\'s insights')}<div class="list">${ins.map(x=>`<div class="li" style="display:grid;gap:6px"><span class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:10px"><span class="ic ${x.k}" style="width:30px;height:30px">${ic(x.k==='good'?'check':x.k==='bad'?'alert':'bulb',16)}</span><b>${esc(x.t)}</b></span><span class="small">${esc(x.m)}</span><span><button class="btn sm" data-a="${x.go?'tab':'toast'}" data-id="${x.go||'Done'}">${x.b}</button></span></div>`).join('')}</div></div>
@@ -890,7 +910,7 @@ db.users=[
  {n:'Laney Millard',e:'laney@localairegistry.com',r:'rep',type:'1099',st:'Active',last:'Yesterday'},
  {n:'Flávia Gottschalk',e:'flavia@localairegistry.com',r:'mkt',type:'Contractor',st:'Active',last:'Yesterday'},
  {n:'Kerrie Quinby',e:'kerrie@localairegistry.com',r:'people',extra:'Conferences, culture',type:'W-2',st:'Active',last:'2 days ago'},
- {n:'Audrey Campbell',e:'audrey@localairegistry.com',r:'partner',extra:'Partner program',type:'W-2',st:'Active',last:'3 days ago'},
+ {n:'Audrey Campbell',e:'audrey@localairegistry.com',r:'people',extra:'Partner program',type:'W-2',st:'Active',last:'3 days ago'},
  {n:'Dana Reyes',e:'dana@example.com',r:'partner',type:'Partner',st:'Active',last:'Today'}];
 V.god_team=()=>{const f=S.uf||'all';const us=db.users.filter(u=>f==='all'||u.r===f);
  return `<div class="row sp"><div><div class="h1">People</div><div class="sub">${db.users.length} people · ${db.users.filter(u=>u.st==='Invited').length} invites pending</div></div><button class="btn pri sm" data-a="addUser">${ic('plus',16)}Add person</button></div>
@@ -914,7 +934,7 @@ function shUser({id}){const u=db.users.find(x=>x.e===id);return `<div class="row
 
 /* ================= MARKETING (Flávia) ================= */
 const PERS={
- biz:{n:'Businesses',st:[['Visited a profile',48210],['Claimed (MQL)',1101],['Met with sales (SQL)',214],['Paying',24]],src:[['Google search (unclaimed pages)',612],['AIORS reps in person',301],['Notice of Record email',121],['Referral links',67]],camp:[['Notice of Record · new DBA filers','Email','38% open · 121 claims','good'],['Med spa landing page','Web','4.1% claim rate','good'],['Plastic surgeon explainer video','YouTube','2,310 views · 9 claims','warn']]},
+ biz:{n:'Businesses',st:[['Visited a profile',48210],['Claimed (MQL)',1101],['Met with sales (SQL)',214],['Paying',3]],src:[['Google search (unclaimed pages)',612],['AIORS reps in person',301],['Notice of Record email',121],['Referral links',67]],camp:[['Notice of Record · new DBA filers','Email','38% open · 121 claims','good'],['Med spa landing page','Web','4.1% claim rate','good'],['Plastic surgeon explainer video','YouTube','2,310 views · 9 claims','warn']]},
  prov:{n:'AEO providers',st:[['Saw For Specialists page',3920],['Applied (MQL)',186],['Passed vetting',41],['Active with accounts',6]],src:[['Clutch + G2 profiles',71],['LinkedIn posts',58],['Referrals from Caron',22],['Agency audit reports',35]],camp:[['"Get paid monthly to do SEO" LinkedIn','Social','186 applies','good'],['Agency audit exposés (Range, MEGA)','Web','35 agencies applied','good'],['Clutch profile','Directory','Up 3x since post','good']]},
  rep:{n:'Sales reps',st:[['Saw the rep app listing',8400],['Installed (MQL)',640],['Finished onboarding',212],['First claim',58]],src:[['Merchant services field reps',240],['Indeed + ZipRecruiter',190],['Rep referrals',130],['TikTok "side income" posts',80]],camp:[['Poach merchant services reps','Email + SMS','12% install rate','good'],['"An hour here and there" TikTok','Social','80 installs, 4 claims','warn'],['Rep-gets-rep bonus','In app','130 installs','good']]}};
 function persSeg(){return `<div class="seg">${Object.entries(PERS).map(([k,p])=>`<button data-a="persona" data-id="${k}" aria-pressed="${S.persona===k}">${p.n}</button>`).join('')}</div>`}
@@ -1005,98 +1025,194 @@ CONFS.push({n:'Botox & Bubbly pop-up',ind:['Med spas'],city:'San Diego, CA',st:'
 const AP={SAN:[32.73,-117.19,'San Diego'],LAS:[36.17,-115.14,'Las Vegas'],MCO:[28.54,-81.38,'Orlando'],ORD:[41.88,-87.63,'Chicago'],ATL:[33.75,-84.39,'Atlanta'],SFO:[37.77,-122.42,'San Francisco'],MIA:[25.79,-80.13,'Miami'],BNA:[36.16,-86.78,'Nashville']};
 const PLAN_AVG=1800,PAY_RATE=.05,MONTHS=10,DAYRATE=30;
 const MODES={booth:'Booth',walk:'Walk the floor',popup:'Pop-up party nearby'};
-function cModel(c,mode,staff){const m=CMETA[c.n];const tr=m.local?0:m.drive?250:950;staff=staff||(mode==='popup'?2:3);
+/* model: fixed cost (venue, travel, day-rate pay) vs variable cost (rev share paid only when customers pay) */
+function cModel(c,mode,staff,dayN){const m=CMETA[c.n];const tr=m.local?0:m.drive?250:950;staff=staff||(mode==='popup'?2:3);dayN=dayN||0;
  const claimRate=.2+Math.min(.1,m.locals/3000);
  const conv=mode==='booth'?staff*40*m.days:mode==='walk'?staff*15*m.days:Math.min(m.att,60);
- const buyers=conv*(mode==='popup'?.8:m.share);
- const claims=buyers*claimRate,paying=claims*PAY_RATE,rev=paying*PLAN_AVG*MONTHS;
- const pay=staff*m.days*8*DAYRATE,cost=(mode==='booth'?m.booth:mode==='walk'?staff*400:3000)+staff*tr+pay;
- return {claims,paying,rev,cost,roi:rev/cost,pay,tr};}
+ const claims=conv*(mode==='popup'?.8:m.share)*claimRate,paying=claims*PAY_RATE,rev=paying*PLAN_AVG*MONTHS;
+ const dayPay=dayN*m.days*8*DAYRATE;
+ const fixed=(mode==='booth'?m.booth:mode==='walk'?staff*400:3000)+staff*tr+dayPay;
+ const share=rev*(.05+.10*(staff-dayN)/staff);
+ return {claims,paying,rev,cost:fixed,fixed,share,dayPay,net:rev-share,roi:(rev-share)/fixed};}
 function cBest(c){if(c.pop)return {mode:'popup',...cModel(c,'popup')};return ['booth','walk','popup'].map(k=>({mode:k,...cModel(c,k)})).sort((a,b)=>b.roi-a.roi)[0]}
 const CID=c=>slug(c.n);
-S.going=S.going||new Set(['MJBizCon','Botox & Bubbly pop-up','VMX','Chicago Midwinter Meeting','WVC Vegas','AAD Annual Meeting','The Aesthetic Meeting']);
+S.going=S.going||new Set(['MJBizCon','Botox & Bubbly pop-up','VMX','Chicago Midwinter Meeting','AAD Annual Meeting','The Aesthetic Meeting']);
 db.invites=[{n:'Jasmine Torres',e:'jasmine.t@example.com',by:'Kerrie',conf:'MJBizCon',d:'2026-10-28'},{n:'Marcus Bell',e:'marcus.b@example.com',by:'Kerrie',conf:'MJBizCon',d:'2026-10-29'},{n:'Priya Shah',e:'priya.s@example.com',by:'Bridgette',conf:'',d:'2026-10-30'}];
+db.kinv=[{n:'Hollin Haley',type:'partner',st:'Signed up',d:'2026-10-20',note:'One Sunday Pools'},{n:'Mia Chen',type:'rep',st:'Not signed up yet',d:'2026-10-30'},{n:'Jasmine Torres',type:'rep',st:'Not signed up yet',d:'2026-10-28'},{n:'Marcus Bell',type:'rep',st:'Not signed up yet',d:'2026-10-29'}];
 db.crew={};
-function crew(c){const k=CID(c);if(!db.crew[k])db.crew[k]=[{n:'Kerrie Quinby',job:'Trip lead',pay:'salary'},{n:'Kody Muffoletto',job:'Closer',pay:'share'},...db.invites.filter(i=>i.conf===c.n).map(i=>({n:i.n,job:'Booth',pay:'day'}))];if(db.crew[k].length<3)db.crew[k].push({n:'Laney Millard',job:'Booth',pay:'share'});return db.crew[k]}
-function roiChip(r){return chip(r.toFixed(1)+'x ROI',r>=4?'good':r>=2?'warn':'bad')}
+function crew(c){const k=CID(c);if(!db.crew[k]){db.crew[k]=[{n:'Kerrie Quinby',job:'Trip lead',pay:'salary'},{n:'Kody Muffoletto',job:'Closer',pay:'share'},...db.invites.filter(i=>i.conf===c.n).map(i=>({n:i.n,job:'Booth',pay:'share'}))];if(db.crew[k].length<3)db.crew[k].push({n:'Laney Millard',job:'Booth',pay:'share'})}return db.crew[k]}
+function roiChip(r){return chip('$'+r.toFixed(1)+' back per $1',r>=4?'good':r>=2?'warn':'bad')}
+const VERB={booth:'Go · get a booth',walk:'Go · walk the floor',popup:'Go · host a party'};
+function verdict(b){return b.roi<2?['Skip this one','bad']:[VERB[b.mode],'good']}
 
 V.people_shows=()=>{
- const ind=S.confInd||'all',st=S.confSt||null,sort=S.cSort||'roi';
- const byInd=CONFS.filter(c=>ind==='all'||c.ind.includes(ind));
- const cnt={};byInd.forEach(c=>cnt[c.st]=(cnt[c.st]||0)+1);
- let list=byInd.filter(c=>!st||c.st===st).map(c=>({c,b:cBest(c),m:CMETA[c.n]}));
- list.sort(sort==='roi'?(x,y)=>y.b.roi-x.b.roi:sort==='locals'?(x,y)=>y.m.locals-x.m.locals:(x,y)=>(x.c.s||'2099').localeCompare(y.c.s||'2099'));
- const clash=c=>c.s&&CONFS.find(o=>o!==c&&o.s&&S.going.has(o.n)&&o.s<=(c.e||c.s)&&(o.e||o.s)>=c.s);
- return `<div><div class="hello">Where we show up.</div><div class="sub">Ranked by estimated return. More of our listings in the city and more customers there means a better show.</div></div>
- <div class="kpis">${kpi('Shows picked',S.going.size,`${[...S.going].filter(n=>CONFS.find(c=>c.n===n)?.s).length} with dates`)}${kpi('Est. new MRR',$k([...S.going].reduce((a,n)=>{const c=CONFS.find(x=>x.n===n);return a+(c?cBest(c).paying*PLAN_AVG:0)},0)),'from picked shows','good')}</div>
+ const ind=S.confInd||'all',st=S.confSt||null;
+ let list=CONFS.filter(c=>(ind==='all'||c.ind.includes(ind))&&(!st||c.st===st)).map(c=>({c,b:cBest(c),m:CMETA[c.n]})).sort((x,y)=>y.b.roi-x.b.roi);
+ const cnt={};CONFS.filter(c=>ind==='all'||c.ind.includes(ind)).forEach(c=>cnt[c.st]=(cnt[c.st]||0)+1);
+ return `<div><div class="hello">Which shows?</div><div class="sub">Best ones are at the top. Tap <b>Add to my plan</b> on the ones you like.</div></div>
  <div class="seg">${[['all','All'],...CIND.map(x=>[x,x])].map(([k,l])=>`<button data-a="confInd" data-id="${k}" aria-pressed="${ind===k}">${l}</button>`).join('')}</div>
- <div class="card"><div class="tm">${TILES.map(t=>{const n=cnt[t.st]||0;return `<button class="tile ${n>1?'c2':n?'c1':''} ${st===t.st?'sel':''}" style="grid-column:${t.x+1};grid-row:${t.y+1}" data-a="confSt" data-id="${t.st}" aria-label="${t.st}, ${n} events">${t.st}${n?`<sup>${n}</sup>`:''}</button>`}).join('')}</div>
- ${st?`<button class="btn ghost" data-a="confSt" data-id="${st}">Show all states</button>`:''}</div>
- <div class="seg">${[['roi','Best ROI'],['locals','Most local listings'],['date','Soonest']].map(([k,l])=>`<button data-a="cSort" data-id="${k}" aria-pressed="${sort===k}">${l}</button>`).join('')}</div>
- <div class="list">${list.map(({c,b,m})=>{const g=S.going.has(c.n),cl=clash(c),away=c.s?ago(TODAY,c.s):null,skip=b.roi<2;
-  return `<div class="li" style="display:grid;gap:7px;${g?'background:color-mix(in srgb,var(--tint) 55%,transparent)':''}">
-  <span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><b>${esc(c.n)}</b>${roiChip(b.roi)}</span>
-  <span class="small muted">${esc(c.city)} · ${esc(confRange(c))}${away!=null&&away>=0?` · ${away} days away`:''}</span>
-  <span class="row">${c.ind.map(x=>chip(x,'blue')).join('')}${c.pop?chip('Pop-up','good'):''}${c.ok?'':chip('Check date','warn')}${cl&&!g?chip('Clashes with '+esc(cl.n),'warn'):''}</span>
-  <div class="cgrid"><span><b>${m.locals}</b>our listings nearby</span><span><b>~${Math.round(b.claims)}</b>claims</span><span><b>${$k(b.cost)}</b>est. cost</span><span><b>${$k(b.paying*PLAN_AVG)}</b>est. MRR</span></div>
-  <span class="small"><b>Do this:</b> ${skip?'Skip it, or send one rep to walk it if they qualify.':MODES[b.mode]}${b.mode==='walk'?'. Meet attendees in sessions, lunches and parties. Most shows ban pitching exhibitors without a booth.':b.mode==='booth'?'. Owners come to you, and the booth pays for itself at this size.':'. Host owners near the venue. Cheapest way to get face time.'}</span>
-  ${m.known.length?`<span class="small"><b>Who we know there:</b> ${m.known.map(esc).join(', ')}</span>`:''}
-  <span class="small"><b>Partners to recruit:</b> ${esc(m.partners)}. They sell to the same owners, so give them a code.</span>
-  <span class="row"><button class="btn sm ${g?'':'pri'}" data-a="going" data-id="${esc(c.n)}">${g?'✓ Going':'Add to plan'}</button>${g?`<button class="btn sm" data-a="planOpen" data-id="${esc(c.n)}">Plan it</button>`:''}<button class="btn sm" data-a="cmp" data-id="${esc(c.n)}">Compare options</button></span></div>`}).join('')||'<div class="empty">Nothing here for this industry yet.</div>'}</div>
- <div class="xs muted">Estimates: attendance and booth fees are rough guesses, ${$(950)} travel per person (Vegas drives at ${$(250)}), ${$(DAYRATE)}/hr day rate, ${PAY_RATE*100}% of claims become paying at ${$(PLAN_AVG)}/mo. Replace with real quotes as you get them.</div>`;};
+ <details class="card"><summary class="small"><b>Show the map</b></summary><div class="tm" style="margin-top:10px">${TILES.map(t=>{const n=cnt[t.st]||0;return `<button class="tile ${n>1?'c2':n?'c1':''} ${st===t.st?'sel':''}" style="grid-column:${t.x+1};grid-row:${t.y+1}" data-a="confSt" data-id="${t.st}" aria-label="${t.st}, ${n} events">${t.st}${n?`<sup>${n}</sup>`:''}</button>`}).join('')}</div>${st?`<button class="btn ghost" data-a="confSt" data-id="${st}">Show all states</button>`:''}</details>
+ <div class="stack">${list.map(({c,b,m})=>{const g=S.going.has(c.n),[v,vk]=verdict(b);
+  return `<div class="card stack" style="${g?'border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)':''}">
+  <div class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><b style="font:700 18px var(--display)">${esc(c.n)}</b>${chip(v,vk)}</div>
+  <div class="small muted">${esc(c.city)} · ${esc(confRange(c))}</div>
+  <div class="small">${b.roi<2?'It costs more than it\'s likely to bring back.':`Every $1 we spend should bring back about <b>$${b.roi.toFixed(0)}</b>.`} ${m.locals>200?`${m.locals} businesses there already have a page with us.`:''}${m.known.length?` You'll know people: ${m.known.map(x=>esc(x.split(' (')[0])).join(', ')}.`:''}</div>
+  ${c.ok?'':`<div class="small" style="color:var(--warn)">Date isn't confirmed yet.</div>`}
+  <div class="row"><button class="btn ${g?'':'pri'}" data-a="going" data-id="${esc(c.n)}">${g?'✓ In my plan':'Add to my plan'}</button><button class="btn ghost" data-a="cmp" data-id="${esc(c.n)}">See the numbers</button></div></div>`}).join('')||'<div class="empty">Nothing here for this industry yet.</div>'}</div>
+ <div class="xs muted">All numbers are rough estimates. Replace them with real quotes as you get them.</div>`;};
 
 function cmpSheet({id}){const c=CONFS.find(x=>x.n===id),m=CMETA[c.n];const opts=(c.pop?['popup']:['booth','walk','popup']).map(k=>({k,...cModel(c,k)}));const best=opts.slice().sort((a,b)=>b.roi-a.roi)[0];
  return `<div class="row sp"><div><div class="h1">${esc(c.n)}</div><div class="sub">${esc(c.city)} · ${esc(confRange(c))}</div></div><button class="btn ghost" data-a="close">Close</button></div>
- <div class="list">${opts.map(o=>`<div class="li" style="display:grid;gap:6px;${o.k===best.k?'background:var(--good-soft)':''}"><span class="row sp"><b>${MODES[o.k]}${o.k===best.k?' · best':''}</b>${roiChip(o.roi)}</span><div class="cgrid"><span><b>${$k(o.cost)}</b>cost</span><span><b>~${Math.round(o.claims)}</b>claims</span><span><b>${o.paying.toFixed(1)}</b>paying</span><span><b>${$k(o.rev)}</b>first year</span></div><span class="xs muted">${o.k==='booth'?`Booth fee ~${$(m.booth)}, 3 people.`:o.k==='walk'?'Badges only, 3 people. No pitching exhibitors.':'Venue ~$3,000, 2 people, about 70 owners.'} Staff ${$(o.pay)} at ${$(DAYRATE)}/hr.</span></div>`).join('')}</div>
- <div class="card small">${best.roi<2?'None of these clear 2x. Skip it unless a top rep wants to go on their own dime.':`Go with <b>${MODES[best.k].toLowerCase()}</b>. ${m.locals>300?`We already have ${m.locals} listings there, so owners will recognize their page.`:''}`}</div>`}
+ <div class="list">${opts.map(o=>`<div class="li" style="display:grid;gap:6px;${o.k===best.k?'background:var(--good-soft)':''}"><span class="row sp"><b>${MODES[o.k]}${o.k===best.k?' · best':''}</b>${roiChip(o.roi)}</span><div class="cgrid"><span><b>${$k(o.fixed)}</b>to go</span><span><b>~${Math.round(o.claims)}</b>claims</span><span><b>${o.paying.toFixed(1)}</b>paying</span><span><b>${$k(o.net)}</b>we keep, yr 1</span></div><span class="xs muted">${o.k==='booth'?`Booth fee about ${$(m.booth)}, 3 people.`:o.k==='walk'?'Badges only, 3 people. Talk to attendees, not exhibitors. Most shows ban pitching exhibitors without a booth.':'Venue about $3,000, 2 people, about 60 owners.'} Team on rev share.</span></div>`).join('')}</div>
+ <div class="card small"><b>Who we know there:</b> ${m.known.length?m.known.map(esc).join(', '):'nobody yet'}<br><b>Partners to recruit:</b> ${esc(m.partners)}. Give them a referral code.</div>`}
 
 /* ---- Plan ---- */
 function planConfs(){return CONFS.filter(c=>S.going.has(c.n)).sort((a,b)=>(a.s||'2099').localeCompare(b.s||'2099'))}
-V.people_plan=()=>{const ps=planConfs();if(!ps.length)return `<div class="empty">Pick a show in Shows first.</div>`;
- const c=ps.find(x=>x.n===S.planConf)||ps.find(x=>!x.pop)||ps[0];S.planConf=c.n;const m=CMETA[c.n];const cr=crew(c);
- const mode=(S.pmode||{})[c.n]||cBest(c).mode;const r=cModel(c,mode,cr.length);
- const dayPay=cr.filter(p=>p.pay==='day').length*m.days*8*DAYRATE;
- const cl=S.calc||(S.calc={names:15,book:40,close:20});
- const book=cl.names*cl.book/100,pay=book*cl.close/100,mo=pay*PLAN_AVG;
- const both=mo*.10,closer=mo*.05,day=m.days*8*DAYRATE,beat=both>0?Math.ceil(day/both):0;
- const nightOn=(S.night||{})[c.n]!==false;
- return `<label class="f" for="pl-c">Show<select id="pl-c" data-ch="planconf">${ps.map(x=>`<option ${x.n===c.n?'selected':''}>${esc(x.n)} · ${esc(confRange(x))}</option>`).join('')}</select></label>
- <div class="seg">${(c.pop?['popup']:['booth','walk','popup']).map(k=>`<button data-a="pmode" data-id="${k}" aria-pressed="${mode===k}">${MODES[k]}</button>`).join('')}</div>
- <div class="kpis">${kpi('Est. cost',$k(r.cost+(nightOn?1500:0)),`staff ${$(dayPay)} day rate`)}${kpi('Est. claims','~'+Math.round(r.claims),`${r.paying.toFixed(1)} paying · ${roiChip(r.roi)}`)}</div>
- <div class="sec">${lbl('Team',`${cr.length} going`)}<div class="list">${cr.map((p,i)=>`<div class="li"><span class="grow"><span class="t" style="display:block">${esc(p.n)}</span><span class="m">${p.job}${db.invites.some(v=>v.n===p.n)?' · '+chip('Not onboarded','warn'):''}</span></span>${p.pay==='salary'?chip('Salaried'):`<div class="seg" style="flex:0 0 auto"><button data-a="crewPay" data-id="${i}|day" aria-pressed="${p.pay==='day'}">$30/hr</button><button data-a="crewPay" data-id="${i}|share" aria-pressed="${p.pay==='share'}">Rev share</button></div>`}${i?`<button class="btn ghost" data-a="crewDel" data-id="${i}" aria-label="Remove">✕</button>`:''}</div>`).join('')}</div>
-  <div class="row"><select id="pl-add" data-ch="crewadd" style="flex:1"><option value="">+ Add someone from the team</option>${db.users.filter(u=>!cr.some(p=>p.n===u.n)&&u.r!=='partner').map(u=>`<option>${esc(u.n)}</option>`).join('')}</select><button class="btn" data-a="invite" data-id="${esc(c.n)}">Invite new</button></div></div>
- <div class="sec">${lbl('How booth staff get paid')}<div class="card stack">
-  <div class="small">The goal is simple: get as many owners as possible to claim their free page, and book a call before they walk away.</div>
-  <div class="list">${li({icon:'pin',ik:'good',t:'5% · Lead',m:'Collect their name and email and get them to claim their page',chev:false})}${li({icon:'phone',ik:'good',t:'5% · Booking',m:'Book a Calendly call within 48 hours. Do it on the spot and you get both',chev:false})}${li({icon:'cash',t:'5% · Close',m:'Whoever closes the sale, usually Kody or Bridgette',chev:false})}</div>
-  <div class="small muted">Paid every month the customer stays. Comes out of the same 30% pool as deals.</div>
-  ${[['names','Names collected per person',5,60,1,''],['book','Booked within 48 hours',0,100,5,'%'],['close','Of booked calls that pay',0,60,5,'%']].map(([k,l,a,b,s,u])=>`<div class="rng"><div class="row"><label for="cl-${k}">${l}</label><b class="num" id="clv-${k}">${cl[k]}${u}</b></div><input type="range" id="cl-${k}" data-in="calc" data-id="${k}" min="${a}" max="${b}" step="${s}" value="${cl[k]}"></div>`).join('')}
-  <div id="calcOut">${calcOut(c)}</div></div></div>
- <div class="sec">${lbl('Team night',`<button data-a="night" data-id="${esc(c.n)}">${nightOn?'Remove':'Add'}</button>`)}${nightOn?`<div class="card stack"><b>Night 2 · team dinner, then a customer party</b><div class="small">Same city, same trip. Invite the team plus ${m.known.length?m.known.map(esc).join(', '):'anyone who claimed at the booth'}. About ${$(1500)}.</div></div>`:'<div class="small muted">No team night for this trip.</div>'}</div>
- <div class="sec">${lbl('Checklist')}<div class="list">${['Booth or badges booked','Flights and hotel block','One-pagers and QR stand shipped','Every rep has their Calendly link','Team night venue booked','Follow up everyone within 48 hours'].map((t,i)=>{const k=c.n+i,d=(S.ck||{})[k];return `<button class="li" data-a="ck" data-id="${esc(k)}"><span class="ic ${d?'good':''}" style="width:28px;height:28px">${ic(d?'check':'plus',15)}</span><span class="grow" style="${d?'text-decoration:line-through;color:var(--muted)':''}">${t}</span></button>`}).join('')}</div></div>`;};
+function curPlan(){const ps=planConfs();return ps.find(x=>x.n===S.planConf)||ps.find(x=>!x.pop&&x.s)||ps[0]}
+V.people_plan=()=>{const ps=planConfs();if(!ps.length)return `<div class="card empty">No shows in your plan yet. Go to Shows and tap Add to my plan.</div>`;
+ const c=curPlan();S.planConf=c.n;const m=CMETA[c.n];const cr=crew(c),staff=cr.length;
+ const mode=(S.pmode||{})[c.n]||cBest(c).mode;
+ const dayN=cr.filter(p=>p.pay==='day').length;
+ const now=cModel(c,mode,staff,dayN),allShare=cModel(c,mode,staff,0),allDay=cModel(c,mode,staff,cr.filter(p=>p.pay!=='salary').length);
+ const nightOn=(S.night||{})[c.n]!==false;const kit=db.orders.some(o=>o.item==='kit'&&o.show===c.n);
+ const step=(n,t,body)=>`<div class="sec"><div class="stephd"><span>${n}</span>${t}</div>${body}</div>`;
+ return `<label class="f" for="pl-c">Which show<select id="pl-c" data-ch="planconf">${ps.map(x=>`<option value="${esc(x.n)}" ${x.n===c.n?'selected':''}>${esc(x.n)} · ${esc(confRange(x))}</option>`).join('')}</select></label>
+ ${step(1,'How we show up',`<div class="seg">${(c.pop?['popup']:['booth','walk','popup']).map(k=>`<button data-a="pmode" data-id="${k}" aria-pressed="${mode===k}">${MODES[k]}${k===cBest(c).mode?' ★':''}</button>`).join('')}</div><div class="small muted">★ is the best value for this show.</div>`)}
+ ${step(2,'Who\'s going',`<div class="list">${cr.map((p,i)=>`<div class="li"><span class="grow"><span class="t" style="display:block">${esc(p.n)}</span><span class="m">${p.job}${db.invites.some(v=>v.n===p.n)?' · '+chip('Hasn\'t signed up yet','warn'):''}</span></span>${i?`<button class="btn ghost" data-a="crewDel" data-id="${i}" aria-label="Remove ${esc(p.n)}">Remove</button>`:''}</div>`).join('')}</div>
+  <div class="row" style="flex-wrap:nowrap"><select id="pl-add" data-ch="crewadd" aria-label="Add someone"><option value="">Add someone from the team</option>${db.users.filter(u=>!cr.some(p=>p.n===u.n)&&u.r!=='partner').map(u=>`<option>${esc(u.n)}</option>`).join('')}</select><button class="btn" data-a="invite" data-id="${esc(c.n)}">Invite new</button></div>`)}
+ ${step(3,'How we pay them',`<div class="card stack" style="background:var(--tint);border-color:transparent"><b>Simple rule</b><div class="small">Anyone talking to owners: <b>rev share</b>. It costs us nothing unless they bring in customers.<br>Helpers who only set up the booth: <b>$30/hr</b>.</div></div>
+  <div class="list">${cr.map((p,i)=>`<div class="li"><span class="grow"><b>${esc(p.n)}</b></span>${p.pay==='salary'?chip('On salary'):`<div class="seg" style="flex:0 0 auto"><button data-a="crewPay" data-id="${i}|share" aria-pressed="${p.pay==='share'}">Rev share</button><button data-a="crewPay" data-id="${i}|day" aria-pressed="${p.pay==='day'}">$30/hr</button></div>`}</div>`).join('')}</div>
+  <div class="cmp3">${[['Everyone rev share',allShare],['Your choice',now],['Everyone $30/hr',allDay]].map(([l,r],i)=>`<div class="${i===1?'on':''}"><span>${l}</span><b>${$k(r.fixed)}</b><small>to go</small><b>${$k(r.share)}</b><small>paid out, only if they sell</small>${roiChip(r.roi)}</div>`).join('')}</div>
+  <div class="small muted">$30/hr adds ${$(m.days*8*DAYRATE)} per person to the trip cost whether they sell or not. Rev share adds nothing up front, then pays them as their customers pay us.</div>
+  <details class="card"><summary class="small"><b>How rev share pays out</b></summary><div class="stack" style="margin-top:10px">
+   <div class="list">${li({icon:'pin',ik:'good',t:'5% · Lead',m:'Get their name and email, and get them to claim their free page',chev:false})}${li({icon:'phone',ik:'good',t:'5% · Booking',m:'Book a call on Calendly within 48 hours. Book it right there and you get both',chev:false})}${li({icon:'cash',t:'5% · Close',m:'Whoever closes the sale, usually Kody or Bridgette',chev:false})}</div>
+   <div class="small">The goal: get as many owners as possible to claim their page, and book a call before they walk away.</div>
+   ${[['names','Names collected per person',5,60,1,''],['book','Booked within 48 hours',0,100,5,'%'],['close','Booked calls that pay',0,60,5,'%']].map(([k,l,a,b,s,u])=>`<div class="rng"><div class="row"><label for="cl-${k}">${l}</label><b class="num" id="clv-${k}">${(S.calc||(S.calc={names:15,book:40,close:20}))[k]}${u}</b></div><input type="range" id="cl-${k}" data-in="calc" data-id="${k}" min="${a}" max="${b}" step="${s}" value="${S.calc[k]}"></div>`).join('')}
+   <div id="calcOut">${calcOut(c)}</div></div></details>`)}
+ ${step(4,'Order the booth kit',kit?`<div class="card row sp"><span>Booth kit ordered</span>${chip(db.orders.find(o=>o.item==='kit'&&o.show===c.n).st,'warn')}</div>`:`<div class="card stack">${preview('banner',me())}<div class="small">Banner, table stand, team shirts and postcards. Already designed. ${$(bootTotal())}.</div><button class="btn pri block" data-a="order" data-id="kit">Order booth kit</button></div>`)}
+ ${step(5,'Team night',nightOn?`<div class="card stack"><b>Night 2: team dinner, then a party for customers</b><div class="small">Same city, same trip. Invite the team plus ${m.known.length?m.known.map(x=>esc(x.split(' (')[0])).join(', '):'anyone who claimed at the booth'}. About ${$(1500)}.</div><button class="btn ghost" data-a="night" data-id="${esc(c.n)}">No team night this time</button></div>`:`<button class="btn" data-a="night" data-id="${esc(c.n)}">Add a team night</button>`)}
+ ${step(6,'Checklist',`<div class="list">${CHK.map((t,i)=>{const k=c.n+i,d=(S.ck||{})[k];return `<button class="li" data-a="ck" data-id="${esc(k)}"><span class="ic ${d?'good':''}" style="width:32px;height:32px">${ic(d?'check':'plus',16)}</span><span class="grow" style="${d?'text-decoration:line-through;color:var(--muted)':''}">${t}</span></button>`}).join('')}</div>`)}`;};
+const CHK=['Book the booth or badges','Book flights and hotel','Every person has their Calendly link','Book the team night spot','Text everyone the plan 1 week before','Follow up with every owner within 48 hours'];
 function calcOut(c){const m=CMETA[c.n],cl=S.calc;const book=cl.names*cl.book/100,pay=book*cl.close/100,mo=pay*PLAN_AVG;const both=mo*.10,closer=mo*.05,day=m.days*8*DAYRATE,beat=both>0?Math.ceil(day/both):0;
- return `<div class="cgrid"><span><b>${book.toFixed(1)}</b>calls booked</span><span><b>${pay.toFixed(1)}</b>paying</span><span><b>${$(both)}</b>/mo to you</span><span><b>${$(closer)}</b>/mo to closer</span></div>
- <div class="small" style="margin-top:8px">Day rate pays <b>${$(day)}</b> once (${m.days} days × 8 hrs × ${$(DAYRATE)}). Rev share pays <b>${$(both)}/mo</b> for as long as they stay${beat?`, so it passes the day rate in <b>month ${beat}</b>`:''}.</div>`}
+ return `<div class="cgrid"><span><b>${book.toFixed(1)}</b>calls booked</span><span><b>${pay.toFixed(1)}</b>paying</span><span><b>${$(both)}</b>/mo to them</span><span><b>${$(closer)}</b>/mo to closer</span></div>
+ <div class="small" style="margin-top:8px">$30/hr would pay them <b>${$(day)}</b> once. Rev share pays <b>${$(both)}/mo</b> for as long as their customers stay${beat?`, so it passes $30/hr in <b>month ${beat}</b>`:''}.</div>`}
 
-/* ---- Travel ---- */
+/* ---- Trips ---- */
 function trips(){return planConfs().filter(c=>c.s).map(c=>{const m=CMETA[c.n];const out=addD(c.s,-1),back=addD(c.e||addD(c.s,m.days-1),1);return {c,m,out,back,nights:ago(out,back),ap:m.ap}})}
 function travelMap(ts){const W=320,H=190,X=lo=>8+(lo+125)/59*(W-16),Y=la=>10+(50-la)/26*(H-30);
  const p=a=>[X(AP[a][1]),Y(AP[a][0])];const [hx,hy]=p('SAN');let paths='',prev=null;
- ts.forEach(t=>{if(t.ap==='SAN'){prev=null;return}const [x,y]=p(t.ap);const hop=prev&&ago(prev.back,t.out)<5;const [sx,sy]=hop?p(prev.ap):[hx,hy];const mx=(sx+x)/2,my=Math.min(sy,y)-30;
+ ts.forEach(t=>{if(t.m.local){prev=null;return}const [x,y]=p(t.ap);const hop=prev&&ago(prev.back,t.out)<5;const [sx,sy]=hop?p(prev.ap):[hx,hy];const mx=(sx+x)/2,my=Math.min(sy,y)-30;
   paths+=`<path d="M${sx},${sy} Q${mx},${my} ${x},${y}" fill="none" stroke="${hop?'var(--coral)':'var(--blue)'}" stroke-width="1.8" ${hop?'':'stroke-dasharray="4 3"'}/>`;prev=t});
  const used=[...new Set(['SAN',...ts.map(t=>t.ap)])];
- return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Flight paths from San Diego"><rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="var(--paper-2)"/>${paths}${used.map(a=>{const[x,y]=p(a);return `<circle cx="${x}" cy="${y}" r="${a==='SAN'?6:4}" fill="${a==='SAN'?'var(--coral)':'var(--blue)'}"/><text x="${x}" y="${y-8}" text-anchor="middle" style="fill:var(--ink-2);font-weight:600">${AP[a][2]}</text>`}).join('')}</svg>`}
-V.people_travel=()=>{const ts=trips();const nights=ts.reduce((a,t)=>a+t.nights,0);
- const byMo={};ts.filter(t=>!t.m.local).forEach(t=>{const k=t.out.slice(0,7);byMo[k]=(byMo[k]||0)+1});
- const busy=Object.entries(byMo).filter(([,n])=>n>1);
- return `<div><div class="hello">Home base: San Diego.</div><div class="sub">About one trip a month, with a real week at home between them. Here's how the picked shows land.</div></div>
- <div class="card">${travelMap(ts)}<div class="leg" style="margin-top:8px"><span><i class="sw" style="background:var(--blue)"></i>Fly from home</span><span><i class="sw" style="background:var(--coral)"></i>Hop city to city, skip home</span></div></div>
- <div class="kpis">${kpi('Trips',ts.filter(t=>!t.m.local).length,`${Object.keys(byMo).length} months`)}${kpi('Nights away',nights,busy.length?`${busy.length} month${busy.length>1?'s':''} over 1 trip`:'About 1 a month',busy.length?'warn':'good')}</div>
- <div class="list">${ts.map((t,i)=>{const nx=ts[i+1],gap=nx?ago(t.back,nx.out):null;const loc=t.m.local;
-  return `<div class="li" style="display:grid;gap:5px"><span class="row sp" style="flex-wrap:nowrap"><b>${esc(t.c.n)}</b>${chip(loc?'Local':t.m.drive?'Drive':'Fly',loc||t.m.drive?'good':'blue')}</span>
-  <span class="small muted">${loc?`${esc(t.c.city)} · ${fd(t.c.s)} · home same night`:`Leave ${fd(t.out)} · back ${fd(t.back)} · ${t.nights} nights · ${AP[t.ap][2]}`}</span>
-  ${gap!=null&&!nx.m.local&&!loc?(gap<5?`<span class="warnbox bad">${gap<=1?'Back to back':`Only ${gap} days home`} before ${esc(nx.c.n)}. Fly ${AP[t.ap][2]} to ${AP[nx.ap][2]} directly, or send ${esc(crew(nx.c).find(p=>p.job!=='Trip lead')?.n||'a trip lead')} to lead it so you can stay home.</span>`:gap<10?`<span class="warnbox warn">${gap} days home before ${esc(nx.c.n)}.</span>`:`<span class="xs" style="color:var(--good)">${gap} days home before the next trip</span>`):''}</div>`}).join('')}</div>
- ${busy.length?`<div class="card small"><b>To keep it to one trip a month:</b> ${busy.map(([k])=>{const n=ts.filter(t=>!t.m.local&&t.out.startsWith(k));const low=n.slice().sort((a,b)=>cBest(a.c).roi-cBest(b.c).roi)[0];return `in ${MON[+k.slice(5)-1]}, drop ${esc(low.c.n)} (lowest ROI) or hand it to a trip lead`}).join('; ')}.</div>`:''}
- <div class="xs muted">Shows without a confirmed date aren't on the map yet.</div>`;};
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Flight paths from San Diego"><rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="var(--paper-2)"/>${paths}${used.map(a=>{const[x,y]=p(a);return `<circle cx="${x}" cy="${y}" r="${a==='SAN'?6:4}" fill="${a==='SAN'?'var(--coral)':'var(--blue)'}"/><text x="${x}" y="${y-8}" text-anchor="middle" style="fill:var(--ink-2);font-weight:600">${a==='SAN'?'Home':AP[a][2]}</text>`}).join('')}</svg>`}
+function tripWarn(ts){const out=[];const byMo={};ts.filter(t=>!t.m.local).forEach((t,i,a)=>{const k=t.out.slice(0,7);(byMo[k]=byMo[k]||[]).push(t);const nx=a[i+1];if(nx){const gap=ago(t.back,nx.out);if(gap<5)out.push(`${gap<=1?'No days':'Only '+gap+' days'} at home between ${esc(t.c.n)} and ${esc(nx.c.n)}. Fly straight from ${AP[t.ap][2]} to ${AP[nx.ap][2]}, or let someone else lead ${esc(nx.c.n)}.`)}});
+ Object.entries(byMo).filter(([,v])=>v.length>1).forEach(([k,v])=>{const low=v.slice().sort((a,b)=>cBest(a.c).roi-cBest(b.c).roi)[0];out.push(`${MON[+k.slice(5)-1]} has ${v.length} trips. Drop ${esc(low.c.n)}, or let someone else lead it.`)});return out}
+
+/* ---- Home ---- */
+function nextStep(c){const cr=crew(c);const pend=db.invites.filter(i=>i.conf===c.n);
+ if(cr.length<3)return ['Pick who\'s going','planOpen',c.n,'Pick people'];
+ if(pend.length)return [`${pend.map(p=>p.n.split(' ')[0]).join(' and ')} haven't signed up yet`,'remind',c.n,'Text them a reminder'];
+ if(!db.orders.some(o=>o.item==='kit'&&o.show===c.n)&&!CMETA[c.n].local)return ['Order the booth kit','order','kit','Order it'];
+ const i=CHK.findIndex((t,k)=>!(S.ck||{})[c.n+k]);if(i>=0)return [CHK[i],'ck',c.n+i,'Mark it done'];
+ return ['You\'re all set','planOpen',c.n,'See the plan']}
+V.people_phome=()=>{const ts=trips();const nx=ts.find(t=>t.out>=TODAY&&!t.m.local)||ts[0];const pop=ts.find(t=>t.m.local&&t.c.s>=TODAY);const warns=tripWarn(ts);
+ if(!nx)return `<div class="hello">Hi Kerrie.</div><div class="card empty">No shows yet. Tap Shows to pick some.</div>`;
+ S.planConf=S.planConf||nx.c.n;const c=nx.c;const [t,a,id,b]=nextStep(c);const done=CHK.filter((x,k)=>(S.ck||{})[c.n+k]).length;
+ return `<div><div class="hello">Hi Kerrie.</div><div class="sub">Here's the one thing to do next.</div></div>
+ <div class="card blue stack"><div class="muted small">Next show · in ${ago(TODAY,c.s)} days</div><div style="font:800 24px var(--display)">${esc(c.n)}</div><div class="muted small">${esc(c.city)} · ${esc(confRange(c))}</div>
+  <div style="background:rgba(255,255,255,.14);border-radius:12px;padding:12px"><div class="muted xs">NEXT STEP</div><div style="font:700 17px var(--display);margin-top:2px">${t}</div></div>
+  <button class="btn block" style="background:#fff;color:#0B1A2E;border-color:#fff" data-a="${a}" data-id="${esc(id)}">${b}</button>
+  <div class="muted xs">${done} of ${CHK.length} checklist steps done · <button class="btn ghost" style="color:#fff;padding:0;text-decoration:underline" data-a="planOpen" data-id="${esc(c.n)}">Open the full plan</button></div></div>
+ ${pop?`<div class="card row sp" style="flex-wrap:nowrap"><span><b>${esc(pop.c.n)}</b><br><span class="small muted">${esc(pop.c.city)} · ${fd(pop.c.s)} · no flight</span></span><button class="btn sm" data-a="planOpen" data-id="${esc(pop.c.n)}">Plan it</button></div>`:''}
+ <div class="sec">${lbl('Your trips')}<div class="card">${travelMap(ts)}</div>
+ ${warns.length?warns.map(w=>`<div class="warnbox warn">${w}</div>`).join(''):`<div class="small" style="color:var(--good)">About one trip a month, with time at home in between. Nice.</div>`}
+ <div class="list">${ts.map(t=>li({icon:t.m.local?'pin':'send',t:esc(t.c.n),m:t.m.local?`${fd(t.c.s)} · near home`:`Leave ${fd(t.out)} · home ${fd(t.back)} · ${t.nights} nights`,a:'planOpen',id:t.c.n})).join('')}</div></div>
+ <div class="card stack"><b>Your best tool is your phone</b><div class="small">Every friend who signs up as a partner or rep through your link earns you 5%.</div><button class="btn pri block" data-a="tab" data-id="invite">Invite friends</button></div>`};
+
+/* ---- Invite ---- */
+V.people_invite=()=>`<div><div class="hello">Invite your people.</div><div class="sub">Pick the kind of friend. We write the text for you.</div></div>
+ <button class="bigpick" data-a="kinvite" data-id="partner"><span class="ic good" style="width:48px;height:48px">${ic('users',26)}</span><span><b>Knows lots of business owners?</b><span>Make them a referral partner. They earn 10% of what their businesses pay, every month.</span></span></button>
+ <button class="bigpick" data-a="kinvite" data-id="rep"><span class="ic" style="width:48px;height:48px">${ic('bolt',26)}</span><span><b>Wants to earn on the side?</b><span>Make them a sales rep. They earn up to 15% on every business they bring in, and can earn trips.</span></span></button>
+ <div class="sec">${lbl('People you invited',`${db.kinv.length}`)}<div class="list">${db.kinv.map(k=>li({icon:k.type==='partner'?'users':'bolt',ik:k.st==='Signed up'?'good':'warn',t:esc(k.n),m:`${k.type==='partner'?'Partner':'Sales rep'} · ${fd(k.d)}${k.note?' · '+esc(k.note):''}`,r:k.st==='Signed up'?chip('Signed up','good'):`<button class="btn sm" data-a="remind" data-id="${esc(k.n)}">Remind</button>`,chev:false})).join('')}</div></div>`;
+function kinviteSheet({id}){const p=id==='partner';const txt=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. You know so many owners, and you'd earn 10% of what they pay us, every month. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! Want to make extra money on your own time? Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
+ return `<div class="row sp"><div class="h1">${p?'Invite a partner':'Invite a sales rep'}</div><button class="btn ghost" data-a="close">Cancel</button></div>
+ <label class="f" for="ki-n">Their name<input id="ki-n" placeholder="First and last name"></label>
+ <label class="f" for="ki-p">Their phone<input id="ki-p" type="tel" placeholder="(619) 555-0100"></label>
+ <div class="lbl">The text we'll send</div><div class="mail" id="ki-t">${esc(txt)}</div>
+ <button class="btn pri block" data-a="kiSend" data-id="${id}">Send it</button><button class="btn block" data-a="copyMsg" data-id="${esc(txt)}">Just copy the text</button>
+ <div class="xs muted">${p?'Bridgette can raise their rate up to 15% later.':'They show up on Bridgette\'s list until they finish signing up.'}</div>`}
+
+/* ================= KIT: public page + print & swag (every role) ================= */
+const KIT=[
+ {k:'cards',n:'Business cards',d:'250 cards',p:35,who:'all'},
+ {k:'post',n:'Leave-behind postcards',d:'100 postcards',p:45,who:'all'},
+ {k:'tent',n:'QR table stand',d:'2 stands',p:40,who:'all'},
+ {k:'one',n:'One-pager',d:'50 sheets',p:30,who:'all'},
+ {k:'shirt',n:'Team T-shirt',d:'1 shirt',p:18,who:'all'},
+ {k:'sticker',n:'Window stickers',d:'100 stickers',p:25,who:'all'},
+ {k:'banner',n:'Booth banner',d:'8 ft, 1 banner',p:220,who:'show'}];
+const KP=k=>KIT.find(x=>x.k===k);
+db.orders=[
+ {id:'O-112',who:'Laney Millard',item:'shirt',qty:2,total:36,st:'Shipped',d:'2026-10-28'},
+ {id:'O-111',who:'Kerrie Quinby',item:'kit',qty:1,total:359,st:'Waiting for Eric',show:'MJBizCon',d:'2026-10-29'},
+ {id:'O-109',who:'Dana Reyes',item:'cards',qty:1,total:35,st:'Printing',d:'2026-10-27'},
+ {id:'O-104',who:'Kody Muffoletto',item:'cards',qty:1,total:0,st:'Delivered',note:'Free starter pack',d:'2026-10-02'}];
+const BOOTHKIT=[['banner',1],['tent',1],['shirt',3],['post',1]];
+const bootTotal=()=>BOOTHKIT.reduce((a,[k,q])=>a+KP(k).p*q,0);
+function me(){const r=R();const w=REFS[S.role]||{code:'TEAM5'};const P={
+ spec:['Caron Cooper','SEO and AI visibility specialist','Seattle, WA','I fix what AI and Google get wrong about local practices, then keep it right. 20 years building websites.',21],
+ rep:['Kody Muffoletto','AI Onboarding & Readiness Specialist','Riverside, CA','I help local businesses see what ChatGPT says about them, and fix it for free.',7],
+ rsm:['Bridgette DeBrino','VP Marketing & Sales','Florida','I help practices get recommended by AI, and I lead our sales team.',40],
+ people:['Kerrie Quinby','VP People & Partnerships','San Diego, CA','Find me at the conferences. I connect business owners with the team that gets them into AI answers.',12],
+ partner:['Dana Reyes','Referral partner · Med spa consultant','Orange County, CA','I recommend Local AI Registry to the med spas I work with.',6],
+ god:['Steve Lee','CEO, Founder','Irvine, CA','Former Google Search and Microsoft. I started Local AI Registry so local businesses show up right in AI answers.',24]}[S.role]||[r.person,r.title,'',`On the Local AI Registry team.`,0];
+ return {n:P[0],t:P[1],city:P[2],bio:P[3],helped:P[4],code:w.code,ini:r.ini,url:(S.role==='partner'?'localairegistry.com/partner/':'localairegistry.com/pro/')+slug(P[0])}}
+function qr(seed,sz=56){let h=0;for(const ch of seed)h=(h*31+ch.charCodeAt(0))>>>0;const n=21,c=sz/n;let r='';const fin=(x,y)=>`<rect x="${x*c}" y="${y*c}" width="${7*c}" height="${7*c}" fill="#0B1A2E"/><rect x="${(x+1)*c}" y="${(y+1)*c}" width="${5*c}" height="${5*c}" fill="#fff"/><rect x="${(x+2)*c}" y="${(y+2)*c}" width="${3*c}" height="${3*c}" fill="#0B1A2E"/>`;
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12))continue;h=(h*1103515245+12345)>>>0;if(h>>>29&1)r+=`<rect x="${x*c}" y="${y*c}" width="${c}" height="${c}" fill="#0B1A2E"/>`}
+ return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-label="QR code"><rect width="${sz}" height="${sz}" fill="#fff"/>${r}${fin(0,0)}${fin(14,0)}${fin(0,14)}</svg>`}
+const MARKW='<svg viewBox="0 0 100 100" width="18" height="18" aria-hidden="true"><path d="M50 10 L92 86 L64 86 L50 58 L36 86 L8 86 Z" fill="#fff"/><path d="M50 10 L61 30 L39 30 Z" fill="#FF5A3C"/></svg>';
+function preview(k,p){const link='localairegistry.com/r/'+p.code;const Q=s=>qr(link,s);
+ return {
+ cards:`<div class="pv2"><div class="pv card-f">${MARKW}<div><b>${esc(p.n)}</b><span>${esc(p.t)}</span></div><span class="tiny">localairegistry.com</span></div><div class="pv card-b"><div><b>Is AI getting your business wrong?</b><span>Scan for a free check</span><span class="tiny">Code ${p.code}</span></div>${Q(48)}</div></div>`,
+ post:`<div class="pv post"><div><span class="tiny">LOCAL AI REGISTRY</span><b>We checked what ChatGPT says about your business.</b><span>Some of it is wrong. Scan to see it and fix it free.</span><span class="tiny">From ${esc(p.n.split(' ')[0])} · code ${p.code}</span></div>${Q(64)}</div>`,
+ tent:`<div class="pv tent">${MARKW}<b>What does AI say about your business?</b>${Q(70)}<span>Scan. Free check in 2 minutes.</span></div>`,
+ one:`<div class="pv one"><span class="tiny">LOCAL AI REGISTRY</span><b>Be the name AI says.</b><i></i><i></i><i style="width:70%"></i><div class="row sp" style="flex-wrap:nowrap"><span class="tiny">${esc(p.n)} · code ${p.code}</span>${Q(36)}</div></div>`,
+ shirt:`<div class="pv shirt"><svg viewBox="0 0 120 110" width="120" aria-hidden="true"><path d="M30 8 L48 2 Q60 12 72 2 L90 8 L114 30 L98 44 L92 38 L92 106 L28 106 L28 38 L22 44 L6 30 Z" fill="#0B1A2E"/><text x="60" y="58" text-anchor="middle" fill="#fff" font-size="8.5" font-weight="700" font-family="Bricolage Grotesque,sans-serif">ASK ME WHAT AI</text><text x="60" y="70" text-anchor="middle" fill="#fff" font-size="8.5" font-weight="700" font-family="Bricolage Grotesque,sans-serif">SAYS ABOUT YOU</text><path d="M60 78 L66 88 L62 88 L60 84 L58 88 L54 88 Z" fill="#FF5A3C"/></svg></div>`,
+ sticker:`<div class="pv stick"><div>${MARKW}<b>Find us on</b><span>Local AI Registry</span></div></div>`,
+ banner:`<div class="pv banner">${MARKW}<b>Be the name AI says.</b><span>Free AI check · scan at the table</span></div>`}[k]}
+function kitView(){const sg=S.kitSeg||'page';const p=me();
+ const seg=`<div class="seg">${[['page','My page'],['order','Print & swag'],['mine','My orders']].map(([k,l])=>`<button data-a="kitSeg" data-id="${k}" aria-pressed="${sg===k}">${l}</button>`).join('')}</div>`;
+ if(sg==='order')return seg+`<div class="sub">Every design is ready to go, with your name and your QR code on it. Pick one, pick how many, done.</div>
+  <div class="kitgrid">${KIT.filter(x=>x.who==='all'||S.role==='people').map(x=>`<button class="kitem" data-a="order" data-id="${x.k}">${preview(x.k,p)}<b>${x.n}</b><span>${x.d} · ${x.p?$(x.p):''}</span></button>`).join('')}</div>
+  <div class="xs muted">${S.role==='rep'?'Your first 250 cards are free after your first claim. ':''}Orders over $150 need Bridgette's OK. Show orders go on the show budget and need Eric's OK. Prices are estimates.</div>`;
+ if(sg==='mine'){const os=db.orders.filter(o=>o.who===p.n);return seg+(os.length?`<div class="list">${os.map(ordRow).join('')}</div>`:`<div class="card empty">No orders yet.</div>`)}
+ return seg+`<div class="sub">Your public page. Business owners land here from your cards and QR codes.</div>
+ <div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="logo-sq" style="background:var(--blue);color:#fff">${p.ini}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.n)}</div><div class="small muted">${esc(p.t)}${p.city?' · '+esc(p.city):''}</div><div class="row" style="margin-top:5px">${chip('✓ Verified by Local AI Registry','good')}</div></div></div>
+  <div class="small">${esc(S.bio?.[S.role]??p.bio)}</div>
+  ${p.helped?`<div class="cgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><span><b>${p.helped}</b>businesses helped</span><span><b>4.9</b>from owners</span></div>`:''}
+  <button class="btn pri block" data-a="toast" data-id="Opens ${esc(p.n.split(' ')[0])}'s booking calendar">Book a free AI check with ${esc(p.n.split(' ')[0])}</button>
+  <button class="btn block" data-a="toast" data-id="Opens the claim flow with code ${p.code}">Claim your business page free</button>
+  <div class="small muted" style="text-align:center">"${S.role==='partner'?'Dana sent us here and we fixed our hours in AI in 2 days.':'Showed us ChatGPT had our hours wrong. Fixed it the same day.'}" · local owner</div></div>
+ <div class="row" style="flex-wrap:nowrap"><input id="publink" readonly value="${p.url}"><button class="btn sm pri" data-a="copyMsg" data-id="${p.url}">Copy</button></div>
+ <label class="f" for="pub-bio">Your short bio<textarea id="pub-bio" data-ch="bio" style="min-height:80px">${esc(S.bio?.[S.role]??p.bio)}</textarea></label>`}
+function ordRow(o){const it=o.item==='kit'?{n:'Booth kit'+(o.show?' · '+o.show:'')}:KP(o.item);return li({icon:'ship',ik:o.st==='Delivered'?'good':/Waiting/.test(o.st)?'warn':'',t:`${esc(it.n)}${o.qty>1?' × '+o.qty:''}`,m:`${esc(o.who)} · ${fd(o.d)} · ${o.total?$(o.total):'Free'}${o.note?' · '+esc(o.note):''}`,r:chip(o.st,o.st==='Delivered'?'good':/Waiting/.test(o.st)?'warn':'blue'),chev:false})}
+function shOrder({id}){const p=me();if(id==='kit'){const c=CONFS.find(x=>x.n===S.planConf);return `<div class="row sp"><div class="h1">Booth kit</div><button class="btn ghost" data-a="close">Cancel</button></div><div class="sub">For ${esc(c?.n||'the show')}. Everything the booth needs, already designed.</div>
+  ${preview('banner',p)}<div class="list">${BOOTHKIT.map(([k,q])=>li({icon:'check',ik:'good',t:`${KP(k).n}${q>1?' × '+q:''}`,m:KP(k).d,r:`<b class="num">${$(KP(k).p*q)}</b>`,chev:false})).join('')}</div>
+  <div class="card row sp"><b>Total</b><b class="num">${$(bootTotal())}</b></div><div class="small muted">Goes on the show budget. Eric gets a text to approve it. Ships to the show hotel 3 days before.</div>
+  <button class="btn pri block" data-a="placeKit">Order booth kit</button>`}
+ const it=KP(id),q=S.oq||1,tot=it.p*q,free=S.role==='rep'&&id==='cards'&&!db.orders.some(o=>o.who===p.n&&o.item==='cards');
+ return `<div class="row sp"><div class="h1">${it.n}</div><button class="btn ghost" data-a="close">Cancel</button></div>${preview(id,p)}
+ <div class="small muted">Your name and QR code are already on it. The QR goes to your page with your code ${p.code}.</div>
+ <div class="seg">${[1,2,4].map(n=>`<button data-a="oq" data-id="${id}|${n}" aria-pressed="${q===n}">${n} × ${it.d}</button>`).join('')}</div>
+ <label class="f" for="o-ship">Ship to<select id="o-ship"><option>My address on file</option>${planConfs().filter(c=>!CMETA[c.n].local).map(c=>`<option>${esc(c.n)} hotel</option>`).join('')}</select></label>
+ <div class="card row sp"><b>Total</b><b class="num">${free?'Free':$(tot)}</b></div>
+ <div class="small muted">${free?'Your first 250 cards are on us.':tot>150?'Over $150, so Bridgette gets a text to OK it.':'Under $150, so it goes straight to print.'}</div>
+ <button class="btn pri block" data-a="placeOrder" data-id="${id}">Place order</button>`}
+V.mkt_brand=()=>{const w=db.orders.filter(o=>/Waiting/.test(o.st));
+ return `<div><div class="h1">Print & swag</div><div class="sub">Everyone orders from the same approved designs, so every card and banner looks the same. You approve, track and change the designs here.</div></div>
+ ${w.length?`<div class="sec">${lbl('Waiting for approval',`${w.length}`)}<div class="list">${w.map(o=>`<div class="li"><span class="grow"><span class="t" style="display:block">${o.item==='kit'?'Booth kit · '+esc(o.show):esc(KP(o.item).n)}</span><span class="m">${esc(o.who)} · ${$(o.total)}</span></span><button class="btn sm pri" data-a="approveOrder" data-id="${o.id}">Approve</button></div>`).join('')}</div></div>`:''}
+ <div class="sec">${lbl('All orders',`${db.orders.length}`)}<div class="list">${db.orders.map(ordRow).join('')}</div></div>
+ <div class="sec">${lbl('Designs everyone can order')}<div class="list">${KIT.map(x=>li({icon:'doc',t:x.n,m:`${x.d} · ${$(x.p)} · ${x.who==='show'?'Kerrie only, for shows':'Everyone'}`,r:`<button class="btn sm" data-a="toast" data-id="Opened the ${x.n.toLowerCase()} design">Edit design</button>`,chev:false})).join('')}</div></div>`}
 
 /* ---- Team (HR) ---- */
 const HR=[
@@ -1133,6 +1249,7 @@ function repTrips(){const me=HR[0];return `<div class="sec">${lbl('Earn a trip')
 function allHands(){const txt=`*Monday all-hands · 30 min*\n1. Wins (5 min): Aaliyah 9 claims, Kody closed NutriChem, The Cannaisseur signed\n2. Number of the week (5 min): book the meeting inside the visit. Team avg 3.3 days, goal under 2\n3. Drill (10 min): role-play the "AI has your hours wrong" opener. Kody leads\n4. Trips (5 min): MJBizCon Dec 1. Who's qualified, who's close\n5. Shout-out + one ask (5 min)`;
  return `<div class="sec">${lbl('This week\'s all-hands, 30 minutes',`<button data-a="copyMsg" data-id="${esc(txt)}">Copy for Slack</button>`)}<div class="card">${[['Wins','5 min','Aaliyah: 9 claims. Kody closed NutriChem. The Cannaisseur signed.'],['Number of the week','5 min','Book the meeting inside the visit. Team average is 3.3 days, goal is under 2.'],['Drill','10 min','Role-play the "AI has your hours wrong" opener. Kody leads, everyone tries it once.'],['Trips','5 min','MJBizCon Dec 1. Read out who qualified and who\'s close. Kerrie shares the plan.'],['Shout-out + one ask','5 min','One person thanks another. You ask for one thing this week.']].map(([t,d,m],k)=>`<div class="tip"><b>${k+1}</b><span><b style="color:var(--ink);font:600 14.5px var(--body)">${t}</b> <span class="xs muted">${d}</span><br><span class="small">${m}</span></span></div>`).join('')}</div></div>`}
 
+V.rep_kit=()=>kitView();V.partner_kit=()=>kitView();
 V.mkt_opps=()=>{const sg=S.oppSeg==='conf'?'press':S.oppSeg;
  const seg=`<div class="seg">${[['press','Press'],['ideas','Ideas']].map(([k,l])=>`<button data-a="oppSeg" data-id="${k}" aria-pressed="${sg===k}">${l}</button>`).join('')}</div>`;
  if(sg==='ideas')return seg+`<div class="sub">Ranked by impact for the effort.</div><div class="list">${OPPS.ideas.map(([t,m,e,i])=>li({icon:'bulb',ik:i==='High'?'good':'',t:esc(t),m:`${esc(m)}<br>${chip('Effort: '+e)} ${chip('Impact: '+i,i==='High'?'good':'')}`,a:'toast',id:'Added to the marketing plan'})).join('')}</div>`;
@@ -1145,7 +1262,7 @@ V.cs_macros=()=>`<div><div class="h1">Saved replies</div><div class="sub">Plain 
 const MAC=[['Code not arriving','Sorry about that. I just sent a code to your email instead. It works the same way. If it doesn\'t show in 2 minutes, check spam.'],['Wrong info on page','Thanks for flagging this. We\'ve corrected it on your page. AI tools can take days to weeks to pick up the change.'],['Pricing question','Fix ($500/mo) submits you to directories every day. Trust ($1,500/mo) adds your Google profile, review replies and press releases. Authority ($3,000/mo) adds your website and articles. No contract on any plan. Want me to book 15 minutes with our team?'],['Take my page down','We understand. Your page is a public record built from public sources, so it stays up, but you can claim it free and control what it says: {claim_link}. Or reply and I\'ll set up a quick call.'],['Delete my account','Done. Your login is deleted and you won\'t get more emails. Your public page stays, as it\'s built from public records. You can claim it again anytime.']];
 
 /* ================= sheets ================= */
-const SH={cmp:cmpSheet,invite:inviteSheet,newCode:shNewCode,addUser:shAddUser,userSheet:shUser};SH.wallet=()=>shWallet();
+const SH={order:shOrder,kinvite:kinviteSheet,kit:()=>`<div class="row sp"><div class="h1">My kit</div><button class="btn ghost" data-a="close">Close</button></div>${kitView()}`,cmp:cmpSheet,invite:inviteSheet,newCode:shNewCode,addUser:shAddUser,userSheet:shUser};SH.wallet=()=>shWallet();
 SH.nudge=({id})=>{const[aid,kind]=id.split('|');const a=A(aid);const miss=Object.entries(a.access).filter(([,v])=>!v).map(([k])=>k);
  const txt={access:`Hi ${a.owner.split(' ').slice(-1)[0]==='Owner'?'there':a.owner}, it's Caron from Local AI Registry. To start the work we still need access to: ${miss.join(', ')}. Here's a 2-minute guide: localairegistry.com/access. Want me to hop on a call and do it with you?`,
   appr:`Hi ${a.owner}, Caron here. You have ${a.appr} drafts waiting for a quick yes or edit. Nothing posts without you. Tap to review: localairegistry.com/approve`,
@@ -1368,6 +1485,7 @@ function shWallet(){const r=R(),w=wal(S.role);const link='localairegistry.com/r/
  <div class="card blue"><div class="muted small">Coming to you each month</div><div class="big-n" style="margin-top:4px">${$(w.total)}</div><div class="muted small" style="margin-top:6px">Paid on the 1st · direct deposit ··· 4417</div></div>
  <div class="list">${w.pay?li({icon:'brief',t:esc(w.pay[0]),r:`<b class="num">${$(w.pay[1])}</b>`,a:'walletGo',id:w.pay[2]+'|'+w.pay[3]}):''}${li({icon:'link',ik:'good',t:`Referrals · ${w.pct}% of what they pay`,m:`${w.list.filter(x=>x[1]==='Paying').length} paying · ${w.pend} in progress`,r:`<b class="num">${$(w.refMo)}</b>`,chev:false})}</div>
  <div class="card stack" style="text-align:center"><div class="xs muted">Your referral code</div><div class="big-n" style="letter-spacing:1px;font-size:38px">${w.code}</div><div class="row" style="justify-content:center;flex-wrap:nowrap"><input id="wlink" readonly value="${link}" style="max-width:290px"><button class="btn sm pri" data-a="copyMsg" data-id="${link}">Copy</button></div><button class="btn sm" data-a="copyMsg" data-id="${esc(msg)}">Copy a ready-to-send text</button></div>
+ <div class="row"><button class="btn" style="flex:1" data-a="kitOpen" data-id="page">${ic('store',16)}My public page</button><button class="btn" style="flex:1" data-a="kitOpen" data-id="order">${ic('ship',16)}Print & swag</button></div>
  <div class="sec">${lbl('Your referrals',`${w.list.length}`)}${w.list.length?`<div class="list">${w.list.map(([n,st,plan,d])=>li({icon:st==='Paying'?'cash':'pin',ik:st==='Paying'?'good':'',t:esc(n),m:`${st} · since ${fd(d)}`,r:plan&&st==='Paying'?`<b class="num">${$(plan*w.pct/100)}</b><div class="xs muted">/mo</div>`:chip(st),chev:false})).join('')}</div>`:`<div class="card empty">No referrals yet. Every business owner you know is a lead: dentists, med spas, your gym, your vet.</div>`}</div>
  ${w.pend?`<div class="small muted">If your ${w.pend} in-progress referral${w.pend>1?'s':''} start on a typical $1,800 plan, you add about ${$(w.pend*1800*w.pct/100)}/mo.</div>`:''}
  <div class="xs muted">Referral shares come out of the same 30% pool as deals and rep commissions. LAIR's team handles the meeting, sale and work.</div>`;}
@@ -1377,13 +1495,13 @@ function renderDemo(){document.getElementById('demo').innerHTML=`<div class="dto
  <div class="dtypes" role="group" aria-label="Switch role">${ROLES.map(r=>`<button class="dt" data-a="role" data-id="${r.id}" aria-pressed="${S.role===r.id}"><small>${r.k}</small><b>${esc(r.person)}</b></button>`).join('')}</div>`}
 function badge(t){if(S.role==='spec'&&t==='today')return specItems().filter(i=>i.lv==='bad').length;if(S.role==='rsm'&&t==='pulse')return db.deals.filter(d=>dealFlags(d).some(f=>f[1]==='bad')).length;if(S.role==='cfo'&&t==='collect')return db.ar.filter(i=>ago(i.due)>60).length;if(S.role==='cs'&&t==='queue')return db.tickets.filter(x=>!x.done&&!x.routed&&x.hrs>24).length;if(S.role==='cs'&&t==='watch')return SPECS.filter(x=>x.reply>36||x.report<65).length;if(S.role==='god'&&t==='alerts')return 4;if(S.role==='rep'&&t==='leads')return db.leads.filter(l=>l.stage==='claimed'&&ago(l.date)>=5).length;return 0}
 function render(){
- renderDemo();const r=R();
+ renderDemo();const r=R();document.body.classList.toggle('easy',S.role==='people');
  document.getElementById('hdr').innerHTML=`<div class="brand">${MARK}<div style="min-width:0;display:grid"><b>Local AI Registry</b><span>${esc(r.title)}</span></div></div><button class="me" data-a="wallet" aria-label="Open my wallet"><span class="wamt">${ic('wallet',15)}${$k(wal(S.role).total)}</span><span class="av">${r.ini}</span></button><button class="qbar" data-a="search">${ic('search')}<span>Search any business, person or city</span></button>`;
  document.getElementById('tabs').innerHTML=TABS[S.role].map(([k,l,i])=>{const b=badge(k);return `<button class="tb" data-a="tab" data-id="${k}" ${tab()===k?'aria-current="page"':''}>${ic(i)}<span>${l}</span>${b?`<span class="bd">${b}</span>`:''}</button>`}).join('');
  document.getElementById('main').innerHTML=(V[S.role+'_'+tab()]||(()=>''))();
  renderSheet();
 }
-function renderSheet(){const el=document.getElementById('sheet');if(!S.sheet){el.innerHTML='';return}el.innerHTML=`<div class="ov" data-a="ovc"><div class="sh ${['search','p360','wallet','asOwner'].includes(S.sheet.k)?'full':''}" role="dialog" aria-modal="true"><div class="grab"></div>${SH[S.sheet.k](S.sheet)}</div></div>`}
+function renderSheet(){const el=document.getElementById('sheet');if(!S.sheet){el.innerHTML='';return}el.innerHTML=`<div class="ov" data-a="ovc"><div class="sh ${['search','p360','wallet','asOwner','kit'].includes(S.sheet.k)?'full':''}" role="dialog" aria-modal="true"><div class="grab"></div>${SH[S.sheet.k](S.sheet)}</div></div>`}
 let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,2800)}
 function open(k,id){S.sheet={k,id};renderSheet()}
 function close(){S.sheet=null;S.vstep=0;renderSheet()}
@@ -1428,6 +1546,17 @@ document.addEventListener('click',e=>{
   saveCode:()=>{const who=document.getElementById('pc-who').value.trim();if(!who){document.getElementById('pc-who').focus();toast('Add the partner\'s name');return}const code=who.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+S.pc.pct;db.pcodes.push({code,who,role:document.getElementById('pc-role').value.trim()||'Partner',pct:S.pc.pct,cust:S.pc.cust,refs:0,paying:0,mrr:0});close();render();toast('Code '+code+' created. Partner portal invite sent.')},
   oppSeg:()=>{S.oppSeg=id;render()},
   pbSeg:()=>{S.pbSeg=id;render()},
+  kitSeg:()=>{S.kitSeg=id;if(S.sheet&&S.sheet.k==='kit')renderSheet();else render()},
+  kitOpen:()=>{S.kitSeg=id;open('kit','')},
+  order:()=>{S.oq=1;open('order',id)},
+  oq:()=>{const[k,n]=id.split('|');S.oq=+n;open('order',k)},
+  placeOrder:()=>{const p=me(),it=KP(id),free=S.role==='rep'&&id==='cards'&&!db.orders.some(o=>o.who===p.n&&o.item==='cards');const tot=free?0:it.p*(S.oq||1);
+   db.orders.unshift({id:'O-'+(113+db.orders.length),who:p.n,item:id,qty:S.oq||1,total:tot,st:tot>150?'Waiting for Bridgette':'Printing',d:TODAY,note:free?'Free starter pack':''});S.kitSeg='mine';close();render();toast(tot>150?'Ordered. Bridgette got a text to OK it.':'Ordered. It\'s going to print.')},
+  placeKit:()=>{db.orders.unshift({id:'O-'+(113+db.orders.length),who:'Kerrie Quinby',item:'kit',qty:1,total:bootTotal(),st:'Waiting for Eric',show:S.planConf,d:TODAY});close();render();toast('Booth kit ordered. Eric got a text to OK it.')},
+  approveOrder:()=>{const o=db.orders.find(x=>x.id===id);o.st='Printing';render();toast('Approved. It\'s going to print.')},
+  kinvite:()=>open('kinvite',id),
+  kiSend:()=>{const n=document.getElementById('ki-n').value.trim();if(!n){document.getElementById('ki-n').focus();toast('Add their name first');return}db.kinv.unshift({n,type:id,st:'Not signed up yet',d:TODAY});if(id==='rep')db.invites.unshift({n,e:'',by:'Kerrie',conf:'',d:TODAY});else db.pcodes.push({code:n.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+'10',who:n,role:'Invited by Kerrie',pct:10,cust:0,refs:0,paying:0,mrr:0});close();render();toast('Sent to '+n+'. We\'ll tell you when they sign up.')},
+  remind:()=>{toast('Reminder texted')},
   going:()=>{S.going.has(id)?S.going.delete(id):S.going.add(id);render();toast(S.going.has(id)?id+' added to the plan':id+' removed')},
   planOpen:()=>{S.planConf=id;S.tab.people='plan';render();window.scrollTo(0,0)},
   cmp:()=>open('cmp',id),
@@ -1438,7 +1567,7 @@ document.addEventListener('click',e=>{
   night:()=>{S.night=S.night||{};S.night[id]=S.night[id]===false;render()},
   ck:()=>{S.ck=S.ck||{};S.ck[id]=!S.ck[id];render()},
   invite:()=>open('invite',id),
-  saveInvite:()=>{const g=x=>document.getElementById(x);const n=g('iv-n').value.trim(),e=g('iv-e').value.trim();if(!n){g('iv-n').focus();toast('Add their name');return}if(!/.+@.+\..+/.test(e)){g('iv-e').focus();toast('Add a valid email');return}
+  saveInvite:()=>{if(id==='Kerrie'){const nn=document.getElementById('iv-n').value.trim();if(nn)db.kinv.unshift({n:nn,type:'rep',st:'Not signed up yet',d:TODAY})}const g=x=>document.getElementById(x);const n=g('iv-n').value.trim(),e=g('iv-e').value.trim();if(!n){g('iv-n').focus();toast('Add their name');return}if(!/.+@.+\..+/.test(e)){g('iv-e').focus();toast('Add a valid email');return}
    const cf=g('iv-c').value;db.invites.unshift({n,e,by:id,conf:cf,d:TODAY});db.users.push({n,e,r:'rep',type:'1099',extra:cf?'Booth for '+cf:'',st:'Invited',last:''});if(cf)crew(CONFS.find(c=>c.n===cf)).push({n,job:'Booth',pay:'day'});close();render();toast(`Invite sent to ${n}. They're on Bridgette's onboarding list.`)},
   uf:()=>{S.uf=id;render()},
   addUser:()=>open('addUser',''),
@@ -1459,7 +1588,7 @@ document.addEventListener('click',e=>{
   close:()=>close(),ovc:()=>close()};
  go[a]&&go[a]();
 });
-document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='planconf'){S.planConf=el.value.split(' · ')[0];render()}if(el.dataset.ch==='crewadd'&&el.value){crew(CONFS.find(c=>c.n===S.planConf)).push({n:el.value,job:'Booth',pay:'share'});render()}if(el.dataset.ch==='aurole'){document.getElementById('auPrev').innerHTML=auPreview(el.value)}if(el.dataset.ch==='urole'){const u=db.users.find(x=>x.e===el.dataset.id);u.r=el.value;document.getElementById('auPrev').innerHTML=auPreview(el.value);render();toast(`${u.n} is now ${URO[u.r]}`)}if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='bio'){S.bio=S.bio||{};S.bio[S.role]=el.value;toast('Bio saved');return}if(el.dataset.ch==='planconf'){S.planConf=el.value;render()}if(el.dataset.ch==='crewadd'&&el.value){crew(CONFS.find(c=>c.n===S.planConf)).push({n:el.value,job:'Booth',pay:'share'});render()}if(el.dataset.ch==='aurole'){document.getElementById('auPrev').innerHTML=auPreview(el.value)}if(el.dataset.ch==='urole'){const u=db.users.find(x=>x.e===el.dataset.id);u.r=el.value;document.getElementById('auPrev').innerHTML=auPreview(el.value);render();toast(`${u.n} is now ${URO[u.r]}`)}if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
 document.addEventListener('input',e=>{const el=e.target;if(el.id==='q'){document.getElementById('qres').innerHTML=searchRes(el.value);return}
  if(el.dataset.in==='calc'){const k=el.dataset.id;S.calc[k]=+el.value;document.getElementById('clv-'+k).textContent=S.calc[k]+(k==='names'?'':'%');document.getElementById('calcOut').innerHTML=calcOut(CONFS.find(c=>c.n===S.planConf));return}
  if(el.dataset.in==='dl'){const k=el.dataset.id;S.dl[k]=+el.value;const lb=document.getElementById('dlv-'+k);if(lb)lb.textContent=k==='amt'?(S.dl.kind==='bonus'?$(S.dl[k]):S.dl[k]+'%'):S.dl[k];dealUpdate();return}
