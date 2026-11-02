@@ -647,8 +647,7 @@ V.spec_store=()=>{
  <div class="sub">This is how owners see you, like an Upwork profile.</div>
  ${specProfile()}
  ${levelLadder(4)}
- <div class="list">${chk.map(([t,d])=>li({icon:d?'check':'plus',ik:d?'good':'',t:esc(t),m:d?'Done':'Add this',a:d?'':'toast',id:'Opened editor',chev:!d})).join('')}</div>
- <button class="btn block" data-a="dirOpen">${ic('map',16)}See how you show in the partner directory</button>`;
+ <div class="list">${chk.map(([t,d])=>li({icon:d?'check':'plus',ik:d?'good':'',t:esc(t),m:d?'Done':'Add this',a:d?'':'toast',id:'Opened editor',chev:!d})).join('')}</div>`;
 };
 
 /* ================= AIORS REP (Kody) ================= */
@@ -914,7 +913,7 @@ V.god_over=()=>{
   ['rep','AIORS reps','31 claims this month, Kody #4 nationally.','good'],
   ['spec','Specialists','R.Ve is 6 days late on approvals and missing GA4/GSC.','bad'],
   ['cfo','Finance','Margin 49% vs 55% target. Biggest leak: failed cards and deal discounts.','warn'],
-  ['partner','Partners','Directory has 69 listings, 6 active partners. The Audrey Aesthetic brought in $6,000/mo.','good'],
+  ['partner','Partners','Directory has 68 listings, 5 active partners. The Audrey Aesthetic brought in $6,000/mo.','good'],
   ['people','People & Partnerships','MJBizCon Dec 1: 2 booth reps haven\'t signed up yet.','warn'],
   ['cto','Product','Pricing exits: 41 owners. Survey ships Monday.','warn'],
   ['mkt','Marketing','Provider applications up 3x after Clutch post.','good'],
@@ -1221,7 +1220,7 @@ function kitView(){const p=me();
  <div class="row" style="flex-wrap:nowrap"><input id="publink" readonly value="${p.url}"><button class="btn sm pri" data-a="copyMsg" data-id="${p.url}">Copy</button></div>
  <label class="f" for="pub-bio">Your short bio<textarea id="pub-bio" data-ch="bio" style="min-height:80px">${esc(S.bio?.[S.role]??p.bio)}</textarea></label>`}
 /* ================= PARTNER DIRECTORY (outside companies, like a vendor marketplace) ================= */
-const PCAT=['Consultancies','Industry leaders','KOLs & practitioners','Medical advisors','AEO specialists','Agencies','Website builders','Booking & practice software','Reviews & reputation','Listings & local SEO','AI & search tools','PR & media','Financing & loyalty','Associations & media'];
+const PCAT=['Consultancies','Industry leaders','KOLs & practitioners','Medical advisors','Agencies','Website builders','Booking & practice software','Reviews & reputation','Listings & local SEO','AI & search tools','PR & media','Financing & loyalty','Associations & media'];
 const CCOL={'Consultancies':'#5a4e44','Industry leaders':'#0B1A2E','KOLs & practitioners':'#7a3e5a','Medical advisors':'#0B1A2E','AEO specialists':'#1F4FE0','Agencies':'#3a4a62','Website builders':'#2b2b2b','Booking & practice software':'#2e6b5e','Reviews & reputation':'#b5651d','Listings & local SEO':'#1F4FE0','AI & search tools':'#4b3fb5','PR & media':'#8a3324','Financing & loyalty':'#FF5A3C','Associations & media':'#3a4a62'};
 const D_=(co,cat,one,site,o={})=>({id:co.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),co,cat,one,site,person:o.person||co,mono:o.mono||co.replace(/^(Dr\.?|The) /,'').split(/[\s,.]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase(),col:CCOL[cat],partner:!!o.partner,code:o.code||'',serves:o.serves||'',lvl:o.lvl||0,since:o.since||'',spec:o.spec||0});
 const PARTNERS=[
@@ -1248,7 +1247,6 @@ const PARTNERS=[
  D_('Linda Rank, PA-C','KOLs & practitioners','soul&beautyMEDx, Mission Viejo.','soulandbeautymedx.com'),
  D_('Dr. Tess Mauricio','Medical advisors','LAIR Medical Director. M Beauty Clinic, Beverly Hills.','',{partner:1,code:'TESS50',since:'Oct 2026'}),
  D_('Dr. Ashish Bhatia','Medical advisors','LAIR Medical Advisor. Dermatologist and educator.','',{partner:1,code:'ASHISH50',since:'Oct 2026'}),
- D_('Caron Cooper','AEO specialists','AEO Specialist. SEO and AI visibility for medical practices. 96% client success, 21 clients improved.','',{mono:'CC',partner:1,lvl:4,spec:1,serves:'Eye care, med spas, surgeons',since:'2026'}),
  D_('Brandon Hahr','Agencies','Agency founder. Built the technology behind Galderma, Merz and Evolus programs.',''),
  ...['Squarespace|squarespace.com','Wix|wix.com','Webflow|webflow.com','WordPress|wordpress.com','Shopify|shopify.com','GoDaddy|godaddy.com','Duda|duda.co'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Website builders','Website builder. Add your LAIR badge and schema to any site.',s2)}),
  ...['Boulevard|joinblvd.com|Salons and med spas','Zenoti|zenoti.com|Spas and med spas','Mangomint|mangomint.com|Salons and spas','Vagaro|vagaro.com|Salons, spas, fitness','Mindbody|mindbodyonline.com|Fitness and wellness','Jane|jane.app|Clinics','NexHealth|nexhealth.com|Dental and medical','Weave|getweave.com|Dental, vet, medical','Dutchie|dutchie.com|Dispensaries'].map(x=>{const[n,s2,sv]=x.split('|');return D_(n,'Booking & practice software',`Booking and practice software for ${sv.toLowerCase()}.`,s2,{serves:sv})}),
