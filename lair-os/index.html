@@ -401,7 +401,9 @@ const TABS={
 
 /* ================= data (sample) ================= */
 const W8=[['technical','Technical fixes'],['llms','llms.txt'],['cannibal','Cannibalization'],['topical','Topical map'],['crawl','Crawl budget'],['schema','Schema'],['onsite','Articles & blogs'],['offpage','Backlinks']];
-const W8S={technical:'Technical',llms:'llms.txt',cannibal:'Cannibal.',topical:'Topical map',crawl:'Crawl',schema:'Schema',onsite:'Articles',offpage:'Backlinks'};
+const WTRUST=[['gbp','Google posts'],['replies','Review replies'],['press','Press release'],['disputes','Review disputes'],['dirs','Directories']];
+const WL=a=>a.tier==='Authority'?W8:WTRUST;
+const W8S={gbp:'Google posts',replies:'Replies',press:'Press',disputes:'Disputes',dirs:'Directories',technical:'Technical',llms:'llms.txt',cannibal:'Cannibal.',topical:'Topical map',crawl:'Crawl',schema:'Schema',onsite:'Articles',offpage:'Backlinks'};
 let db;
 function seed(){return {
  accts:[
@@ -501,6 +503,7 @@ function seed(){return {
   {code:'LASERREP8',who:'Nina Park',role:'Laser device rep',pct:8,cust:7,refs:9,paying:2,mrr:3000}],
 };}
 db=seed();
+Object.entries({ces:{gbp:2,replies:1,press:2,disputes:2,dirs:2},qvita:{gbp:2,replies:1,press:0,disputes:2,dirs:2},quik:{gbp:2,replies:2,press:2,disputes:2,dirs:2}}).forEach(([k,v])=>{const a=db.accts.find(x=>x.id===k);if(a)a.work=v});
 
 /* ================= state ================= */
 const S={role:'spec',tab:{},detail:null,sheet:null,online:false,hours:2,shift:{v:0,c:0},persona:'biz',mapSel:'CA',
@@ -530,19 +533,19 @@ function wDone(a){return Object.values(a.work).filter(v=>v===2).length}
 const V={};
 V.spec_today=()=>{
  const it=specItems(),bad=it.filter(i=>i.lv==='bad').length;
- const due=db.accts.filter(a=>wDone(a)<8&&!a.handoff).length;
+ const due=db.accts.filter(a=>wDone(a)<WL(a).length&&!a.handoff).length;
  return `<div><div class="hello">${hello()}, Caron.</div><div class="sub">${bad} things are late. The November reports lock in 2 days.</div></div>
- <div class="kpis">${kpi('Accounts',db.accts.length,'1 new handoff')}${kpi('Report work done',Math.round(db.accts.reduce((s,a)=>s+wDone(a),0)/(db.accts.length*8)*100)+'%',`${due} accounts not complete`,'warn')}</div>
+ <div class="kpis">${kpi('Accounts',db.accts.length,'1 new handoff')}${kpi('Report work done',Math.round(db.accts.reduce((s,a)=>s+wDone(a),0)/db.accts.reduce((s,a)=>s+WL(a).length,0)*100)+'%',`${due} accounts not complete`,'warn')}</div>
  <div class="sec">${lbl('Do these first')}<div class="list">${it.map(i=>li({icon:i.icon,ik:i.lv,t:i.t,m:i.m+(i.lv==='bad'?' '+chip('Late','bad'):''),a:i.act==='nudge'?'nudge':'openAcct',id:i.act==='nudge'?i.a.id+'|'+i.kind:i.a.id})).join('')}</div></div>
- <div class="sec">${lbl('Report closes Nov 1',`<button data-a="tab" data-id="work">Log work</button>`)}<div class="list">${db.accts.filter(a=>wDone(a)<8&&!a.handoff).map(a=>li({icon:'doc',t:esc(a.name),m:`${8-wDone(a)} of 8 not done: ${W8.filter(([k])=>a.work[k]<2).map(([k])=>W8S[k]).join(', ')}`,a:'openAcct',id:a.id})).join('')}</div></div>`;
+ <div class="sec">${lbl('Report closes Nov 1',`<button data-a="tab" data-id="work">Log work</button>`)}<div class="list">${db.accts.filter(a=>wDone(a)<WL(a).length&&!a.handoff).map(a=>li({icon:'doc',t:esc(a.name),m:`${WL(a).length-wDone(a)} of ${WL(a).length} not done: ${WL(a).filter(([k])=>a.work[k]<2).map(([k])=>W8S[k]).join(', ')}`,a:'openAcct',id:a.id})).join('')}</div></div>`;
 };
 V.spec_accts=()=>{
  if(S.detail)return acctDetail(A(S.detail));
  return `<div><div class="h1">Your accounts</div><div class="sub">${db.accts.length} accounts · ${$(db.accts.reduce((s,a)=>s+a.mrr,0))}/mo under your care</div></div>
  <div class="list">${db.accts.map(a=>{const miss=Object.values(a.access).filter(v=>!v).length;const st=a.handoff?chip('Handoff','blue'):miss?chip(`${miss} access missing`,'bad'):a.appr?chip(`${a.appr} approvals`,'warn'):chip('On track','good');
-  return li({icon:'brief',ik:a.handoff?'':miss?'bad':a.appr?'warn':'good',t:esc(a.name),m:`${a.tier} · ${wDone(a)}/8 done · ${st}`,r:`<div class="num" style="font-weight:600">${$(a.mrr)}</div><div class="xs muted">/mo</div>`,a:'openAcct',id:a.id})}).join('')}</div>`;
+  return li({icon:'brief',ik:a.handoff?'':miss?'bad':a.appr?'warn':'good',t:esc(a.name),m:`${a.tier} · ${wDone(a)}/${WL(a).length} done · ${st}`,r:`<div class="num" style="font-weight:600">${$(a.mrr)}</div><div class="xs muted">/mo</div>`,a:'openAcct',id:a.id})}).join('')}</div>`;
 };
-function eight(a){return `<div class="eight">${W8.map(([k])=>`<div class="e8 s${a.work[k]}"><i></i>${W8S[k]}</div>`).join('')}</div>`}
+function eight(a){return `<div class="eight">${WL(a).map(([k])=>`<div class="e8 s${a.work[k]}"><i></i>${W8S[k]}</div>`).join('')}</div>`}
 function acctDetail(a){
  const miss=Object.entries(a.access).filter(([,v])=>!v).map(([k])=>k);
  const logs=db.log.filter(l=>l.acct===a.id);
@@ -551,7 +554,7 @@ function acctDetail(a){
   <div class="row" style="margin-top:12px"><button class="btn pri sm" data-a="nudge" data-id="${a.id}|text">${ic('chat',16)}Text owner</button><button class="btn sm" data-a="logWork" data-id="${a.id}">${ic('plus',16)}Log work</button><button class="btn sm" data-a="p360" data-id="${slug(a.name)}">${ic('eye',16)}360 view</button><button class="btn sm" data-a="toast" data-id="Opened ${esc(a.name)}'s LAIR profile editor">${ic('doc',16)}Edit LAIR profile</button></div></div>
  <div class="sec">${lbl('Access',miss.length?chip(`${miss.length} missing`,'bad'):chip('All set','good'))}<div class="acc">${Object.entries(a.access).map(([k,v])=>`<div><span class="${v?'ok':'no'}">${v?'✓':'✕'}</span>${k}</div>`).join('')}</div>
   ${miss.length?`<button class="btn block" data-a="nudge" data-id="${a.id}|access">Ask for ${miss.join(', ')} again</button>`:''}</div>
- <div class="sec">${lbl('This month\'s 8',`${wDone(a)}/8 done`)}${eight(a)}<div class="leg"><span><i class="sw" style="background:var(--good)"></i>Done</span><span><i class="sw" style="background:var(--warn-soft);box-shadow:inset 0 0 0 1.5px var(--warn)"></i>In progress</span><span><i class="sw" style="background:var(--paper-2);box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>Not started</span></div></div>
+ <div class="sec">${lbl(a.tier==='Authority'?'This month\'s 8 (Authority)':'This month\'s work ('+a.tier+')',`${wDone(a)}/${WL(a).length} done`)}${eight(a)}<div class="leg"><span><i class="sw" style="background:var(--good)"></i>Done</span><span><i class="sw" style="background:var(--warn-soft);box-shadow:inset 0 0 0 1.5px var(--warn)"></i>In progress</span><span><i class="sw" style="background:var(--paper-2);box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>Not started</span></div></div>
  <div class="sec">${lbl('In the November report',`<button data-a="logWork" data-id="${a.id}">+ Add</button>`)}${logs.length?`<div class="list">${logs.map(l=>li({icon:'link',t:esc(l.title),m:`${W8S[l.type]} · ${fd(l.date)} · ${esc(l.link)}`})).join('')}</div>`:`<div class="card empty">Nothing logged yet. Every item you add shows in the client's report with its date and link.</div>`}</div>
  <div class="kpis">${kpi('LAIR profile',a.profile+'%',a.profile<60?'Fill it for them':'Owner confirmed',a.profile<60?'warn':'good')}${kpi('Waiting on owner',(a.appr||0)+(a.q||0),a.appr?`${a.appr} approvals · ${a.q||0} questions`:'Nothing pending',a.appr||a.q?'warn':'good')}</div>
  <div class="sec">${lbl('Everything sent to and from them')}<div class="card"><div class="tl">${a.comms.map(([d,k,t])=>`<div class="i"><div class="d">${fd(d)}</div><div><div class="k">${k}</div><div>${esc(t)}</div></div></div>`).join('')}</div></div></div>
@@ -561,7 +564,7 @@ V.spec_work=()=>{
  const all=[...db.log].sort((x,y)=>y.date.localeCompare(x.date));
  return `<div><div class="h1">Log your work</div><div class="sub">Date, title and a link or file. It shows up in that client's monthly report, in "Everything we did, day by day."</div></div>
  <button class="btn pri block" data-a="logWork" data-id="">${ic('plus',18)}Add work to a report</button>
- <div class="sec">${lbl('By account, this month')}<div class="list">${db.accts.filter(a=>!a.handoff).map(a=>`<div class="li" style="display:grid;gap:8px"><div class="row sp"><b>${esc(a.name)}</b><span class="xs muted">${wDone(a)}/8</span></div>${eight(a)}</div>`).join('')}</div></div>
+ <div class="sec">${lbl('By account, this month')}<div class="list">${db.accts.filter(a=>!a.handoff).map(a=>`<div class="li" style="display:grid;gap:8px"><div class="row sp"><b>${esc(a.name)}</b><span class="xs muted">${wDone(a)}/${WL(a).length}</span></div>${eight(a)}</div>`).join('')}</div></div>
  <div class="sec">${lbl('Recently logged')}<div class="list">${all.map(l=>li({icon:'link',t:esc(l.title),m:`${esc(A(l.acct).name)} · ${W8S[l.type]} · ${fd(l.date)}`})).join('')}</div></div>`;
 };
 V.spec_wallet=()=>{
@@ -595,7 +598,7 @@ const REP_PCT=.05;
 function repMonthly(){return db.leads.filter(l=>l.stage==='closed').reduce((s,l)=>s+l.plan*(l.closer==='self'?.15:.10),0)}
 V.rep_go=()=>{
  const est=Math.round(S.hours*7*.18*4)*10;
- if(!S.online)return `<div><div class="hello">Ready, Kody?</div><div class="sub">Walk in as a customer who couldn't find them. Get them to claim their free page. That's the whole job.</div></div>
+ if(!S.online)return `<div><div class="hello">Ready, Kody?</div><div class="sub">Walk in, show them what AI gets wrong about them, and help them claim their free page. That's the whole job.</div></div>
  <div class="sec">${lbl('How long do you have?')}<div class="seg">${[1,2,4,6].map(h=>`<button data-a="hours" data-id="${h}" aria-pressed="${S.hours===h}">${h} hr${h>1?'s':''}</button>`).join('')}</div>
  <div class="card"><div class="small muted">About ${S.hours*7} visits · about ${Math.max(1,Math.round(S.hours*7*.18))} claims</div><div class="big-n" style="margin-top:6px">~${$(est)}<span style="font:600 15px var(--body);color:var(--muted)">/mo added</span></div><div class="xs muted" style="margin-top:6px">Based on your last 30 days. 1 in 40 visits becomes a paying customer.</div></div></div>
  <button class="btn pri big" data-a="goOnline">Go online</button>
@@ -616,13 +619,13 @@ V.rep_earn=()=>{
  return `<div class="card blue"><div class="muted small">Earning every month</div><div class="big-n" style="margin-top:4px">${$(m)}</div><div class="muted small" style="margin-top:6px">From ${db.leads.filter(l=>l.stage==='closed').length} paying businesses. Paid on the 1st.</div></div>
  <div class="sec">${lbl('Last 6 months')}<div class="card">${cols([60,75,150,300,375,m],['May','Jun','Jul','Aug','Sep','Oct'])}</div></div>
  <div class="sec">${lbl('If your 4 open leads close')}<div class="card"><div class="row sp"><span>Pending, at typical plans</span><b class="num">+${$(4*1500*.10)}/mo</b></div></div></div>
- <div class="sec">${lbl('How you get paid')}<div class="list">${[['They claim their page','5% · you are the lead source'],['They meet with sales','5% · booked by you or the auto email'],['They pay','5% · if you close it yourself'],['Deals and partner codes','Come out of the same 30% pool. A deep discount lowers each 5%.']].map(([t,m],i)=>li({icon:['pin','phone','cash','bolt'][i],t,m})).join('')}</div></div>`;
+ <div class="sec">${lbl('How you get paid')}<div class="list">${[['They claim their page','5% · you are the lead source'],['The meeting happens','5% · goes to whoever booked it. If our auto email books it from your claim, it\'s yours'],['They pay','5% · if you close it yourself'],['Deals and partner codes','Come out of the same 30% pool. A deep discount lowers each 5%.']].map(([t,m],i)=>li({icon:['pin','phone','cash','bolt'][i],t,m})).join('')}</div></div>`;
 };
 V.rep_ranks=()=>{
  const lb=[['Aaliyah Brooks','Miami, FL',9],['Ray Delgado','Houston, TX',8],['Mina Cho','Atlanta, GA',8],['Kody Muffoletto','Riverside, CA',7],['Marisol Vega','San Diego, CA',5],['Chris Avila','Denver, CO',5],['Jordan Kim','Seattle, WA',4],['Priya Nair','Chicago, IL',4],['Sam Patel','Dallas, TX',3],['Lena Ortiz','Tampa, FL',3],['Tony Russo','New York, NY',2],['Derek Thompson','Phoenix, AZ',1]];
  const lv=[[1,'Starter',0,''],[2,'Regular',3,'$100 bonus'],[3,'Pro',10,'New iPhone'],[4,'Captain',25,'$2,500 bonus'],[5,'Legend',100,'A car']];
  const closes=3;
- return `<div><div class="h1">National leaderboard</div><div class="sub">Claims this month. Resets Nov 1.</div></div>
+ return `<div><div class="h1">National leaderboard</div><div class="sub">Verified claims this month (owner confirmed by text code). Resets Nov 1.</div></div>
  <div class="card stack"><div class="row sp"><b>Level 2 · Regular</b><span class="small muted">${closes} of 10 paying customers</span></div>${meter(closes/10*100)}<div class="small">7 more paying customers to reach <b>Pro</b> and a new iPhone.</div></div>
  ${repTrips()}
  <div class="list">${lv.map(([n,name,need,prize])=>li({icon:'trophy',ik:closes>=need?'good':'',t:`Level ${n} · ${name}`,m:`${need} paying customers${prize?' · '+prize:''}`,r:closes>=need?chip('Reached','good'):''})).join('')}</div>
@@ -684,12 +687,12 @@ function pool(d,partnerPct=0,custLife=0){
  else if(d.kind==='free')disc=plan*d.months;
  else if(d.kind==='bonus')disc=d.amt;
  disc+=plan*custLife/100*12;
- const dP=disc/annual*100,used=dP+partnerPct,reps=Math.max(0,Math.min(REPMAX,POOL-used)),kept=Math.max(0,POOL-used-reps);
- return {plan,annual,disc,dP,pp:partnerPct,used,reps,step:reps/3,kept,over:used>POOL+1e-9};}
+ const steps=partnerPct>0?2:3,dP=disc/annual*100,used=dP+partnerPct,reps=Math.max(0,Math.min(steps*5,POOL-used)),kept=Math.max(0,POOL-used-reps);
+ return {plan,annual,disc,dP,pp:partnerPct,used,reps,step:reps/steps,intro:partnerPct>0?0:reps/steps,kept,over:used>POOL+1e-9};}
 const pf=v=>(Math.round(v*10)/10)+'%';
 function poolBar(p){
  const seg=(v,c)=>v>0.01?`<i style="width:${Math.min(v,POOL)/POOL*100}%;background:${c}"></i>`:'';
- const rows=[['Customer discount',p.dP,'var(--blue)'],['Partner',p.pp,'var(--coral)'],['Rep: intro',p.step,'var(--good)'],['Rep: booking',p.step,'color-mix(in srgb,var(--good) 65%,var(--card))'],['Rep: close',p.step,'color-mix(in srgb,var(--good) 38%,var(--card))'],['Kept by LAIR',p.kept,'var(--line-2)']];
+ const rows=[['Customer discount',p.dP,'var(--blue)'],['Partner',p.pp,'var(--coral)'],[p.pp>0?'Rep: intro (partner owns it)':'Rep: intro',p.intro,'var(--good)'],['Rep: booking',p.step,'color-mix(in srgb,var(--good) 65%,var(--card))'],['Rep: close',p.step,'color-mix(in srgb,var(--good) 38%,var(--card))'],['Kept by LAIR',p.kept,'var(--line-2)']];
  return `<div class="pool ${p.over?'over':''}" role="img" aria-label="30% pool split">${rows.map(r=>seg(r[1],r[2])).join('')}</div>
  <div class="poolrows">${rows.filter(r=>r[1]>0.01||r[0].startsWith('Rep')).map(r=>`<span><i class="sw" style="background:${r[2]}"></i>${r[0]}</span><b class="num">${pf(r[1])}</b><span class="num muted">${$(p.annual*r[1]/100)}</span>`).join('')}</div>`;}
 function hookText(d){
@@ -1085,7 +1088,7 @@ V.people_plan=()=>{const ps=planConfs();if(!ps.length)return `<div class="card e
   <div class="cmp3">${[['Everyone rev share',allShare],['Your choice',now],['Everyone $30/hr',allDay]].map(([l,r],i)=>`<div class="${i===1?'on':''}"><span>${l}</span><b>${$k(r.fixed)}</b><small>to go</small><b>${$k(r.share)}</b><small>paid out, only if they sell</small>${roiChip(r.roi)}</div>`).join('')}</div>
   <div class="small muted">$30/hr adds ${$(m.days*8*DAYRATE)} per person to the trip cost whether they sell or not. Rev share adds nothing up front, then pays them as their customers pay us.</div>
   <details class="card"><summary class="small"><b>How rev share pays out</b></summary><div class="stack" style="margin-top:10px">
-   <div class="list">${li({icon:'pin',ik:'good',t:'5% · Lead',m:'Get their name and email, and get them to claim their free page',chev:false})}${li({icon:'phone',ik:'good',t:'5% · Booking',m:'Book a call on Calendly within 48 hours. Book it right there and you get both',chev:false})}${li({icon:'cash',t:'5% · Close',m:'Whoever closes the sale, usually Kody or Bridgette',chev:false})}</div>
+   <div class="list">${li({icon:'pin',ik:'good',t:'5% · Lead',m:'Get their name and email, and get them to claim their free page',chev:false})}${li({icon:'phone',ik:'good',t:'5% · Booking',m:'Book a call on Calendly within 48 hours. Paid once the call happens. Book it right there and you get both',chev:false})}${li({icon:'cash',t:'5% · Close',m:'Whoever closes the sale, usually Kody or Bridgette',chev:false})}</div>
    <div class="small">The goal: get as many owners as possible to claim their page, and book a call before they walk away.</div>
    ${[['names','Names collected per person',5,60,1,''],['book','Booked within 48 hours',0,100,5,'%'],['close','Booked calls that pay',0,60,5,'%']].map(([k,l,a,b,s,u])=>`<div class="rng"><div class="row"><label for="cl-${k}">${l}</label><b class="num" id="clv-${k}">${(S.calc||(S.calc={names:15,book:40,close:20}))[k]}${u}</b></div><input type="range" id="cl-${k}" data-in="calc" data-id="${k}" min="${a}" max="${b}" step="${s}" value="${S.calc[k]}"></div>`).join('')}
    <div id="calcOut">${calcOut(c)}</div></div></details>`)}
@@ -1134,12 +1137,12 @@ V.people_invite=()=>`<div><div class="hello">Invite your people.</div><div class
  <button class="bigpick" data-a="kinvite" data-id="partner"><span class="ic good" style="width:48px;height:48px">${ic('users',26)}</span><span><b>Knows lots of business owners?</b><span>Make them a referral partner. They earn 10% of what their businesses pay, every month.</span></span></button>
  <button class="bigpick" data-a="kinvite" data-id="rep"><span class="ic" style="width:48px;height:48px">${ic('bolt',26)}</span><span><b>Wants to earn on the side?</b><span>Make them a sales rep. They earn up to 15% on every business they bring in, and can earn trips.</span></span></button>
  <div class="sec">${lbl('People you invited',`${db.kinv.length}`)}<div class="list">${db.kinv.map(k=>li({icon:k.type==='partner'?'users':'bolt',ik:k.st==='Signed up'?'good':'warn',t:esc(k.n),m:`${k.type==='partner'?'Partner':'Sales rep'} · ${fd(k.d)}${k.note?' · '+esc(k.note):''}`,r:k.st==='Signed up'?chip('Signed up','good'):`<button class="btn sm" data-a="remind" data-id="${esc(k.n)}">Remind</button>`,chev:false})).join('')}</div></div>`;
-function kinviteSheet({id}){const p=id==='partner';const txt=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. You know so many owners, and you'd earn 10% of what they pay us, every month. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! Want to make extra money on your own time? Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
+function kinviteSheet({id}){const p=id==='partner';const txt0=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. You know so many owners, and you'd earn 10% of what they pay us, every month. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! Want to make extra money on your own time? Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
  return `<div class="row sp"><div class="h1">${p?'Invite a partner':'Invite a sales rep'}</div><button class="btn ghost" data-a="close">Cancel</button></div>
  <label class="f" for="ki-n">Their name<input id="ki-n" placeholder="First and last name"></label>
  <label class="f" for="ki-p">Their phone<input id="ki-p" type="tel" placeholder="(619) 555-0100"></label>
- <div class="lbl">The text we'll send</div><div class="mail" id="ki-t">${esc(txt)}</div>
- <button class="btn pri block" data-a="kiSend" data-id="${id}">Send it</button><button class="btn block" data-a="copyMsg" data-id="${esc(txt)}">Just copy the text</button>
+ <div class="lbl">Your text</div><div class="mail" id="ki-t">${esc(txt0)}</div>
+ <button class="btn pri block" data-a="kiSend" data-id="${id}">Copy the text and save</button><div class="small muted">Paste it into a text from your own phone. Texts to friends come from you, not from us.</div>
  <div class="xs muted">${p?'Bridgette can raise their rate up to 15% later.':'They show up on Bridgette\'s list until they finish signing up.'}</div>`}
 
 /* ================= KIT: public page + print & swag (every role) ================= */
@@ -1271,7 +1274,7 @@ SH.nudge=({id})=>{const[aid,kind]=id.split('|');const a=A(aid);const miss=Object
  <div class="row"><button class="btn pri" data-a="sent" data-id="${aid}|Text">Send text</button><button class="btn" data-a="sent" data-id="${aid}|Email">Send as email</button><button class="btn ghost" data-a="close">Cancel</button></div><div class="xs muted">Logged to the account timeline either way.</div>`};
 SH.logWork=({id})=>`<div><div class="h1">Add work to a report</div><div class="sub">Shows in the client's monthly report with this date, title and link.</div></div>
  <label class="f" for="lw-a">Account<select id="lw-a">${db.accts.map(a=>`<option value="${a.id}" ${a.id===id?'selected':''}>${esc(a.name)}</option>`).join('')}</select></label>
- <label class="f" for="lw-t">Type<select id="lw-t">${W8.map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></label>
+ <label class="f" for="lw-t">Type<select id="lw-t">${[...W8,...WTRUST].map(([k,n])=>`<option value="${k}">${n}</option>`).join('')}</select></label>
  <label class="f" for="lw-d">Date<input id="lw-d" type="date" value="${TODAY}"></label>
  <label class="f" for="lw-ti">Title<input id="lw-ti" placeholder="e.g. Botox aftercare: what to avoid for 24 hours"></label>
  <label class="f" for="lw-l">Link<small>Blog URL, off-page placement, Google Doc or Sheet</small><input id="lw-l" placeholder="https://"></label>
@@ -1279,7 +1282,7 @@ SH.logWork=({id})=>`<div><div class="h1">Add work to a report</div><div class="s
  <button class="btn pri block" data-a="saveWork">Add to report</button>`;
 SH.visit=({id})=>{const n=db.nearby.find(x=>x.id===id);const st=S.vstep||0;
  const steps=[
-  `<div class="lbl">Step 1 of 3 · Say this</div><div class="script">"Hey, quick one. I was looking for a ${n.kind.toLowerCase()} near here and asked ChatGPT. It said you ${n.wrong.toLowerCase().includes('hours')?'had different hours':'do things you might not'}. Is that right?"</div><div class="small muted">Then show them: ${esc(n.wrong)}</div><button class="btn pri block" data-a="vnext">They're listening</button>`,
+  `<div class="lbl">Step 1 of 3 · Say this</div><div class="script">"Hi, I'm ${R().first}. I help local businesses with what ChatGPT says about them. I checked yours on the way in. It says you ${n.wrong.toLowerCase().includes('hours')?'have different hours':'do things you might not'}. Is that right?"</div><div class="small muted">Then show them: ${esc(n.wrong)}</div><button class="btn pri block" data-a="vnext">They're listening</button>`,
   `<div class="lbl">Step 2 of 3 · Show their page</div><div class="card stack"><div class="row sp"><b>${esc(n.name)}</b>${chip('Unclaimed','bad')}</div><div class="row"><span class="big-n" style="font-size:36px">${n.score}</span><span class="small muted">AI Score out of 100</span></div><div class="small">${esc(n.wrong)}</div></div><div class="script" style="font-size:19px">"It's a free page. You can fix it in two minutes and AI starts reading the right info."</div><button class="btn pri block" data-a="vnext">They want to fix it</button>`,
   `<div class="lbl">Step 3 of 3 · Claim it with them</div><label class="f" for="cl-e">Owner email<input id="cl-e" type="email" placeholder="owner@business.com"></label><label class="f" for="cl-p">Owner mobile<input id="cl-p" type="tel" placeholder="(951) 555-0100"></label><div class="small muted">They get a code by text. You're saved as the lead source.</div><button class="btn pri block" data-a="claimed" data-id="${n.id}">Send their code</button>`];
  return `<div class="row sp"><div><div class="h1">${esc(n.name)}</div><div class="sub">${n.kind} · ${n.dist}</div></div><button class="btn ghost" data-a="close">Skip</button></div>${steps[st]}<button class="btn ghost" data-a="notint" data-id="${n.id}">Not interested · log visit</button>`};
@@ -1434,7 +1437,7 @@ SH.asOwner=({id})=>{const p=prof(id);const o=S.otab||'dash';const who=ownerName(
    <div class="kpis">${kpi('AI Score',(p.r.ai??58)+' / 100',p.a?'+6 this month':'Claim and confirm to raise it',p.a?'good':'warn')}${kpi('Questions from locals',p.a?2:1,'1 unanswered','warn')}</div>
    ${p.a?`<div class="card stack"><b>Make sure AI shows your correct info</b><div class="small">Add the "Verified on Local AI Registry" badge and the code snippet to your website.</div><button class="btn sm" ${act('Badge code copied.')}>Copy badge code</button></div>`:`<div class="card stack"><b>Kody invited you to a 30-minute walkthrough</b><div class="small">See what AI says about you and how to fix it.</div><button class="btn pri sm" ${act('Walkthrough booked for Tue 10 AM.')}>Pick a time</button></div>`}`,
   inbox:`<div class="list">${li({icon:'chat',ik:'warn',t:'Question: "Do you take walk-ins on Saturdays?"',m:'From a local · 2 days ago · unanswered',chev:false})}${li({icon:'pin',t:'Booking request: Thu afternoon',m:'From a visitor · 4 days ago',chev:false})}</div><div class="lbl">From Local AI Registry</div><div class="list">${sys.map(x=>li({icon:x.ch==='Text'?'chat':'inbox',t:esc(x.tx),m:`${x.ch} · ${fd(x.d)}`,chev:false})).join('')||'<div class="empty">No messages</div>'}</div>`,
-  premium:p.a?`<div class="sub">${p.a.appr?`${p.a.appr} drafts waiting for ${esc(who)}'s OK.`:'Nothing waiting for approval.'}</div><div class="list">${Array.from({length:p.a.appr||0},(_,k)=>`<div class="li" style="display:grid;gap:8px"><b>${['Google post: Morpheus8 is here','Google post: holiday hours','Review reply to Jen M.'][k%3]}</b><span class="small muted">Drafted by Caron · ${fd(p.a.apprOld)}</span><span class="row"><button class="btn sm pri" ${act('Approved.')}>Approve</button><button class="btn sm" ${act('Opened editor.')}>Edit</button></span></div>`).join('')}</div>`:`<div class="card stack"><b>Premium is locked</b><div class="small">Upgrade to have LAIR do the work. You only approve.</div><div class="row">${PLANS.map(([v,n])=>chip(`${n} ${$(v)}/mo`)).join('')}</div></div>`,
+  premium:p.a?`<div class="sub">${p.a.appr?`${p.a.appr} drafts waiting for ${esc(who)}'s OK.`:'Nothing waiting for approval.'}</div><div class="list">${Array.from({length:p.a.appr||0},(_,k)=>`<div class="li" style="display:grid;gap:8px"><b>${['Google post: Morpheus8 is here','Google post: holiday hours','Review reply to Jen M.'][k%3]}</b><span class="small muted">Drafted by Caron · ${fd(p.a.apprOld)}</span></div>`).join('')}</div>${p.a.appr?`<div class="card stack"><div class="small">Only the owner can approve. That's our promise: nothing posts without their OK.</div><button class="btn pri" ${act('Approval link texted to the owner.')}>Text them the approval link</button></div>`:''}`:`<div class="card stack"><b>Premium is locked</b><div class="small">Upgrade to have LAIR do the work. You only approve.</div><div class="row">${PLANS.map(([v,n])=>chip(`${n} ${$(v)}/mo`)).join('')}</div></div>`,
   billing:p.a||p.i?`${p.i?`<div class="warnbox bad">Payment failed. ${$(p.i.amt)} is ${ago(p.i.due)} days past due.</div>`:''}<div class="card"><dl class="facts"><dt>Plan</dt><dd>${p.a?p.a.tier+' · '+$(p.a.mrr)+'/mo':'Paid plan'}</dd><dt>Card</dt><dd>Visa ending 4242</dd><dt>Next bill</dt><dd>Nov 1</dd></dl></div><button class="btn" ${act('Card update link texted to the owner. Card numbers can only be entered by them.')}>Send card update link</button>`:`<div class="card">Free plan. No card on file.</div>`,
   settings:`<div class="list">${li({icon:'link',t:'Google Business Profile',m:p.a?'Connected':'Not connected',chev:false})}${li({icon:'doc',t:'Download their data',m:'Zip of page, posts and reports',a:'toast',id:'Export started. Link goes to the owner\'s email.',chev:false})}${li({icon:'alert',ik:'bad',t:'Delete account',m:'Only the owner can do this. Send them the delete link instead.',a:'toast',id:'Delete link sent to the owner.',chev:false})}</div>`};
  return `<div class="asbar"><span class="grow small">Viewing as <b>${esc(p.e.name)}</b> · ${esc(who)}</span><button class="btn sm" data-a="p360" data-id="${id}">Exit</button></div>
@@ -1488,7 +1491,7 @@ function shWallet(){const r=R(),w=wal(S.role);const link='localairegistry.com/r/
  <div class="row"><button class="btn" style="flex:1" data-a="kitOpen" data-id="page">${ic('store',16)}My public page</button><button class="btn" style="flex:1" data-a="kitOpen" data-id="order">${ic('ship',16)}Print & swag</button></div>
  <div class="sec">${lbl('Your referrals',`${w.list.length}`)}${w.list.length?`<div class="list">${w.list.map(([n,st,plan,d])=>li({icon:st==='Paying'?'cash':'pin',ik:st==='Paying'?'good':'',t:esc(n),m:`${st} · since ${fd(d)}`,r:plan&&st==='Paying'?`<b class="num">${$(plan*w.pct/100)}</b><div class="xs muted">/mo</div>`:chip(st),chev:false})).join('')}</div>`:`<div class="card empty">No referrals yet. Every business owner you know is a lead: dentists, med spas, your gym, your vet.</div>`}</div>
  ${w.pend?`<div class="small muted">If your ${w.pend} in-progress referral${w.pend>1?'s':''} start on a typical $1,800 plan, you add about ${$(w.pend*1800*w.pct/100)}/mo.</div>`:''}
- <div class="xs muted">Referral shares come out of the same 30% pool as deals and rep commissions. LAIR's team handles the meeting, sale and work.</div>`;}
+ <div class="xs muted">Your 5% is the lead share, the same 5% a rep earns for bringing a business in. It comes out of the 30% pool. LAIR's team handles the meeting, sale and work.</div>`;}
 
 /* ================= render ================= */
 function renderDemo(){document.getElementById('demo').innerHTML=`<div class="dtop"><span class="dtag">Prototype</span><span>LAIR OS. Pick a role to see the app the way that person would. Sample data: real account names, made-up numbers.</span></div>
@@ -1555,7 +1558,7 @@ document.addEventListener('click',e=>{
   placeKit:()=>{db.orders.unshift({id:'O-'+(113+db.orders.length),who:'Kerrie Quinby',item:'kit',qty:1,total:bootTotal(),st:'Waiting for Eric',show:S.planConf,d:TODAY});close();render();toast('Booth kit ordered. Eric got a text to OK it.')},
   approveOrder:()=>{const o=db.orders.find(x=>x.id===id);o.st='Printing';render();toast('Approved. It\'s going to print.')},
   kinvite:()=>open('kinvite',id),
-  kiSend:()=>{const n=document.getElementById('ki-n').value.trim();if(!n){document.getElementById('ki-n').focus();toast('Add their name first');return}db.kinv.unshift({n,type:id,st:'Not signed up yet',d:TODAY});if(id==='rep')db.invites.unshift({n,e:'',by:'Kerrie',conf:'',d:TODAY});else db.pcodes.push({code:n.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+'10',who:n,role:'Invited by Kerrie',pct:10,cust:0,refs:0,paying:0,mrr:0});close();render();toast('Sent to '+n+'. We\'ll tell you when they sign up.')},
+  kiSend:()=>{const n=document.getElementById('ki-n').value.trim();if(!n){document.getElementById('ki-n').focus();toast('Add their name first');return}db.kinv.unshift({n,type:id,st:'Not signed up yet',d:TODAY});if(id==='rep')db.invites.unshift({n,e:'',by:'Kerrie',conf:'',d:TODAY});else db.pcodes.push({code:n.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+'10',who:n,role:'Invited by Kerrie',pct:10,cust:0,refs:0,paying:0,mrr:0});close();render();try{navigator.clipboard.writeText(document.getElementById('ki-t')?.textContent||'')}catch(_){}toast('Copied. Paste it into a text to '+n+'. We\'ll tell you when they sign up.')},
   remind:()=>{toast('Reminder texted')},
   going:()=>{S.going.has(id)?S.going.delete(id):S.going.add(id);render();toast(S.going.has(id)?id+' added to the plan':id+' removed')},
   planOpen:()=>{S.planConf=id;S.tab.people='plan';render();window.scrollTo(0,0)},
