@@ -257,6 +257,13 @@ details>summary{cursor:pointer;list-style:none}details>summary::-webkit-details-
 .plogo{width:40px;height:40px;border-radius:11px;color:#fff;display:grid;place-items:center;font:500 18px var(--serif);flex:0 0 auto}
 .plogo.lg{width:56px;height:56px;font-size:24px;border-radius:14px}
 @media (max-width:380px){.pgrid{grid-template-columns:minmax(0,1fr)}}
+.lvl{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#0B1A2E,#1F4FE0);color:#fff;font:700 11.5px var(--display);padding:3px 9px 3px 7px;border-radius:999px;white-space:nowrap;letter-spacing:.02em}
+.lvl svg{color:#FFC94D}.lvl.big{font-size:13px;padding:5px 12px 5px 9px}
+.statgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.statgrid span{background:var(--paper-2);border-radius:12px;padding:9px 6px;text-align:center;font-size:11.5px;color:var(--muted);display:grid;line-height:1.25}.statgrid b{font:800 18px var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
+.chat{display:grid;gap:8px;max-height:52vh;overflow-y:auto;padding:4px 2px}
+.bub{max-width:82%;padding:9px 12px;border-radius:16px;font-size:14.5px;line-height:1.4;display:grid;gap:3px}
+.bub span{font-size:11px;opacity:.7}.bub.me{justify-self:end;background:var(--blue);color:#fff;border-bottom-right-radius:5px}.bub.them{justify-self:start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
+.ubadge{min-width:22px;height:22px;border-radius:11px;background:var(--blue);color:#fff;font:700 12px var(--display);display:grid;place-items:center;padding:0 6px;flex:0 0 auto}
 .empty{padding:20px;text-align:center;color:var(--muted);font-size:14px}
 .pool{display:flex;height:18px;border-radius:9px;overflow:hidden;background:var(--paper-2)}
 .pool i{display:block;height:100%;border-right:2px solid var(--card)}
@@ -394,7 +401,7 @@ const ROLES=[
  {id:'people',k:'People & Partnerships',person:'Kerrie Quinby',ini:'KQ',title:'People & Partnerships · conferences',first:'Kerrie'},
  {id:'partner',k:'Partner company',person:'Audrey Campbell',ini:'AC',title:'Partner portal · The Audrey Aesthetic',first:'Audrey'}];
 const TABS={
- spec:[['today','Today','home'],['accts','Accounts','brief'],['work','Work','tool'],['wallet','Wallet','wallet'],['store','Profile','store']],
+ spec:[['today','Today','home'],['inbox','Inbox','chat'],['accts','Accounts','brief'],['work','Work','tool'],['store','Profile','store']],
  rep:[['go','Go','bolt'],['leads','Leads','users'],['earn','Earnings','wallet'],['ranks','Ranks','trophy'],['kit','Profile','store']],
  rsm:[['make','Make deal','bolt'],['pulse','Pulse','gauge'],['deals','Pipeline','funnel'],['map','Map','map'],['reps','Reps','users'],['tips','Coach','bulb']],
  cfo:[['margin','Margin','gauge'],['collect','Collect','alert'],['pay','Pay out','send'],['fore','Forecast','chart']],
@@ -583,6 +590,52 @@ V.spec_wallet=()=>{
  <div class="sec">${lbl('Per account')}<div class="list">${db.accts.map(a=>li({t:esc(a.name),m:`${a.tier} · ${$(a.mrr)}/mo retainer`,r:`<b class="num">${$(a.mrr*SHARE)}</b>`})).join('')}</div></div>
  <div class="sec">${lbl('Payout method')}<div class="card row sp"><span>Direct deposit ··· 4417</span><button class="btn sm">Change</button></div></div>`;
 };
+/* ---- Specialist levels + portfolio profile (Upwork-style) ---- */
+const SLEVELS=[
+ [1,'Associate','New on LAIR. Up to 3 accounts while you build a record.'],
+ [2,'Specialist','90%+ client success, 3+ clients kept 3 months, 1 verified result.'],
+ [3,'Senior','90%+ client success for 6 months, 10+ clients, 3 verified results, 4.7+ reviews.'],
+ [4,'Elite','Top level. 95%+ client success for 12 months, 20+ clients, 5 verified results, 4.8+ reviews, replies within a day.']];
+const PORT=[
+ {acct:'est',name:'Eye Surgery Today',type:'Eye surgery practice',url:'localairegistry.com/biz/eye-surgery-today',res:'AI mentions 3 → 11 of 20 test prompts',when:'90 days',col:'#1F4FE0'},
+ {acct:'lis',name:'Dr. Jeff Lisiecki',type:'Medical practice',url:'localairegistry.com/biz/dr-jeff-lisiecki',res:'AI Score 38 → 81',when:'5 months',col:'#0B1A2E'},
+ {acct:'ces',name:'Commonwealth Eye Surgery',type:'Eye surgery practice',url:'localairegistry.com/biz/commonwealth-eye-surgery',res:'Google reviews replied 100%, 6 posts a month',when:'5 months',col:'#3a4a62'},
+ {acct:'quik',name:'Quiktox Medspa',type:'Med spa',url:'localairegistry.com/biz/quiktox-medspa',res:'Organic clicks +64%',when:'6 months',col:'#FF5A3C'}];
+const SREV=[
+ ['Shawna, Commonwealth Eye Surgery',5,'Caron caught a wrong doctor name before it went out and fixed it the same day.','Oct 2026'],
+ ['Dr. Jeff Lisiecki',5,'She explains what she\'s doing in plain English. Our AI Score doubled.','Sep 2026'],
+ ['Quiktox Medspa',5,'Three years in. She still answers faster than anyone we\'ve worked with.','Aug 2026'],
+ ['Eye Surgery Today',4,'Great results. Wish the monthly report came a few days earlier.','Jul 2026']];
+function lvlBadge(n,big){const L=SLEVELS[n-1];return `<span class="lvl ${big?'big':''}"><svg viewBox="0 0 24 24" width="${big?18:13}" height="${big?18:13}" aria-hidden="true"><path d="M12 2l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 16.6 6.1 19.8l1.3-6.5L2.5 8.8 9.1 8z" fill="currentColor"/></svg>Level ${n} · ${L[1]}</span>`}
+function specProfile(){const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+ return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="logo-sq" style="background:var(--blue);color:#fff">CC</span><div style="min-width:0"><div style="font:800 21px var(--display)">Caron Cooper</div><div class="small muted">AEO Specialist · Seattle, WA · works nationwide</div><div class="row" style="margin-top:6px">${lvlBadge(4,1)}</div></div></div>
+ <div class="small">SEO and AI visibility for medical practices. I fix what AI and Google get wrong about a practice, then keep it right. 20 years building and fixing websites.</div>
+ <div class="statgrid"><span><b>96%</b>Client success</span><span><b>4.9 ★</b>14 reviews</span><span><b>21</b>clients improved</span><span><b>96%</b>kept 6+ months</span><span><b>+8</b>avg AI mentions gained</span><span><b>~19h</b>to reply</span></div>
+ <div class="row">${['AEO','Technical SEO','Schema','llms.txt','Topical maps','WordPress','Google Business Profile'].map(x=>chip(x)).join('')}</div>
+ <button class="btn pri block" data-a="toast" data-id="Owners request Caron when they upgrade">Request Caron as your specialist</button></div>
+ <div class="sec">${lbl('Portfolio',`${PORT.length} clients`)}<div class="pgrid">${PORT.map(p=>`<button class="pcard" data-a="p360" data-id="${slug(p.name)}"><span class="plogo" style="background:${p.col}">${esc(p.name.split(' ').map(w=>w[0]).join('').slice(0,2))}</span><b>${esc(p.name)}</b><span class="small muted">${esc(p.type)}</span><span class="small" style="color:var(--good);font-weight:600">${esc(p.res)}</span><span class="xs muted">in ${p.when} · ${esc(p.url)}</span></button>`).join('')}</div><div class="xs muted">Results shown are sample numbers. Each card links to the client's LAIR page.</div></div>
+ <div class="sec">${lbl('Reviews',`4.9 · 14`)}<div class="list">${SREV.map(([w,n,t,d])=>`<div class="li" style="display:grid;gap:4px"><span class="row sp"><b>${esc(w)}</b><span class="xs muted">${d}</span></span><span style="color:#e0a33a;letter-spacing:1px">${stars(n)}</span><span class="small">"${esc(t)}"</span></div>`).join('')}</div></div>`}
+function levelLadder(cur){return `<div class="sec">${lbl('Specialist levels')}<div class="list">${SLEVELS.map(([n,name,req])=>li({icon:'trophy',ik:n<=cur?'good':'',t:`Level ${n} · ${name}`,m:esc(req),r:n===cur?chip('You','good'):n<cur?chip('Passed','good'):'',chev:false})).join('')}</div><div class="small muted">${cur===4?'You\'re at the top level. Higher levels get first pick of new clients and show first in the directory.':''}</div></div>`}
+
+/* ---- Specialist inbox: chat with clients ---- */
+db.chats=[
+ {id:'c-rve',acct:'rve',who:'Dr. Osborne Williams',unread:2,msgs:[[0,'Oct 24, 9:02 AM','Hi Dr. Williams, 3 drafts are ready for you: 2 Google posts and 1 review reply. Nothing posts until you say OK.'],[0,'Oct 28, 4:10 PM','Quick nudge on the drafts. Also, could someone add me to Google Analytics and Search Console?'],[1,'Oct 29, 8:47 PM','Sorry, crazy week. Who should add you?'],[1,'Oct 29, 8:48 PM','Also a patient asked if we do Morpheus8. We just started offering it.']]},
+ {id:'c-ces',acct:'ces',who:'Shawna',unread:1,msgs:[[1,'Oct 29, 11:15 AM','Two review replies use the wrong doctor. Can you fix today?']]},
+ {id:'c-nutri',acct:'nutri',who:'Tom Miron',unread:0,msgs:[[0,'Oct 28, 10:00 AM','Welcome aboard, Tom! To get started I need access to your website, Google Business Profile, Analytics and Search Console. Here\'s a 2-minute guide: localairegistry.com/access'],[1,'Oct 28, 2:30 PM','Our IT team handles the website. I\'ll loop them in.']]},
+ {id:'c-lux',acct:'lux',who:'Owner',unread:0,msgs:[[0,'Oct 21, 3:00 PM','Booked our site walkthrough for Nov 3. I\'ll send the 2 new pages before then.'],[1,'Oct 21, 3:12 PM','Perfect, thank you!']]},
+ {id:'c-qvita',acct:'qvita',who:'Panagiota Demetriou',unread:0,msgs:[[0,'Oct 28, 9:00 AM','One review reply is waiting for your OK. I used "Panagiota" as you asked.'],[1,'Oct 28, 6:40 PM','Thank you, approving tonight.']]}];
+const QR=[['Ask for access','Could you add me to Google Analytics and Search Console? Here\'s a 2-minute guide: localairegistry.com/access'],['Drafts ready','Your drafts are ready for a quick yes or edit. Nothing posts without you: localairegistry.com/approve'],['Offer a call','Want to hop on a 15-minute call this week? Pick a time: calendly.com/caron-lair'],['Report is live','Your monthly report is live. Want me to walk you through it?']];
+V.spec_inbox=()=>{const c=db.chats.find(x=>x.id===S.chat);
+ if(!c)return `<div><div class="h1">Inbox</div><div class="sub">Chat with your clients. Everything here is saved to their account timeline.</div></div>
+ <div class="list">${db.chats.map(x=>{const a=A(x.acct),l=x.msgs[x.msgs.length-1];return `<button class="li" data-a="chat" data-id="${x.id}"><span class="logo-sq" style="width:42px;height:42px;font-size:15px;background:var(--tint);color:var(--blue)">${esc(a.name.split(' ').map(w=>w[0]).join('').slice(0,2))}</span><span class="grow"><span class="row sp" style="flex-wrap:nowrap"><b style="font-size:15px">${esc(a.name)}</b><span class="xs muted">${l[1].split(',')[0]}</span></span><span class="m" style="${x.unread?'color:var(--ink);font-weight:600':''}">${l[0]?'':'You: '}${esc(l[2].slice(0,64))}${l[2].length>64?'…':''}</span></span>${x.unread?`<span class="ubadge">${x.unread}</span>`:''}</button>`}).join('')}</div>`;
+ c.unread=0;const a=A(c.acct);
+ return `<div class="row sp" style="flex-wrap:nowrap"><button class="btn ghost" data-a="chat" data-id="">← Inbox</button><button class="btn sm" data-a="p360" data-id="${slug(a.name)}">${ic('eye',15)}360</button></div>
+ <div><div class="h1" style="font-size:20px">${esc(a.name)}</div><div class="sub">${esc(c.who)} · ${a.tier} · usually replies in a few hours</div></div>
+ <div class="chat" id="chatlog">${c.msgs.map(([them,t,txt])=>`<div class="bub ${them?'them':'me'}"><div>${esc(txt)}</div><span>${t}${them?'':' · Read'}</span></div>`).join('')}</div>
+ <div class="row" style="gap:6px;overflow-x:auto;flex-wrap:nowrap">${QR.map(([l,t])=>`<button class="chip blue" style="border:0;cursor:pointer" data-a="qr" data-id="${esc(t)}">${l}</button>`).join('')}</div>
+ <div class="row" style="flex-wrap:nowrap"><textarea id="chat-in" rows="2" style="min-height:48px" placeholder="Message ${esc(c.who.split(' ')[0])}"></textarea><button class="btn pri" data-a="chatSend" data-id="${c.id}" aria-label="Send">${ic('send',18)}</button></div>
+ <div class="xs muted">Messages go to the owner's LAIR inbox, with a text and email so they see it.</div>`};
+
 V.spec_store=()=>{
  const seg=`<div class="seg">${[['front','My public profile'],['whole','Wholesale']].map(([k,l])=>`<button data-a="storeSeg" data-id="${k}" aria-pressed="${S.storeSeg===k}">${l}</button>`).join('')}</div>`;
  if(S.storeSeg==='whole')return seg+`<div><div class="h1">Wholesale bench</div><div class="sub">Provider-only prices for work you'd rather hand off. You stay the client's specialist.</div></div>
@@ -591,11 +644,9 @@ V.spec_store=()=>{
  const chk=[['Headshot and bio',1],['Specialties picked',1],['2 verified results from GSC',1],['Client review from R.Ve',0],['Intro video',0]];
  const pct=Math.round(chk.filter(c=>c[1]).length/chk.length*100);
  return seg+`<div class="card stack"><div class="row sp"><b>Profile strength</b><b class="num" style="color:var(--good)">${pct}/100</b></div>${meter(pct,'good')}<div class="small muted">Add 1 client review and an intro video to show up first when owners pick a specialist.</div></div>
- <div class="sf"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="logo-sq">CC</span><div style="min-width:0"><div style="font:700 19px var(--display)">Caron Cooper</div><div class="row" style="margin-top:4px">${chip('✓ Verified by LAIR','good')}${chip('Independent business')}${chip('Technical SEO')}${chip('AEO')}</div></div></div>
-  <div class="small">SEO and AI visibility for medical practices. 20 years building and fixing websites. Seattle, works nationwide.</div>
-  <div class="tri"><div><b>4.9</b><span class="xs muted">14 reviews</span></div><div><b>21</b><span class="xs muted">accounts served</span></div><div><b>96%</b><span class="xs muted">kept 6+ months</span></div></div>
-  <div class="small"><b>Verified results</b><div class="muted" style="margin-top:4px">Eye surgery practice: AI mentions 3 to 11 of 20 test prompts in 90 days · Search Console connected</div><div class="muted">Med spa: organic clicks +64% in 6 months · Search Console connected</div></div>
-  <div class="row sp"><span class="small muted">Owners hire you through LAIR</span><span class="chip">Responds within 1 day</span></div></div>
+ <div class="sub">This is how owners see you, like an Upwork profile.</div>
+ ${specProfile()}
+ ${levelLadder(4)}
  <div class="list">${chk.map(([t,d])=>li({icon:d?'check':'plus',ik:d?'good':'',t:esc(t),m:d?'Done':'Add this',a:d?'':'toast',id:'Opened editor',chev:!d})).join('')}</div>
  <button class="btn block" data-a="dirOpen">${ic('map',16)}See how you show in the partner directory</button>`;
 };
@@ -1173,7 +1224,7 @@ function kitView(){const p=me();
 const PCAT=['Consulting & education','Specialists','Medical advisors','Software','Agencies','Product reps'];
 const PARTNERS=[
  {id:'audrey',co:'The Audrey Aesthetic',mono:'A',person:'Audrey Campbell, MPH',cat:'Consulting & education',one:'AI strategy for medical aesthetics. Writing, speaking and helping practices choose and adopt AI tools.',serves:'Med spas, plastic surgery, wellness',site:'theaudreyaesthetic.com',code:'AUDREY15',give:6,get:3,since:'Oct 2026',col:'#5a4e44',real:1},
- {id:'caron',co:'Caron Cooper',mono:'CC',person:'Caron Cooper',cat:'Specialists',one:'Independent SEO and AI visibility specialist. Builds and fixes websites for medical practices.',serves:'Eye care, med spas, surgeons',site:'',code:'CARON5',give:2,get:8,since:'2026',col:'#1F4FE0',real:1,spec:1},
+ {id:'caron',co:'Caron Cooper',mono:'CC',person:'Caron Cooper',cat:'Specialists',lvl:4,one:'AEO Specialist. SEO and AI visibility for medical practices. 96% client success, 21 clients improved.',serves:'Eye care, med spas, surgeons',site:'',code:'CARON5',give:2,get:8,since:'2026',col:'#1F4FE0',real:1,spec:1},
  {id:'tess',co:'Dr. Tess Mauricio',mono:'TM',person:'Dr. Tess Mauricio',cat:'Medical advisors',one:'LAIR Medical Director. Helps define where AI should look to find the best practices.',serves:'Dermatology, med spas',site:'',code:'TESS50',give:4,get:0,since:'Oct 2026',col:'#0B1A2E',real:1},
  {id:'ashish',co:'Dr. Ashish Bhatia',mono:'AB',person:'Dr. Ashish Bhatia',cat:'Medical advisors',one:'LAIR Medical Advisor. Dermatologist and educator.',serves:'Dermatology',site:'',code:'ASHISH50',give:2,get:0,since:'Oct 2026',col:'#0B1A2E',real:1},
  {id:'orbit',co:'OrbitBack',mono:'O',person:'OrbitBack team',cat:'Software',one:'Cashback memberships for local businesses. LAIR pages link claimed businesses to their OrbitBack page.',serves:'Any local business',site:'orbitback.com',code:'',give:0,get:5,since:'2026',col:'#FF5A3C',real:1},
@@ -1190,8 +1241,8 @@ function dirView(){const cat=S.dcat||'all',q=(S.dq||'').toLowerCase();const L=PA
  <div class="seg">${[['all','All'],...PCAT.map(x=>[x,x])].map(([k,l])=>`<button data-a="dcat" data-id="${k}" aria-pressed="${cat===k}">${l}</button>`).join('')}</div>
  <div class="pgrid" id="dgrid">${dirCards(L)}</div>
  <div class="xs muted">Smile Brokers, Northline Laser and Greenline POS are sample listings.</div>`}
-function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="plogo" style="background:${p.col}">${p.mono}</span><b>${esc(p.co)}</b><span class="small muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span><span class="row">${p.pending?chip('Pending','warn'):p.give?chip(`Sent us ${p.give}`,'blue'):''}${p.get?chip(`We sent ${p.get}`,'good'):''}</span></button>`).join('')||'<div class="empty">No partners match.</div>'}
-function partnerPage(p,mine){return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${p.mono}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.pending?chip('Pending review','warn'):chip('✓ LAIR partner since '+p.since,'good')}</div></div></div>
+function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="plogo" style="background:${p.col}">${p.mono}</span><b>${esc(p.co)}</b><span class="small muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span><span class="row">${p.lvl?lvlBadge(p.lvl):''}${p.pending?chip('Pending','warn'):p.give?chip(`Sent us ${p.give}`,'blue'):''}${p.get?chip(`We sent ${p.get}`,'good'):''}</span></button>`).join('')||'<div class="empty">No partners match.</div>'}
+function partnerPage(p,mine){return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${p.mono}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.lvl?lvlBadge(p.lvl,1):''}${p.pending?chip('Pending review','warn'):chip('✓ LAIR partner since '+p.since,'good')}</div></div></div>
  <div class="small">${esc(mine&&S.pbio?S.pbio:p.one)}</div>
  <dl class="facts"><dt>Serves</dt><dd>${esc(p.serves)}</dd>${p.site?`<dt>Website</dt><dd>${esc(p.site)}</dd>`:''}${p.code?`<dt>Referral code</dt><dd>${p.code}</dd>`:''}</dl>
  <div class="cgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><span><b>${p.give}</b>businesses sent to LAIR</span><span><b>${p.get}</b>sent to them by LAIR</span></div>
@@ -1486,7 +1537,7 @@ function shWallet(){const r=R(),w=wal(S.role);const link='localairegistry.com/r/
 /* ================= render ================= */
 function renderDemo(){document.getElementById('demo').innerHTML=`<div class="dtop"><span class="dtag">Prototype</span><span>LAIR OS. Pick a role to see the app the way that person would. Sample data: real account names, made-up numbers.</span></div>
  <div class="dtypes" role="group" aria-label="Switch role">${ROLES.map(r=>`<button class="dt" data-a="role" data-id="${r.id}" aria-pressed="${S.role===r.id}"><small>${r.k}</small><b>${esc(r.person)}</b></button>`).join('')}</div>`}
-function badge(t){if(S.role==='spec'&&t==='today')return specItems().filter(i=>i.lv==='bad').length;if(S.role==='rsm'&&t==='pulse')return db.deals.filter(d=>dealFlags(d).some(f=>f[1]==='bad')).length;if(S.role==='cfo'&&t==='collect')return db.ar.filter(i=>ago(i.due)>60).length;if(S.role==='cs'&&t==='queue')return db.tickets.filter(x=>!x.done&&!x.routed&&x.hrs>24).length;if(S.role==='cs'&&t==='watch')return SPECS.filter(x=>x.reply>36||x.report<65).length;if(S.role==='god'&&t==='alerts')return 4;if(S.role==='rep'&&t==='leads')return db.leads.filter(l=>l.stage==='claimed'&&ago(l.date)>=5).length;return 0}
+function badge(t){if(S.role==='spec'&&t==='inbox')return db.chats.reduce((n,c)=>n+c.unread,0);if(S.role==='spec'&&t==='today')return specItems().filter(i=>i.lv==='bad').length;if(S.role==='rsm'&&t==='pulse')return db.deals.filter(d=>dealFlags(d).some(f=>f[1]==='bad')).length;if(S.role==='cfo'&&t==='collect')return db.ar.filter(i=>ago(i.due)>60).length;if(S.role==='cs'&&t==='queue')return db.tickets.filter(x=>!x.done&&!x.routed&&x.hrs>24).length;if(S.role==='cs'&&t==='watch')return SPECS.filter(x=>x.reply>36||x.report<65).length;if(S.role==='god'&&t==='alerts')return 4;if(S.role==='rep'&&t==='leads')return db.leads.filter(l=>l.stage==='claimed'&&ago(l.date)>=5).length;return 0}
 function render(){
  renderDemo();const r=R();document.body.classList.toggle('easy',S.role==='people');
  document.getElementById('hdr').innerHTML=`<div class="brand">${MARK}<div style="min-width:0;display:grid"><b>Local AI Registry</b><span>${esc(r.title)}</span></div></div><button class="me" data-a="wallet" aria-label="Open my wallet"><span class="wamt">${ic('wallet',15)}${$k(wal(S.role).total)}</span><span class="av">${r.ini}</span></button><button class="qbar" data-a="search">${ic('search')}<span>Search any business, person or city</span></button>`;
@@ -1539,6 +1590,9 @@ document.addEventListener('click',e=>{
   saveCode:()=>{const who=document.getElementById('pc-who').value.trim();if(!who){document.getElementById('pc-who').focus();toast('Add the partner\'s name');return}const code=who.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+S.pc.pct;db.pcodes.push({code,who,role:document.getElementById('pc-role').value.trim()||'Partner',pct:S.pc.pct,cust:S.pc.cust,refs:0,paying:0,mrr:0});close();render();toast('Code '+code+' created. Partner portal invite sent.')},
   oppSeg:()=>{S.oppSeg=id;render()},
   pbSeg:()=>{S.pbSeg=id;render()},
+  chat:()=>{S.chat=id;render();const l=document.getElementById('chatlog');if(l)l.scrollTop=l.scrollHeight;window.scrollTo(0,id?document.body.scrollHeight:0)},
+  qr:()=>{const t=document.getElementById('chat-in');if(t){t.value=id;t.focus()}},
+  chatSend:()=>{const t=document.getElementById('chat-in');const v=(t.value||'').trim();if(!v){t.focus();return}const c=db.chats.find(x=>x.id===id);c.msgs.push([0,'Now',v]);const a=A(c.acct);a.comms.unshift([TODAY,'Message',v.slice(0,90)]);render();window.scrollTo(0,document.body.scrollHeight);toast('Sent to '+c.who+'. Logged to '+a.name+'.')},
   kitOpen:()=>open('kit',''),
   dcat:()=>{S.dcat=id;if(S.sheet&&S.sheet.k==='dir')renderSheet();else render()},
   dirOpen:()=>{S.dq='';S.dcat='all';open('dir','')},
