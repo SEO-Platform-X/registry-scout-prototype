@@ -1,9 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-</head><body>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>LAIR OS</title></head><body>
 <title>LAIR OS</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -409,7 +405,7 @@ const TABS={
  god:[['over','Overview','eye'],['fore','Forecast','sliders'],['alerts','Alerts','alert'],['team','People','users']],
  mkt:[['mql','MQLs','funnel'],['opps','Opportunities','bulb'],['camp','Campaigns','chart'],['send','New send','send']],
  cs:[['queue','Queue','inbox'],['watch','Provider watch','eye'],['look','Look up','search'],['macros','Macros','book']],
- people:[['phome','Home','home'],['shows','Shows','map'],['plan','Plan','brief'],['invite','Invite','send'],['team','Team','users']],
+ people:[['phome','Home','home'],['invite','Invite','send'],['shows','Find shows','map'],['plan','My plan','brief']],
  partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pprof','Profile','store'],['pdir','Works with','map'],['pgrow','Grow','trophy']]};
 
 /* ================= data (sample) ================= */
@@ -813,10 +809,8 @@ V.partner_phome=()=>{
  <div class="kpis">${kpi('Earned so far',$(1575),'Since August')}${kpi('In the pipeline',pend,`+${$(pend*1800*PPCT/100*.4)}/mo if 40% convert`,'good')}</div>
  <div class="sec">${lbl('Your monthly, next 6 months')}<div class="card">${cols([mo,mo,mo+270,mo+270,mo+540,mo+540],['Nov','Dec','Jan','Feb','Mar','Apr'],2)}<div class="xs muted" style="margin-top:8px">Solid bars are locked in. Light bars assume 1 new paying referral every 2 months.</div></div></div>
  <div class="sec">${lbl('Do this today')}<div class="list">${li({icon:'chat',ik:'warn',t:'Nudge Pure Glow Studio',m:'Claimed 2 days ago, no meeting yet. A text from you doubles the odds.',a:'tab',id:'prefs'})}${li({icon:'send',t:'Share your code at 2 more businesses',m:'Partners who share weekly earn 4x more',a:'tab',id:'pprof'})}</div></div>`;};
-V.partner_prefs=()=>{const st=['Signed up','Claimed','Meeting booked','Paying'];const sg=S.pseg||'out';
- const seg=`<div class="seg"><button data-a="pseg" data-id="out" aria-pressed="${sg==='out'}">You sent us ${PREFS.length}</button><button data-a="pseg" data-id="in" aria-pressed="${sg==='in'}">We sent you ${PRECV.length}</button></div>`;
- if(sg==='in')return seg+`<div class="sub">Businesses LAIR's team sent your way. Reply within a day so we keep sending them.</div><div class="list">${PRECV.map(r=>li({icon:'send',ik:r.st==='Won'?'good':r.st==='New'?'warn':'',t:esc(r.name),m:`${esc(r.ask)} · from ${esc(r.from)} · ${fd(r.d)}`,r:r.st==='New'?`<button class="btn sm pri" data-a="toast" data-id="You accepted ${esc(r.name)}. We sent them your intro.">Accept</button>`:chip(r.st,r.st==='Won'?'good':'blue'),chev:false})).join('')}</div>`;
- return seg+`<div class="sub">LAIR handles the meeting, the sale and the work. You just make the intro.</div>
+V.partner_prefs=()=>{const st=['Signed up','Claimed','Meeting booked','Paying'];
+ return `<div><div class="h1">Businesses you sent us</div></div><div class="sub">LAIR handles the meeting, the sale and the work. You just make the intro.</div>
  ${st.slice().reverse().map(s=>{const rs=PREFS.filter(r=>r.stage===s);if(!rs.length)return '';return `<div class="sec">${lbl(s,`${rs.length}`)}<div class="list">${rs.map(r=>li({icon:s==='Paying'?'cash':s==='Meeting booked'?'phone':'pin',ik:s==='Paying'?'good':'',t:esc(r.name),m:`${esc(r.note)} · since ${fd(r.since)}`,r:r.plan?`<b class="num">${$(r.plan*PPCT/100)}</b><div class="xs muted">/mo to you</div>`:`<button class="btn sm" data-a="toast" data-id="Text to ${esc(r.name)} copied">Nudge</button>`})).join('')}</div></div>`}).join('')}`;};
 const PMSG=[['Text','Hi! I work a lot with AI in medical aesthetics. Local AI Registry shows what ChatGPT says about your practice, and you can fix it for free. Use my link: localairegistry.com/r/AUDREY15'],['Email','Subject: What AI says about your practice\n\nHi, when patients ask ChatGPT about you, some of what it says is out of date. Local AI Registry shows you exactly what AI says and lets you fix it for free. Their team will walk you through it: localairegistry.com/r/AUDREY15'],['After a talk','Thanks for coming today! If you want to see what AI says about your own practice, it takes 2 minutes and it\'s free: localairegistry.com/r/AUDREY15']];
 V.partner_pshare=()=>`<div class="card stack" style="text-align:center"><div class="xs muted">Your code</div><div class="big-n" style="letter-spacing:1px">AUDREY15</div><div class="row" style="justify-content:center"><input id="plink" readonly value="localairegistry.com/r/AUDREY15" style="max-width:280px"><button class="btn sm" data-a="copy" data-id="localairegistry.com/r/AUDREY15">Copy</button></div></div>
@@ -1046,7 +1040,6 @@ const CONFS=[
  {n:'Vision Expo',ind:['Eye care'],city:'Orlando, FL',st:'FL',when:'2027',ok:0,note:'Optometry and optical. Date not confirmed yet.'},
  {n:'The Aesthetic Show',ind:['Med spas'],city:'Las Vegas, NV',st:'NV',s:'2027-07-08',e:'',ok:1,note:'Big floor of injectors and owners. Send reps with the one-pager.'},
  {n:'WVC Nashville',ind:['Vets'],city:'Nashville, TN',st:'TN',s:'2027-08-21',e:'2027-08-24',ok:1,note:'Smaller vet show. Good for a regional rep push.'}];
-const CIND=['Dispensaries','Vets','Dentists','Plastic surgeons','Med spas','Dermatology','Eye care'];
 function confRange(c){if(!c.s)return c.when;const a=D(c.s);if(!c.e)return `From ${fd(c.s)}, ${a.getFullYear()}`;const b=D(c.e);return a.getMonth()===b.getMonth()?`${MON[a.getMonth()]} ${a.getDate()} to ${b.getDate()}, ${b.getFullYear()}`:`${fd(c.s)} to ${fd(c.e)}, ${b.getFullYear()}`}
 function confView(){
  const ind=S.confInd||'all',st=S.confSt||null;
@@ -1083,20 +1076,42 @@ const CMETA={
  'Irvine Spectrum owners mixer':{att:120,share:.6,locals:380,known:['Irvine Spectrum Med Spa (customer)'],partners:'Local agencies and accountants',booth:0,days:1,local:1,ap:'SAN'}};
 CONFS.push({n:'Botox & Bubbly pop-up',ind:['Med spas'],city:'San Diego, CA',st:'CA',s:'2026-11-20',e:'',ok:1,note:'Our own pop-up with a partner med spa. No flight, no booth fee.',pop:1},
  {n:'Irvine Spectrum owners mixer',ind:['Med spas','Dentists','Vets'],city:'Irvine, CA',st:'CA',s:'2026-12-10',e:'',ok:1,note:'Local business owners mixer. Cheap way to fill the claim list at home.',pop:1});
+/* Industry research: who could pay $3k/mo for AEO? val = rough first-year value of ONE new customer to that business (estimate, replace with real data) */
+const INDS=[
+ ['Personal injury lawyers',15000,'Law'],['Plastic surgeons',8000,'Medical'],['Fertility clinics',15000,'Medical'],['Addiction treatment',12000,'Medical'],
+ ['Hair restoration',8000,'Medical'],['Eye care',4000,'Medical'],['Orthodontists',5500,'Medical'],['Solar installers',8000,'Home'],
+ ['Pool builders',12000,'Home'],['Home remodelers',10000,'Home'],['Senior living',30000,'Care'],['Divorce & family lawyers',8000,'Law'],
+ ['Estate planning lawyers',3000,'Law'],['Financial advisors',6000,'Money'],['Mortgage brokers',4000,'Money'],['Real estate agents',9000,'Money'],
+ ['Roofers',9000,'Home'],['HVAC',3000,'Home'],['Dentists',1500,'Medical'],['Med spas',1500,'Medical'],
+ ['Dermatology',1200,'Medical'],['Weight loss clinics',2500,'Medical'],['Hearing aids',3500,'Medical'],['Private schools',15000,'Care'],
+ ['Auto dealers',2500,'Auto'],['Auto body shops',2500,'Auto'],['Chiropractors',1200,'Medical'],['Physical therapy',1500,'Medical'],
+ ['CPAs & tax',1500,'Money'],['Plumbers',800,'Home'],['Pest control',600,'Home'],['Movers',1500,'Home'],
+ ['Wedding venues',15000,'Events'],['Vets',700,'Medical'],['Dispensaries',600,'Retail']].map(([n,val,grp])=>{const need=3000/val;return {n,val,grp,need,fit:need<=1?'Great fit':need<=3?'Good fit':'Long shot'}});
+const CIND=INDS.map(x=>x.n);
+const IFIT={'Great fit':'good','Good fit':'blue','Long shot':'warn'};
+/* More shows to research. Names are real events; dates and cities are NOT confirmed yet, so each one says Check date. */
+[['AAJ Annual Convention','Personal injury lawyers'],['ASRM Scientific Congress','Fertility clinics'],['ISHRS World Congress','Hair restoration'],['AAO Annual Session (orthodontists)','Orthodontists'],
+ ['ASCRS Annual Meeting','Eye care'],['RE+','Solar installers'],['International Pool | Spa | Patio Expo','Pool builders'],['KBIS (Kitchen & Bath Industry Show)','Home remodelers'],
+ ['International Builders\' Show','Home remodelers'],['Argentum Senior Living Conference','Senior living'],['NAR NXT','Real estate agents'],['International Roofing Expo','Roofers'],
+ ['AHR Expo','HVAC'],['NADA Show','Auto dealers'],['Parker Seminars','Chiropractors'],['APTA Combined Sections Meeting','Physical therapy'],
+ ['AICPA ENGAGE','CPAs & tax'],['PestWorld','Pest control'],['ObesityWeek','Weight loss clinics'],['AAA Conference (audiology)','Hearing aids'],['T3 Advisor Conference','Financial advisors']
+].forEach(([n,ind])=>CONFS.push({n,ind:[ind],city:'Check city',st:'',when:'Check date',ok:0,unscored:1,note:'Not scored yet. Find the date, city and booth price, then tell Steve if it looks good.'}));
 const AP={SAN:[32.73,-117.19,'San Diego'],LAS:[36.17,-115.14,'Las Vegas'],MCO:[28.54,-81.38,'Orlando'],ORD:[41.88,-87.63,'Chicago'],ATL:[33.75,-84.39,'Atlanta'],SFO:[37.77,-122.42,'San Francisco'],MIA:[25.79,-80.13,'Miami'],BNA:[36.16,-86.78,'Nashville']};
 const PLAN_AVG=1800,PAY_RATE=.05,MONTHS=10,DAYRATE=30;
 const MODES={booth:'Booth',walk:'Walk the floor',popup:'Pop-up party nearby'};
 /* model: fixed cost (venue, travel, day-rate pay) vs variable cost (rev share paid only when customers pay) */
-function cModel(c,mode,staff,dayN){const m=CMETA[c.n];const tr=m.local?0:m.drive?250:950;staff=staff||(mode==='popup'?2:3);dayN=dayN||0;
+function cModel(c,mode,staff,dayN,travel){const m=M(c);const tr=m.local?0:m.drive?250:950;staff=staff||(mode==='popup'?2:3);dayN=dayN||0;
  const claimRate=.2+Math.min(.1,m.locals/3000);
  const conv=mode==='booth'?staff*40*m.days:mode==='walk'?staff*15*m.days:Math.min(m.att,60);
  const claims=conv*(mode==='popup'?.8:m.share)*claimRate,paying=claims*PAY_RATE,rev=paying*PLAN_AVG*MONTHS;
  const dayPay=dayN*m.days*8*DAYRATE;
- const fixed=(mode==='booth'?m.booth:mode==='walk'?staff*400:3000)+staff*tr+dayPay;
+ const fixed=(mode==='booth'?m.booth:mode==='walk'?staff*400:3000)+(travel!=null?travel:staff*tr)+dayPay;
  const share=rev*(.05+.10*(staff-dayN)/staff);
  return {claims,paying,rev,cost:fixed,fixed,share,dayPay,net:rev-share,roi:(rev-share)/fixed};}
 function cBest(c){if(c.pop)return {mode:'popup',...cModel(c,'popup')};return ['booth','walk','popup'].map(k=>({mode:k,...cModel(c,k)})).sort((a,b)=>b.roi-a.roi)[0]}
 const CID=c=>slug(c.n);
+const MDEF={att:0,share:.3,locals:0,known:[],partners:'Vendors who sell to this industry',booth:6000,days:3,ap:null,unscored:1};
+function M(c){return CMETA[c.n]||MDEF}
 S.going=S.going||new Set(['MJBizCon','Botox & Bubbly pop-up','VMX','Chicago Midwinter Meeting','AAD Annual Meeting','The Aesthetic Meeting']);
 db.invites=[{n:'Jasmine Torres',e:'jasmine.t@example.com',by:'Kerrie',conf:'MJBizCon',d:'2026-10-28'},{n:'Marcus Bell',e:'marcus.b@example.com',by:'Kerrie',conf:'MJBizCon',d:'2026-10-29'},{n:'Priya Shah',e:'priya.s@example.com',by:'Bridgette',conf:'',d:'2026-10-30'}];
 db.kinv=[{n:'Hollin Haley',type:'partner',st:'Signed up',d:'2026-10-20',note:'One Sunday Pools'},{n:'Mia Chen',type:'rep',st:'Not signed up yet',d:'2026-10-30'},{n:'Jasmine Torres',type:'rep',st:'Not signed up yet',d:'2026-10-28'},{n:'Marcus Bell',type:'rep',st:'Not signed up yet',d:'2026-10-29'}];
@@ -1107,40 +1122,70 @@ const VERB={booth:'Go · get a booth',walk:'Go · walk the floor',popup:'Go · h
 function verdict(b){return b.roi<2?['Skip this one','bad']:[VERB[b.mode],'good']}
 
 V.people_shows=()=>{
- const ind=S.confInd||'all',st=S.confSt||null;
- let list=CONFS.filter(c=>(ind==='all'||c.ind.includes(ind))&&(!st||c.st===st)).map(c=>({c,b:cBest(c),m:CMETA[c.n]})).sort((x,y)=>y.b.roi-x.b.roi);
- const cnt={};CONFS.filter(c=>ind==='all'||c.ind.includes(ind)).forEach(c=>cnt[c.st]=(cnt[c.st]||0)+1);
- return `<div><div class="hello">Which shows?</div><div class="sub">Best ones are at the top. Tap <b>Add to my plan</b> on the ones you like.</div></div>
- <div class="seg">${[['all','All'],...CIND.map(x=>[x,x])].map(([k,l])=>`<button data-a="confInd" data-id="${k}" aria-pressed="${ind===k}">${l}</button>`).join('')}</div>
- <details class="card"><summary class="small"><b>Show the map</b></summary><div class="tm" style="margin-top:10px">${TILES.map(t=>{const n=cnt[t.st]||0;return `<button class="tile ${n>1?'c2':n?'c1':''} ${st===t.st?'sel':''}" style="grid-column:${t.x+1};grid-row:${t.y+1}" data-a="confSt" data-id="${t.st}" aria-label="${t.st}, ${n} events">${t.st}${n?`<sup>${n}</sup>`:''}</button>`}).join('')}</div>${st?`<button class="btn ghost" data-a="confSt" data-id="${st}">Show all states</button>`:''}</details>
- <div class="stack">${list.map(({c,b,m})=>{const g=S.going.has(c.n),[v,vk]=verdict(b);
+ const ind=S.confInd||'all',st=S.confSt||null,fit=S.ifit||'all';
+ const inds=INDS.filter(x=>fit==='all'||x.fit===fit).sort((a,b)=>a.need-b.need);
+ let list=CONFS.filter(c=>(ind==='all'||c.ind.includes(ind))&&(!st||c.st===st)).map(c=>({c,b:cBest(c),m:M(c)})).sort((x,y)=>(x.m.unscored?1:0)-(y.m.unscored?1:0)||y.b.roi-x.b.roi);
+ const cnt={};CONFS.filter(c=>c.st&&(ind==='all'||c.ind.includes(ind))).forEach(c=>cnt[c.st]=(cnt[c.st]||0)+1);
+ const nShows=n=>CONFS.filter(c=>c.ind.includes(n)).length;
+ return `<div><div class="hello">Find good shows</div><div class="sub">First, which industries could pay us $3,000 a month? Then, where do those owners gather?</div></div>
+ <div class="sec">${lbl('Who could pay $3k a month?',`${INDS.length} industries`)}
+ <div class="card small" style="background:var(--tint);border-color:transparent">The test: how many <b>new customers a month</b> would we need to bring them to pay for $3,000? Fewer is better. One new plastic surgery patient can be worth $8,000. A new pest control customer, about $600.</div>
+ <div class="seg">${['all','Great fit','Good fit','Long shot'].map(k=>`<button data-a="ifit" data-id="${k}" aria-pressed="${fit===k}">${k==='all'?'All':k}</button>`).join('')}</div>
+ <div class="list">${inds.map(x=>`<button class="li" data-a="confInd" data-id="${esc(x.n)}" style="${ind===x.n?'background:var(--tint)':''}"><span class="grow"><span class="t" style="display:block">${esc(x.n)}</span><span class="m">1 new customer ≈ ${$(x.val)} in year 1 · needs <b>${x.need<1?'less than 1':x.need.toFixed(1)}</b> a month · ${nShows(x.n)?nShows(x.n)+' show'+(nShows(x.n)>1?'s':''):'no shows yet'}</span></span>${chip(x.fit,IFIT[x.fit])}</button>`).join('')}</div>
+ <div class="xs muted">Customer values are rough guesses, not research. Swap in real numbers as we learn them.</div></div>
+ <div class="sec">${lbl(ind==='all'?'All shows':'Shows for '+esc(ind),`${list.length}`)}
+ ${ind!=='all'?`<button class="btn ghost" data-a="confInd" data-id="all">Show every industry</button>`:''}
+ <details class="card"><summary class="small"><b>Show the map</b></summary><div class="tm" style="margin-top:10px">${TILES.map(t=>{const n=cnt[t.st]||0;return `<button class="tile ${n>1?'c2':n?'c1':''} ${st===t.st?'sel':''}" style="grid-column:${t.x+1};grid-row:${t.y+1}" data-a="confSt" data-id="${t.st}" aria-label="${t.st}, ${n} events">${t.st}${n?`<sup>${n}</sup>`:''}</button>`}).join('')}</div>${st?`<button class="btn ghost" data-a="confSt" data-id="${st}">Show all states</button>`:''}<div class="xs muted">Only shows with a confirmed city are on the map.</div></details>
+ <div class="stack">${list.map(({c,b,m})=>{const g=S.going.has(c.n),[v,vk]=m.unscored?['Not scored yet','']:verdict(b);
   return `<div class="card stack" style="${g?'border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)':''}">
   <div class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><b style="font:700 18px var(--display)">${esc(c.n)}</b>${chip(v,vk)}</div>
-  <div class="small muted">${esc(c.city)} · ${esc(confRange(c))}</div>
-  <div class="small">${b.roi<2?'It costs more than it\'s likely to bring back.':`Every $1 we spend should bring back about <b>$${b.roi.toFixed(0)}</b>.`} ${m.locals>200?`${m.locals} businesses there already have a page with us.`:''}${m.known.length?` You'll know people: ${m.known.map(x=>esc(x.split(' (')[0])).join(', ')}.`:''}</div>
+  <div class="small muted">${esc(c.city)} · ${esc(confRange(c))} · ${c.ind.map(esc).join(', ')}</div>
+  ${m.unscored?`<div class="small">${esc(c.note)}</div>`:`<div class="small">${b.roi<2?'It costs more than it\'s likely to bring back.':`Every $1 we spend should bring back about <b>$${b.roi.toFixed(0)}</b>.`} ${m.locals>200?`${m.locals} businesses there already have a page with us.`:''}${m.known.length?` You'll know people: ${m.known.map(x=>esc(x.split(' (')[0])).join(', ')}.`:''}</div>`}
   ${c.ok?'':`<div class="small" style="color:var(--warn)">Date isn't confirmed yet.</div>`}
-  <div class="row"><button class="btn ${g?'':'pri'}" data-a="going" data-id="${esc(c.n)}">${g?'✓ In my plan':'Add to my plan'}</button><button class="btn ghost" data-a="cmp" data-id="${esc(c.n)}">See the numbers</button></div></div>`}).join('')||'<div class="empty">Nothing here for this industry yet.</div>'}</div>
- <div class="xs muted">All numbers are rough estimates. Replace them with real quotes as you get them.</div>`;};
+  <div class="row">${m.unscored?`<button class="btn pri" data-a="suggest" data-id="${esc(c.n)}">Suggest to Steve</button>`:`<button class="btn ${g?'':'pri'}" data-a="going" data-id="${esc(c.n)}">${g?'✓ In my plan':'Add to my plan'}</button><button class="btn ghost" data-a="cmp" data-id="${esc(c.n)}">See the numbers</button>`}</div></div>`}).join('')||'<div class="empty">No shows for this industry yet. Found one? Tell Steve.</div>'}</div>
+ <button class="btn block" data-a="suggest" data-id="">${ic('plus',16)}I found a show</button>
+ <div class="xs muted">All numbers are rough estimates. Replace them with real quotes as you get them.</div></div>`;};
 
-function cmpSheet({id}){const c=CONFS.find(x=>x.n===id),m=CMETA[c.n];const opts=(c.pop?['popup']:['booth','walk','popup']).map(k=>({k,...cModel(c,k)}));const best=opts.slice().sort((a,b)=>b.roi-a.roi)[0];
+function cmpSheet({id}){const c=CONFS.find(x=>x.n===id),m=M(c);const opts=(c.pop?['popup']:['booth','walk','popup']).map(k=>({k,...cModel(c,k)}));const best=opts.slice().sort((a,b)=>b.roi-a.roi)[0];
  return `<div class="row sp"><div><div class="h1">${esc(c.n)}</div><div class="sub">${esc(c.city)} · ${esc(confRange(c))}</div></div><button class="btn ghost" data-a="close">Close</button></div>
  <div class="list">${opts.map(o=>`<div class="li" style="display:grid;gap:6px;${o.k===best.k?'background:var(--good-soft)':''}"><span class="row sp"><b>${MODES[o.k]}${o.k===best.k?' · best':''}</b>${roiChip(o.roi)}</span><div class="cgrid"><span><b>${$k(o.fixed)}</b>to go</span><span><b>~${Math.round(o.claims)}</b>claims</span><span><b>${o.paying.toFixed(1)}</b>paying</span><span><b>${$k(o.net)}</b>we keep, yr 1</span></div><span class="xs muted">${o.k==='booth'?`Booth fee about ${$(m.booth)}, 3 people.`:o.k==='walk'?'Badges only, 3 people. Talk to attendees, not exhibitors. Most shows ban pitching exhibitors without a booth.':'Venue about $3,000, 2 people, about 60 owners.'} Team on rev share.</span></div>`).join('')}</div>
  <div class="card small"><b>Who we know there:</b> ${m.known.length?m.known.map(esc).join(', '):'nobody yet'}<br><b>Partners to recruit:</b> ${esc(m.partners)}. Give them a referral code.</div>`}
 
+/* ---- Travel cost per person ---- */
+const HOMES={'San Diego, CA':[32.73,-117.19],'Riverside, CA':[33.95,-117.40],'Los Angeles, CA':[34.05,-118.24],'Orange County, CA':[33.68,-117.83],'Seattle, WA':[47.61,-122.33],'Phoenix, AZ':[33.45,-112.07],'Las Vegas, NV':[36.17,-115.14],'Denver, CO':[39.74,-104.99],'Dallas, TX':[32.78,-96.80],'Chicago, IL':[41.88,-87.63],'Atlanta, GA':[33.75,-84.39],'Florida':[28.54,-81.38],'New York, NY':[40.71,-74.01],'Brazil':[-23.55,-46.63]};
+const HOMEOF={'Kerrie Quinby':'San Diego, CA','Steve Lee':'San Diego, CA','Kody Muffoletto':'Riverside, CA','Eric Sim':'Riverside, CA','Caron Cooper':'Seattle, WA','Bridgette DeBrino':'Florida','Flávia Gottschalk':'Brazil'};
+const HOTEL={LAS:180,MCO:190,ORD:250,ATL:200,SFO:300,MIA:280,BNA:230,SAN:0};
+function miles(a,b){const r=x=>x*Math.PI/180,R=3959;const dla=r(b[0]-a[0]),dlo=r(b[1]-a[1]);const h=Math.sin(dla/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(dlo/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function homeOf(p){return p.home||HOMEOF[p.n]||'San Diego, CA'}
+function travelCost(p,c){const m=M(c);if(m.local||!m.ap)return {how:'Local',fly:0,hotel:0,nights:0,mi:0};
+ const h=homeOf(p),mi=miles(HOMES[h],AP[m.ap]);const nights=m.days+1;
+ if(mi<60)return {how:'Lives there',fly:0,hotel:0,nights:0,mi};
+ const fly=h==='Brazil'?1200:mi<300?150:mi<1200?350:550;
+ return {how:mi<300?'Drive':'Fly',fly,hotel:nights*(HOTEL[m.ap]||220),nights,mi}}
+const STAFFN=n=>{const u=db.users.find(x=>x.n===n);return u&&u.r!=='rep'};
+function elig(p,c){if(STAFFN(p.n))return ['Staff',''];if(db.invites.some(v=>v.n===p.n))return ['Needs to sign up','warn'];
+ const h=HR.find(x=>x.n===p.n);if(!h)return ['Check','warn'];if(h.staff)return ['Staff',''];
+ const q=QUAL(c);if(qOk(h,q))return ['Qualified','good'];return [q.claims-h.claims<=3?`${q.claims-h.claims} claims short`:`${q.paying-h.paying} paying short`,'bad']}
+function crewTravel(c){return crew(c).reduce((t,p)=>{const x=travelCost(p,c);return t+x.fly+x.hotel},0)}
 /* ---- Plan ---- */
 function planConfs(){return CONFS.filter(c=>S.going.has(c.n)).sort((a,b)=>(a.s||'2099').localeCompare(b.s||'2099'))}
 function curPlan(){const ps=planConfs();return ps.find(x=>x.n===S.planConf)||ps.find(x=>!x.pop&&x.s)||ps[0]}
-V.people_plan=()=>{const ps=planConfs();if(!ps.length)return `<div class="card empty">No shows in your plan yet. Go to Shows and tap Add to my plan.</div>`;
- const c=curPlan();S.planConf=c.n;const m=CMETA[c.n];const cr=crew(c),staff=cr.length;
+V.people_plan=()=>{const ps=planConfs();if(!ps.length)return `<div class="card empty">No shows in your plan yet. Go to Find shows and tap Add to my plan.</div>`;
+ const c=curPlan();S.planConf=c.n;const m=M(c);const cr=crew(c),staff=cr.length;
  const mode=(S.pmode||{})[c.n]||cBest(c).mode;
  const dayN=cr.filter(p=>p.pay==='day').length;
- const now=cModel(c,mode,staff,dayN),allShare=cModel(c,mode,staff,0),allDay=cModel(c,mode,staff,cr.filter(p=>p.pay!=='salary').length);
+ const tv=crewTravel(c);const now=cModel(c,mode,staff,dayN,tv),allShare=cModel(c,mode,staff,0,tv),allDay=cModel(c,mode,staff,cr.filter(p=>p.pay!=='salary').length,tv);
+ const q=QUAL(c),TC=cr.map(p=>travelCost(p,c)),fl=TC.reduce((a,x)=>a+x.fly,0),ho=TC.reduce((a,x)=>a+x.hotel,0);
  const nightOn=(S.night||{})[c.n]!==false;
  const step=(n,t,body)=>`<div class="sec"><div class="stephd"><span>${n}</span>${t}</div>${body}</div>`;
  return `<label class="f" for="pl-c">Which show<select id="pl-c" data-ch="planconf">${ps.map(x=>`<option value="${esc(x.n)}" ${x.n===c.n?'selected':''}>${esc(x.n)} · ${esc(confRange(x))}</option>`).join('')}</select></label>
  ${step(1,'How we show up',`<div class="seg">${(c.pop?['popup']:['booth','walk','popup']).map(k=>`<button data-a="pmode" data-id="${k}" aria-pressed="${mode===k}">${MODES[k]}${k===cBest(c).mode?' ★':''}</button>`).join('')}</div><div class="small muted">★ is the best value for this show.</div>`)}
- ${step(2,'Who\'s going',`<div class="list">${cr.map((p,i)=>`<div class="li"><span class="grow"><span class="t" style="display:block">${esc(p.n)}</span><span class="m">${p.job}${db.invites.some(v=>v.n===p.n)?' · '+chip('Hasn\'t signed up yet','warn'):''}</span></span>${i?`<button class="btn ghost" data-a="crewDel" data-id="${i}" aria-label="Remove ${esc(p.n)}">Remove</button>`:''}</div>`).join('')}</div>
-  <div class="row" style="flex-wrap:nowrap"><select id="pl-add" data-ch="crewadd" aria-label="Add someone"><option value="">Add someone from the team</option>${db.users.filter(u=>!cr.some(p=>p.n===u.n)&&u.r!=='partner').map(u=>`<option>${esc(u.n)}</option>`).join('')}</select><button class="btn" data-a="invite" data-id="${esc(c.n)}">Invite new</button></div>`)}
+ ${step(2,'Who\'s going',`<div class="small muted">${M(c).local?'Near home. No flights or hotels.':`Reps can come if they hit <b>${q.claims} claims or ${q.paying} paying</b> in the 60 days before. Travel costs are estimates from where each person lives.`}</div>
+  <div class="list">${cr.map((p,i)=>{const t=TC[i],[e,ek]=elig(p,c);return `<div class="li" style="display:grid;gap:6px"><span class="row sp" style="flex-wrap:nowrap"><span><b>${esc(p.n)}</b> <span class="small muted">· ${p.job}</span></span>${chip(e,ek)}</span>
+   <span class="row sp" style="flex-wrap:nowrap;gap:8px"><select data-ch="crewhome" data-id="${i}" aria-label="Where ${esc(p.n)} lives" style="flex:1;min-width:0">${Object.keys(HOMES).map(h=>`<option ${h===homeOf(p)?'selected':''}>${h}</option>`).join('')}</select>${i?`<button class="btn ghost" data-a="crewDel" data-id="${i}" aria-label="Remove ${esc(p.n)}">Remove</button>`:''}</span>
+   ${M(c).local?'':`<span class="small">${t.how==='Lives there'?'Lives there · no flight or hotel':`${t.how==='Drive'?'Drive (gas)':'Flight'} <b>${$(t.fly)}</b> · Hotel ${t.nights} nights <b>${$(t.hotel)}</b> · <b>${$(t.fly+t.hotel)}</b>`}</span>`}</div>`}).join('')}</div>
+  ${M(c).local?'':`<div class="cgrid"><span><b>${$(fl)}</b>flights and gas</span><span><b>${$(ho)}</b>hotels</span><span><b>${$(fl+ho)}</b>travel total</span><span><b>${cr.filter(p=>elig(p,c)[1]==='bad').length}</b>not qualified yet</span></div>`}
+  <div class="row" style="flex-wrap:nowrap"><select id="pl-add" data-ch="crewadd" aria-label="Add someone"><option value="">Add someone</option>${[...new Set([...db.users.filter(u=>u.r!=='partner').map(u=>u.n),...HR.map(h=>h.n)])].filter(n=>!cr.some(p=>p.n===n)).map(n=>`<option>${esc(n)}</option>`).join('')}</select><button class="btn" data-a="invite" data-id="${esc(c.n)}">Invite new</button></div>`)}
  ${step(3,'How we pay them',`<div class="card stack" style="background:var(--tint);border-color:transparent"><b>Simple rule</b><div class="small">Anyone talking to owners: <b>rev share</b>. It costs us nothing unless they bring in customers.<br>Helpers who only set up the booth: <b>$30/hr</b>.</div></div>
   <div class="list">${cr.map((p,i)=>`<div class="li"><span class="grow"><b>${esc(p.n)}</b></span>${p.pay==='salary'?chip('On salary'):`<div class="seg" style="flex:0 0 auto"><button data-a="crewPay" data-id="${i}|share" aria-pressed="${p.pay==='share'}">Rev share</button><button data-a="crewPay" data-id="${i}|day" aria-pressed="${p.pay==='day'}">$30/hr</button></div>`}</div>`).join('')}</div>
   <div class="cmp3">${[['Everyone rev share',allShare],['Your choice',now],['Everyone $30/hr',allDay]].map(([l,r],i)=>`<div class="${i===1?'on':''}"><span>${l}</span><b>${$k(r.fixed)}</b><small>to go</small><b>${$k(r.share)}</b><small>paid out, only if they sell</small>${roiChip(r.roi)}</div>`).join('')}</div>
@@ -1153,12 +1198,12 @@ V.people_plan=()=>{const ps=planConfs();if(!ps.length)return `<div class="card e
  ${step(4,'Team night',nightOn?`<div class="card stack"><b>Night 2: team dinner, then a party for customers</b><div class="small">Same city, same trip. Invite the team plus ${m.known.length?m.known.map(x=>esc(x.split(' (')[0])).join(', '):'anyone who claimed at the booth'}. About ${$(1500)}.</div><button class="btn ghost" data-a="night" data-id="${esc(c.n)}">No team night this time</button></div>`:`<button class="btn" data-a="night" data-id="${esc(c.n)}">Add a team night</button>`)}
  ${step(5,'Checklist',`<div class="list">${CHK.map((t,i)=>{const k=c.n+i,d=(S.ck||{})[k];return `<button class="li" data-a="ck" data-id="${esc(k)}"><span class="ic ${d?'good':''}" style="width:32px;height:32px">${ic(d?'check':'plus',16)}</span><span class="grow" style="${d?'text-decoration:line-through;color:var(--muted)':''}">${t}</span></button>`}).join('')}</div>`)}`;};
 const CHK=['Book the booth or badges','Book flights and hotel','Every person has their Calendly link','Book the team night spot','Text everyone the plan 1 week before','Follow up with every owner within 48 hours'];
-function calcOut(c){const m=CMETA[c.n],cl=S.calc;const book=cl.names*cl.book/100,pay=book*cl.close/100,mo=pay*PLAN_AVG;const both=mo*.10,closer=mo*.05,day=m.days*8*DAYRATE,beat=both>0?Math.ceil(day/both):0;
+function calcOut(c){const m=M(c),cl=S.calc;const book=cl.names*cl.book/100,pay=book*cl.close/100,mo=pay*PLAN_AVG;const both=mo*.10,closer=mo*.05,day=m.days*8*DAYRATE,beat=both>0?Math.ceil(day/both):0;
  return `<div class="cgrid"><span><b>${book.toFixed(1)}</b>calls booked</span><span><b>${pay.toFixed(1)}</b>paying</span><span><b>${$(both)}</b>/mo to them</span><span><b>${$(closer)}</b>/mo to closer</span></div>
  <div class="small" style="margin-top:8px">$30/hr would pay them <b>${$(day)}</b> once. Rev share pays <b>${$(both)}/mo</b> for as long as their customers stay${beat?`, so it passes $30/hr in <b>month ${beat}</b>`:''}.</div>`}
 
 /* ---- Trips ---- */
-function trips(){return planConfs().filter(c=>c.s).map(c=>{const m=CMETA[c.n];const out=addD(c.s,-1),back=addD(c.e||addD(c.s,m.days-1),1);return {c,m,out,back,nights:ago(out,back),ap:m.ap}})}
+function trips(){return planConfs().filter(c=>c.s).map(c=>{const m=M(c);const out=addD(c.s,-1),back=addD(c.e||addD(c.s,m.days-1),1);return {c,m,out,back,nights:ago(out,back),ap:m.ap}})}
 function travelMap(ts){const W=320,H=190,X=lo=>8+(lo+125)/59*(W-16),Y=la=>10+(50-la)/26*(H-30);
  const p=a=>[X(AP[a][1]),Y(AP[a][0])];const [hx,hy]=p('SAN');let paths='',prev=null;
  ts.forEach(t=>{if(t.m.local){prev=null;return}const [x,y]=p(t.ap);const hop=prev&&ago(prev.back,t.out)<5;const [sx,sy]=hop?p(prev.ap):[hx,hy];const mx=(sx+x)/2,my=Math.min(sy,y)-30;
@@ -1174,26 +1219,32 @@ function nextStep(c){const cr=crew(c);const pend=db.invites.filter(i=>i.conf===c
  if(pend.length)return [`${pend.map(p=>p.n.split(' ')[0]).join(' and ')} haven't signed up yet`,'remind',c.n,'Text them a reminder'];
  const i=CHK.findIndex((t,k)=>!(S.ck||{})[c.n+k]);if(i>=0)return [CHK[i],'ck',c.n+i,'Mark it done'];
  return ['You\'re all set','planOpen',c.n,'See the plan']}
+function nextShow(){const ts=trips();return (ts.find(t=>t.out>=TODAY&&!t.m.local)||{}).c}
 V.people_phome=()=>{const ts=trips();const nx=ts.find(t=>t.out>=TODAY&&!t.m.local)||ts[0];const pop=ts.find(t=>t.m.local&&t.c.s>=TODAY);const warns=tripWarn(ts);
- if(!nx)return `<div class="hello">Hi Kerrie.</div><div class="card empty">No shows yet. Tap Shows to pick some.</div>`;
+ const signed=db.kinv.filter(k=>k.st==='Signed up').length,waiting=db.kinv.filter(k=>k.st!=='Signed up');
+ const hero=`<div class="card blue stack"><div class="muted small">YOUR MAIN JOB</div><div style="font:800 24px var(--display);line-height:1.15">Invite people${nx?` to ${esc(nx.c.n)}`:''}</div>
+  <div class="small" style="opacity:.9">${nx?`Ask business partners and reps to join us in ${esc(nx.c.city.split(',')[0])}, ${esc(confRange(nx.c))}. Can't make it? They can still make money on the side with LAIR.`:'Ask business partners and reps to join us at our next show, or to make money on the side with LAIR.'}</div>
+  <button class="btn block" style="background:#fff;color:#0B1A2E;border-color:#fff;font-size:17px" data-a="kinvite" data-id="partner">${ic('users',18)}Invite a business partner</button>
+  <button class="btn block" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.6);font-size:17px" data-a="kinvite" data-id="rep">${ic('bolt',18)}Invite a rep</button>
+  <div class="muted xs">${db.kinv.length} invited · ${signed} signed up · every one who signs up earns you 5%</div></div>`;
+ const chase=waiting.length?`<div class="sec">${lbl('Waiting on them',`${waiting.length}`)}<div class="list">${waiting.slice(0,3).map(k=>li({icon:k.type==='partner'?'users':'bolt',ik:'warn',t:esc(k.n),m:`${k.type==='partner'?'Partner':'Rep'} · invited ${fd(k.d)}`,r:`<button class="btn sm" data-a="remind" data-id="${esc(k.n)}">Remind</button>`,chev:false})).join('')}</div></div>`:'';
+ if(!nx)return `<div class="hello">Hi Kerrie.</div>${hero}${chase}<div class="card empty">No shows in your plan yet. Tap Find shows.</div>`;
  S.planConf=S.planConf||nx.c.n;const c=nx.c;const [t,a,id,b]=nextStep(c);const done=CHK.filter((x,k)=>(S.ck||{})[c.n+k]).length;
- return `<div><div class="hello">Hi Kerrie.</div><div class="sub">Here's the one thing to do next.</div></div>
- <div class="card blue stack"><div class="muted small">Next show · in ${ago(TODAY,c.s)} days</div><div style="font:800 24px var(--display)">${esc(c.n)}</div><div class="muted small">${esc(c.city)} · ${esc(confRange(c))}</div>
-  <div style="background:rgba(255,255,255,.14);border-radius:12px;padding:12px"><div class="muted xs">NEXT STEP</div><div style="font:700 17px var(--display);margin-top:2px">${t}</div></div>
-  <button class="btn block" style="background:#fff;color:#0B1A2E;border-color:#fff" data-a="${a}" data-id="${esc(id)}">${b}</button>
-  <div class="muted xs">${done} of ${CHK.length} checklist steps done · <button class="btn ghost" style="color:#fff;padding:0;text-decoration:underline" data-a="planOpen" data-id="${esc(c.n)}">Open the full plan</button></div></div>
- ${pop?`<div class="card row sp" style="flex-wrap:nowrap"><span><b>${esc(pop.c.n)}</b><br><span class="small muted">${esc(pop.c.city)} · ${fd(pop.c.s)} · no flight</span></span><button class="btn sm" data-a="planOpen" data-id="${esc(pop.c.n)}">Plan it</button></div>`:''}
- <div class="sec">${lbl('Your trips')}<div class="card">${travelMap(ts)}</div>
+ return `<div class="hello">Hi Kerrie.</div>${hero}${chase}
+ <div class="sec">${lbl('Keep yourself organized')}<div class="card stack"><div class="row sp" style="flex-wrap:nowrap"><span><b>${esc(c.n)}</b><br><span class="small muted">${esc(c.city)} · in ${ago(TODAY,c.s)} days</span></span><button class="btn sm" data-a="planOpen" data-id="${esc(c.n)}">Open plan</button></div>
+  <div class="small"><b>Next step:</b> ${t}</div><button class="btn" data-a="${a}" data-id="${esc(id)}">${b}</button><div class="xs muted">${done} of ${CHK.length} checklist steps done</div></div>
+ ${pop?`<div class="card row sp" style="flex-wrap:nowrap"><span><b>${esc(pop.c.n)}</b><br><span class="small muted">${esc(pop.c.city)} · ${fd(pop.c.s)} · no flight</span></span><button class="btn sm" data-a="planOpen" data-id="${esc(pop.c.n)}">Plan it</button></div>`:''}</div>
+ <details class="card"><summary class="small"><b>My trips this year (${ts.length})</b></summary><div class="stack" style="margin-top:10px">${travelMap(ts)}
  ${warns.length?warns.map(w=>`<div class="warnbox warn">${w}</div>`).join(''):`<div class="small" style="color:var(--good)">About one trip a month, with time at home in between. Nice.</div>`}
- <div class="list">${ts.map(t=>li({icon:t.m.local?'pin':'send',t:esc(t.c.n),m:t.m.local?`${fd(t.c.s)} · near home`:`Leave ${fd(t.out)} · home ${fd(t.back)} · ${t.nights} nights`,a:'planOpen',id:t.c.n})).join('')}</div></div>
- <div class="card stack"><b>Your best tool is your phone</b><div class="small">Every friend who signs up as a partner or rep through your link earns you 5%.</div><button class="btn pri block" data-a="tab" data-id="invite">Invite friends</button></div>`};
+ <div class="list">${ts.map(t=>li({icon:t.m.local?'pin':'send',t:esc(t.c.n),m:t.m.local?`${fd(t.c.s)} · near home`:`Leave ${fd(t.out)} · home ${fd(t.back)} · ${t.nights} nights`,a:'planOpen',id:t.c.n})).join('')}</div></div></details>
+ <button class="btn block" data-a="tab" data-id="shows">${ic('map',16)}Find more good shows</button>`};
 
 /* ---- Invite ---- */
-V.people_invite=()=>`<div><div class="hello">Invite your people.</div><div class="sub">Pick the kind of friend. We write the text for you.</div></div>
+V.people_invite=()=>{const nx=nextShow();return `<div><div class="hello">Invite your people.</div><div class="sub">${nx?`Ask them to join us at <b>${esc(nx.n)}</b>. If they can't come, they can still earn on the side.`:'Pick the kind of friend.'} We write the text for you.</div></div>
  <button class="bigpick" data-a="kinvite" data-id="partner"><span class="ic good" style="width:48px;height:48px">${ic('users',26)}</span><span><b>Runs a company that serves business owners?</b><span>Consultants, agencies, product reps. Make their company a partner. They get a listing on our Works with page, and we trade clients both ways.</span></span></button>
  <button class="bigpick" data-a="kinvite" data-id="rep"><span class="ic" style="width:48px;height:48px">${ic('bolt',26)}</span><span><b>Wants to earn on the side?</b><span>Make them a sales rep. They earn up to 15% on every business they bring in, and can earn trips.</span></span></button>
- <div class="sec">${lbl('People you invited',`${db.kinv.length}`)}<div class="list">${db.kinv.map(k=>li({icon:k.type==='partner'?'users':'bolt',ik:k.st==='Signed up'?'good':'warn',t:esc(k.n),m:`${k.type==='partner'?'Partner':'Sales rep'} · ${fd(k.d)}${k.note?' · '+esc(k.note):''}`,r:k.st==='Signed up'?chip('Signed up','good'):`<button class="btn sm" data-a="remind" data-id="${esc(k.n)}">Remind</button>`,chev:false})).join('')}</div></div>`;
-function kinviteSheet({id}){const p=id==='partner';const txt0=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. Want your company listed on our Works with page? We send each other clients, and you earn 10% of what yours pay us. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! Want to make extra money on your own time? Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
+ <div class="sec">${lbl('People you invited',`${db.kinv.length}`)}<div class="list">${db.kinv.map(k=>li({icon:k.type==='partner'?'users':'bolt',ik:k.st==='Signed up'?'good':'warn',t:esc(k.n),m:`${k.type==='partner'?'Partner':'Sales rep'} · ${fd(k.d)}${k.note?' · '+esc(k.note):''}`,r:k.st==='Signed up'?chip('Signed up','good'):`<button class="btn sm" data-a="remind" data-id="${esc(k.n)}">Remind</button>`,chev:false})).join('')}</div></div>`};
+function kinviteSheet({id}){const p=id==='partner';const nx=nextShow();const show=nx?`We'll be at ${nx.n} in ${nx.city.split(',')[0]}, ${confRange(nx)}. Want to join us there? `:'';const txt0=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. ${show}${show?'If you can\'t make it, no problem. ':''}We'd love to list your company on our Works with page. We send each other clients, and you earn 10% of what yours pay us. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! ${show?show+'Come work the floor with us. ':''}${show?'If you can\'t make it, you':'You'} can still make extra money on your own time. Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
  return `<div class="row sp"><div class="h1">${p?'Invite a partner':'Invite a sales rep'}</div><button class="btn ghost" data-a="close">Cancel</button></div>
  <label class="f" for="ki-n">Their name<input id="ki-n" placeholder="First and last name"></label>
  <label class="f" for="ki-p">Their phone<input id="ki-p" type="tel" placeholder="(619) 555-0100"></label>
@@ -1256,7 +1307,7 @@ const PARTNERS=[
  D_('Bryan Bullock','People','Marketing executive. Launched DAXXIFY at Revance. Now at AVITA Medical.',''),
  D_('Jeff Allen','People','Sales executive. VP Sales, Collagen P.I.N. Ex-Teoxane, Revance.',''),
  D_('Jill Gregory','People','Sales executive. Now at Acorn Biolabs. Ex-HydraFacial. Launched Juvéderm.',''),
- D_('Dustin Sjuts','People','CEO, Revelyx Bio. Former President of Revance. Ex-Galderma.',''),
+ D_('Dustin Sjuts','People','CEO, Revelyx Bio. Former President of Revance. Ex-Galderma. Earlier career in eye care.',''),
  D_('Kara McClanahan','People','CEO, Aesthetic Practice Partners. Advisor to MedShift. Ex-Genesis.',''),
  D_('Kimberly Gerber','People','CEO, Excelerate. Coaches leaders at Allergan, Revance.',''),
  D_('Jasmine Hill, MBA','People','CEO, Aesthetic Influencer. Ex-Cynosure, Pierre Fabre.',''),
@@ -1287,10 +1338,6 @@ const PARTNERS=[
  ...['U.S. Small Business Administration|sba.gov','SCORE|score.org','NFIB|nfib.com','U.S. Chamber of Commerce|uschamber.com','Inc.|inc.com','Entrepreneur|entrepreneur.com','Search Engine Land|searchengineland.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Press, media & associations','Small business press, media and associations.',s2)})];
 const isMe=p=>S.role==='partner'&&p.id==='the-audrey-aesthetic';
 const utm=p=>p.site?`https://${p.site}${p.site.includes('?')?'&':'?'}utm_source=localairegistry&utm_medium=directory&utm_campaign=works_with&utm_content=${p.id}`:'';
-const PRECV=[
- {name:'Bloom Med Spa',ask:'Wants help choosing an AI tool for front-desk booking',from:'Caron Cooper (LAIR)',st:'New',d:'2026-10-30'},
- {name:'Coastline Aesthetics',ask:'Wants staff training on using ChatGPT safely',from:'Bridgette DeBrino (LAIR)',st:'Meeting booked',d:'2026-10-24'},
- {name:'Luna Skin Bar',ask:'Asked for an AI strategy workshop for 3 locations',from:'Kody Muffoletto (LAIR)',st:'Won',d:'2026-10-10'}];
 function dirList(){const cat=S.dcat||'all',q=(S.dq||'').toLowerCase();return PARTNERS.filter(p=>(cat==='all'||p.cat===cat)&&(!q||(p.co+p.one+p.cat+p.person+p.serves).toLowerCase().includes(q)))}
 function dirView(){const L=dirList();const n=c=>PARTNERS.filter(p=>p.cat===c).length;
  return `<div><div class="h1">Works with LAIR</div><div class="sub">${PARTNERS.length} tools, companies and people we work with. Your LAIR record connects to them, and they help owners get found in AI. Public at localairegistry.com/works-with.</div></div>
@@ -1326,15 +1373,8 @@ const HR=[
  {n:'Bridgette DeBrino',role:'Sales manager',claims:0,paying:6,trips:2,staff:1},
  {n:'Caron Cooper',role:'Specialist',claims:0,paying:0,trips:0,staff:1,kpi:'Report work 72%'},
  {n:'Flávia Gottschalk',role:'Marketing',claims:0,paying:0,trips:0,staff:1,kpi:'218 MQLs'}];
-const QUAL=c=>{const m=CMETA[c.n];return m.local?{claims:0,paying:0,t:'Open to everyone'}:m.drive?{claims:6,paying:1}:c.n==='The Aesthetic Meeting'?{claims:15,paying:3}:{claims:10,paying:2}};
+const QUAL=c=>{const m=M(c);return m.local?{claims:0,paying:0,t:'Open to everyone'}:m.drive?{claims:6,paying:1}:c.n==='The Aesthetic Meeting'?{claims:15,paying:3}:{claims:10,paying:2}};
 const qOk=(p,q)=>p.claims>=q.claims||p.paying>=q.paying;
-V.people_team=()=>{const nx=planConfs().find(c=>c.s&&!CMETA[c.n].local);const q=nx?QUAL(nx):null;
- return `<div class="row sp"><div><div class="h1">Team</div><div class="sub">Who's performing, who's been on a trip, and who's earned the next one.</div></div><button class="btn pri sm" data-a="invite" data-id="">${ic('plus',16)}Invite</button></div>
- ${nx?`<div class="card small">Next trip: <b>${esc(nx.n)}</b> (${esc(confRange(nx))}). Reps qualify with <b>${q.claims} claims or ${q.paying} paying</b> in the last 60 days.</div>`:''}
- <div class="list">${HR.map(p=>{const ok=p.staff||!q||qOk(p,q);const short=!ok?(q.claims-p.claims<=3?`${q.claims-p.claims} claims short`:`${q.paying-p.paying} paying short`):'';
-  return li({icon:'users',ik:ok?'good':p.claims<4?'bad':'warn',t:esc(p.n),m:`${p.role} · ${p.staff?(p.kpi||p.paying+' closes'):`${p.claims} claims, ${p.paying} paying (60 days)`} · ${p.trips} trip${p.trips===1?'':'s'} this year`,r:p.staff?chip(p.trips?'Went':'Culture invite',p.trips?'':'blue'):ok?chip('Qualified','good'):chip(short,'warn'),chev:false})}).join('')}</div>
- <div class="xs muted">Staff who don't sell (like Caron and Flávia) go as a culture reward, at your call.</div>
- <div class="sec">${lbl('Invited, not onboarded yet',`${db.invites.length}`)}<div class="list">${db.invites.map(i=>li({icon:'inbox',ik:'warn',t:esc(i.n),m:`Invited by ${i.by} · ${fd(i.d)}${i.conf?' · for '+esc(i.conf):''}`,r:`<button class="btn sm" data-a="toast" data-id="Invite resent to ${esc(i.n)}">Resend</button>`,chev:false})).join('')}</div></div>`;};
 function inviteSheet({id}){const by=S.role==='rsm'?'Bridgette':'Kerrie';return `<div class="row sp"><div class="h1">Invite a rep</div><button class="btn ghost" data-a="close">Cancel</button></div>
  <div class="sub">They join as an AIORS rep and show up on Bridgette's list until they finish onboarding.</div>
  <label class="f" for="iv-n">Full name<input id="iv-n" placeholder="e.g. Jasmine Torres"></label>
@@ -1344,7 +1384,7 @@ function inviteSheet({id}){const by=S.role==='rsm'?'Bridgette':'Kerrie';return `
  <button class="btn pri block" data-a="saveInvite" data-id="${by}">Send invite</button><div class="xs muted">They set up their own sign-in and get a referral code. Invited by ${by}.</div>`}
 
 /* ---- Rep: earn a trip ---- */
-function repTrips(){const me=HR[0];return `<div class="sec">${lbl('Earn a trip')}<div class="sub" style="margin-top:-4px">Hit the number in the 60 days before and you're on the team. Travel's on us.</div><div class="list">${planConfs().filter(c=>c.s&&!CMETA[c.n].local).map(c=>{const q=QUAL(c),ok=qOk(me,q);const pc=Math.min(100,Math.max(me.claims/q.claims,me.paying/q.paying)*100);
+function repTrips(){const me=HR[0];return `<div class="sec">${lbl('Earn a trip')}<div class="sub" style="margin-top:-4px">Hit the number in the 60 days before and you're on the team. Travel's on us.</div><div class="list">${planConfs().filter(c=>c.s&&!M(c).local).map(c=>{const q=QUAL(c),ok=qOk(me,q);const pc=Math.min(100,Math.max(me.claims/q.claims,me.paying/q.paying)*100);
  return `<div class="li" style="display:grid;gap:6px"><span class="row sp" style="flex-wrap:nowrap"><b>${esc(c.n)}</b>${ok?chip('You qualify','good'):chip(`${Math.max(0,q.claims-me.claims)} claims or ${Math.max(0,q.paying-me.paying)} paying to go`,'warn')}</span><span class="small muted">${esc(c.city)} · ${esc(confRange(c))} · need ${q.claims} claims or ${q.paying} paying</span>${meter(pc,ok?'good':'')}</div>`}).join('')}</div></div>`}
 
 /* ---- Bridgette: all hands ---- */
@@ -1655,7 +1695,6 @@ document.addEventListener('click',e=>{
   dcat:()=>{S.dcat=id;if(S.sheet&&S.sheet.k==='dir')renderSheet();else render()},
   dirOpen:()=>{S.dq='';S.dcat='all';open('dir','')},
   pview:()=>open('pview',id),
-  pseg:()=>{S.pseg=id;render()},
   kinvite:()=>open('kinvite',id),
   kiSend:()=>{const n=document.getElementById('ki-n').value.trim();if(!n){document.getElementById('ki-n').focus();toast('Add their name first');return}db.kinv.unshift({n,type:id,st:'Not signed up yet',d:TODAY});if(id==='rep')db.invites.unshift({n,e:'',by:'Kerrie',conf:'',d:TODAY});else db.pcodes.push({code:n.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+'10',who:n,role:'Invited by Kerrie',pct:10,cust:0,refs:0,paying:0,mrr:0});close();render();try{navigator.clipboard.writeText(document.getElementById('ki-t')?.textContent||'')}catch(_){}toast('Copied. Paste it into a text to '+n+'. We\'ll tell you when they sign up.')},
   remind:()=>{toast('Reminder texted')},
@@ -1678,6 +1717,8 @@ document.addEventListener('click',e=>{
    const r=g('au-r').value;db.users.push({n,e,r,type:g('au-t').value,extra:g('au-x').value.trim(),st:'Invited',last:''});const code=n.split(' ')[0].toUpperCase().replace(/[^A-Z]/g,'')+(r==='partner'?'10':'5');close();S.uf='all';render();toast(`Invite sent to ${n}. Referral code ${code} is ready.`)},
   userOff:()=>{const u=db.users.find(x=>x.e===id);u.st=u.st==='Off'?'Active':'Off';u.last=u.last||'just now';close();render();toast(u.st==='Off'?`${u.n} is signed out everywhere`:`${u.n} can sign in again`)},
   confInd:()=>{S.confInd=id;S.confSt=null;render()},
+  ifit:()=>{S.ifit=id;render()},
+  suggest:()=>{toast(id?`Sent ${id} to Steve to look at`:'Tell Steve the name and a link. Sent him a note.')},
   confSt:()=>{S.confSt=S.confSt===id?null:id;render()},
   copyMsg:()=>{try{navigator.clipboard.writeText(id).then(()=>toast('Copied'),()=>toast('Copy blocked here. Select the text instead.'))}catch(_){toast('Select the text to copy')}},
   wallet:()=>{open('wallet','');const sh=document.querySelector('.sh');if(sh)sh.scrollTop=0},
@@ -1690,7 +1731,7 @@ document.addEventListener('click',e=>{
   close:()=>close(),ovc:()=>close()};
  go[a]&&go[a]();
 });
-document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='pbio'){S.pbio=el.value;render();toast('Profile saved');return}if(el.dataset.ch==='pwant'){toast('Saved. We\'ll send clients like these your way.');return}if(el.dataset.ch==='bio'){S.bio=S.bio||{};S.bio[S.role]=el.value;toast('Bio saved');return}if(el.dataset.ch==='planconf'){S.planConf=el.value;render()}if(el.dataset.ch==='crewadd'&&el.value){crew(CONFS.find(c=>c.n===S.planConf)).push({n:el.value,job:'Booth',pay:'share'});render()}if(el.dataset.ch==='aurole'){document.getElementById('auPrev').innerHTML=auPreview(el.value)}if(el.dataset.ch==='urole'){const u=db.users.find(x=>x.e===el.dataset.id);u.r=el.value;document.getElementById('auPrev').innerHTML=auPreview(el.value);render();toast(`${u.n} is now ${URO[u.r]}`)}if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
+document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='pbio'){S.pbio=el.value;render();toast('Profile saved');return}if(el.dataset.ch==='pwant'){toast('Saved. We\'ll send clients like these your way.');return}if(el.dataset.ch==='bio'){S.bio=S.bio||{};S.bio[S.role]=el.value;toast('Bio saved');return}if(el.dataset.ch==='planconf'){S.planConf=el.value;render()}if(el.dataset.ch==='crewhome'){crew(CONFS.find(c=>c.n===S.planConf))[+el.dataset.id].home=el.value;render()}if(el.dataset.ch==='crewadd'&&el.value){crew(CONFS.find(c=>c.n===S.planConf)).push({n:el.value,job:'Booth',pay:'share'});render()}if(el.dataset.ch==='aurole'){document.getElementById('auPrev').innerHTML=auPreview(el.value)}if(el.dataset.ch==='urole'){const u=db.users.find(x=>x.e===el.dataset.id);u.r=el.value;document.getElementById('auPrev').innerHTML=auPreview(el.value);render();toast(`${u.n} is now ${URO[u.r]}`)}if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
 document.addEventListener('input',e=>{const el=e.target;if(el.id==='q'){document.getElementById('qres').innerHTML=searchRes(el.value);return}
  if(el.dataset.in==='dq'){S.dq=el.value;const q=el.value.toLowerCase(),cat=S.dcat||'all';document.getElementById('dgrid').innerHTML=dirCards(dirList());return}
  if(el.dataset.in==='calc'){const k=el.dataset.id;S.calc[k]=+el.value;document.getElementById('clv-'+k).textContent=S.calc[k]+(k==='names'?'':'%');document.getElementById('calcOut').innerHTML=calcOut(CONFS.find(c=>c.n===S.planConf));return}
