@@ -602,10 +602,10 @@ const PORT=[
  {acct:'ces',name:'Commonwealth Eye Surgery',type:'Eye surgery practice',url:'localairegistry.com/biz/commonwealth-eye-surgery',res:'Google reviews replied 100%, 6 posts a month',when:'5 months',col:'#3a4a62'},
  {acct:'quik',name:'Quiktox Medspa',type:'Med spa',url:'localairegistry.com/biz/quiktox-medspa',res:'Organic clicks +64%',when:'6 months',col:'#FF5A3C'}];
 const SREV=[
- ['Shawna, Commonwealth Eye Surgery',5,'Caron caught a wrong doctor name before it went out and fixed it the same day.','Oct 2026'],
- ['Dr. Jeff Lisiecki',5,'She explains what she\'s doing in plain English. Our AI Score doubled.','Sep 2026'],
- ['Quiktox Medspa',5,'Three years in. She still answers faster than anyone we\'ve worked with.','Aug 2026'],
- ['Eye Surgery Today',4,'Great results. Wish the monthly report came a few days earlier.','Jul 2026']];
+ ['Eye surgery practice',5,'Caron caught a wrong doctor name before it went out and fixed it the same day.','Oct 2026'],
+ ['Plastic surgeon',5,'She explains what she\'s doing in plain English. Our AI Score doubled.','Sep 2026'],
+ ['Med spa',5,'Three years in. She still answers faster than anyone we\'ve worked with.','Aug 2026'],
+ ['Eye surgery practice',4,'Great results. Wish the monthly report came a few days earlier.','Jul 2026']];
 function lvlBadge(n,big){const L=SLEVELS[n-1];return `<span class="lvl ${big?'big':''}"><svg viewBox="0 0 24 24" width="${big?18:13}" height="${big?18:13}" aria-hidden="true"><path d="M12 2l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 16.6 6.1 19.8l1.3-6.5L2.5 8.8 9.1 8z" fill="currentColor"/></svg>Level ${n} · ${L[1]}</span>`}
 function specProfile(){const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
  return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="logo-sq" style="background:var(--blue);color:#fff">CC</span><div style="min-width:0"><div style="font:800 21px var(--display)">Caron Cooper</div><div class="small muted">AEO Specialist · Seattle, WA · works nationwide</div><div class="row" style="margin-top:6px">${lvlBadge(4,1)}</div></div></div>
@@ -913,7 +913,7 @@ V.god_over=()=>{
   ['rep','AIORS reps','31 claims this month, Kody #4 nationally.','good'],
   ['spec','Specialists','R.Ve is 6 days late on approvals and missing GA4/GSC.','bad'],
   ['cfo','Finance','Margin 49% vs 55% target. Biggest leak: failed cards and deal discounts.','warn'],
-  ['partner','Partners','Works with page has 68 listings, 5 active partners. The Audrey Aesthetic brought in $6,000/mo.','good'],
+  ['partner','Partners','Works with page lists 80+ tools, companies and people. The Audrey Aesthetic brought in $6,000/mo.','good'],
   ['people','People & Partnerships','MJBizCon Dec 1: 2 booth reps haven\'t signed up yet.','warn'],
   ['cto','Product','Pricing exits: 41 owners. Survey ships Monday.','warn'],
   ['mkt','Marketing','Provider applications up 3x after Clutch post.','good'],
@@ -1214,52 +1214,66 @@ function kitView(){const p=me();
  return `<div><div class="h1">Your public profile</div><div class="sub">Like a Zillow agent page. Owners land here from your link.</div></div>
  <div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="logo-sq" style="background:var(--blue);color:#fff">${p.ini}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.n)}</div><div class="small muted">${esc(p.t)}${p.city?' · '+esc(p.city):''}</div><div class="row" style="margin-top:5px">${chip('✓ Verified by Local AI Registry','good')}</div></div></div>
   <div class="small">${esc(S.bio?.[S.role]??p.bio)}</div>
-  ${p.helped?`<div class="cgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><span><b>${p.helped}</b>businesses helped</span><span><b>4.9</b>from owners</span></div>`:''}
   <button class="btn pri block" data-a="toast" data-id="Opens ${esc(p.n.split(' ')[0])}'s booking calendar">Book a free AI check with ${esc(p.n.split(' ')[0])}</button>
   <button class="btn block" data-a="toast" data-id="Opens the claim flow with code ${p.code}">Claim your business page free</button></div>
  <div class="row" style="flex-wrap:nowrap"><input id="publink" readonly value="${p.url}"><button class="btn sm pri" data-a="copyMsg" data-id="${p.url}">Copy</button></div>
  <label class="f" for="pub-bio">Your short bio<textarea id="pub-bio" data-ch="bio" style="min-height:80px">${esc(S.bio?.[S.role]??p.bio)}</textarea></label>`}
 /* ================= PARTNER DIRECTORY (outside companies, like a vendor marketplace) ================= */
-const PCAT=['Consultancies','Industry leaders','KOLs & practitioners','Medical advisors','Agencies','Website builders','Booking & practice software','Reviews & reputation','Listings & local SEO','AI & search tools','PR & media','Financing & loyalty','Associations & media'];
-const CCOL={'Consultancies':'#5a4e44','Industry leaders':'#0B1A2E','KOLs & practitioners':'#7a3e5a','Medical advisors':'#0B1A2E','AEO specialists':'#1F4FE0','Agencies':'#3a4a62','Website builders':'#2b2b2b','Booking & practice software':'#2e6b5e','Reviews & reputation':'#b5651d','Listings & local SEO':'#1F4FE0','AI & search tools':'#4b3fb5','PR & media':'#8a3324','Financing & loyalty':'#FF5A3C','Associations & media':'#3a4a62'};
-const D_=(co,cat,one,site,o={})=>({id:co.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),co,cat,one,site,person:o.person||co,mono:o.mono||co.replace(/^(Dr\.?|The) /,'').split(/[\s,.]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase(),col:CCOL[cat],partner:!!o.partner,code:o.code||'',serves:o.serves||'',lvl:o.lvl||0,since:o.since||'',spec:o.spec||0});
+const PCAT=['People','Consultancies & agencies','Website builders','Booking & practice software','Reviews & reputation','Listings & local SEO','AI & search tools','Payments & loyalty','Press, media & associations'];
+const CCOL={'People':'#0B1A2E','Consultancies & agencies':'#5a4e44','Website builders':'#2b2b2b','Booking & practice software':'#2e6b5e','Reviews & reputation':'#b5651d','Listings & local SEO':'#1F4FE0','AI & search tools':'#4b3fb5','Payments & loyalty':'#FF5A3C','Press, media & associations':'#8a3324'};
+const D_=(co,cat,one,site,o={})=>({id:co.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),co,cat,one,site,person:o.person||co,mono:o.mono||co.replace(/^(Dr\.?|The) /,'').split(/[\s,.]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase(),col:CCOL[cat],partner:!!o.partner,code:o.code||'',serves:o.serves||''});
 const PARTNERS=[
- D_('The Audrey Aesthetic','Consultancies','AI strategy for medical aesthetics. Writing, speaking and helping practices adopt AI tools.','theaudreyaesthetic.com',{person:'Audrey Campbell, MPH',mono:'A',partner:1,code:'AUDREY15',serves:'Med spas, plastic surgery, wellness',since:'Oct 2026'}),
- D_('Aesthetic Practice Partners','Consultancies','Practice management consulting. Led by Kara McClanahan, 29 years in aesthetics.','',{person:'Kara McClanahan',mono:'AP'}),
- D_('Excelerate','Consultancies','Executive coaching for aesthetics leaders. Led by Kimberly Gerber.','',{person:'Kimberly Gerber'}),
- D_('Medical Insight','Consultancies','Aesthetics market research and THE Aesthetic Guide. Founded by Michael Moretti, ex-Allergan.','',{person:'Michael Moretti',mono:'MI'}),
- D_('Taryn Conway','Industry leaders','Marketing executive. Ex-Allergan and Revance.',''),
- D_('Kellie Lao','Industry leaders','Marketing leader. Ex-Allergan, Revance and Evolus.',''),
- D_('Aneesh Patel, PharmD','Industry leaders','Industry leader. Ex-Evolus and Galderma.',''),
- D_('Benjamin Hahr','Industry leaders','Tech executive. Ex-Evolus, Revance, HintMD and Growth99.',''),
- D_('Dustin Sjuts','Industry leaders','CEO, Revelyx Bio. Former President of Revance.',''),
- D_('Eric Sanders','Industry leaders','Former VP of Marketing and Business Development, Revance.',''),
- D_('Ben Wolber','Industry leaders','Founder and CEO, Illume. Partners with Merz and Allergan.','joinillume.com'),
- D_('Dr Benji Dhillon','KOLs & practitioners','Cosmetic surgeon, Define Clinic.','defineclinic.com',{partner:1,since:'2026'}),
- D_('Dr. Doris Day','KOLs & practitioners','Dermatologist, New York.',''),
- D_('Dr. Mariano Busso','KOLs & practitioners','Dermatologist and injector trainer.',''),
- D_('Dr. Roberta Del Campo','KOLs & practitioners','Aesthetic physician and injector trainer.',''),
- D_('Dr. Sachin Shridharani','KOLs & practitioners','Plastic surgeon, New York.',''),
- D_('Dr. Deepak Dugar','KOLs & practitioners','Facial plastic surgeon, Beverly Hills.',''),
- D_('Dr. Janet Allenby','KOLs & practitioners','Dermatologist, Delray Beach.','allenbydermatology.com'),
- D_('Dr. Walter Joseph','KOLs & practitioners','Aesthetic physician.',''),
- D_('Naomi Barrett, NP-C','KOLs & practitioners','Nurse practitioner and injector.',''),
- D_('Linda Rank, PA-C','KOLs & practitioners','soul&beautyMEDx, Mission Viejo.','soulandbeautymedx.com'),
- D_('Dr. Tess Mauricio','Medical advisors','LAIR Medical Director. M Beauty Clinic, Beverly Hills.','',{partner:1,code:'TESS50',since:'Oct 2026'}),
- D_('Dr. Ashish Bhatia','Medical advisors','LAIR Medical Advisor. Dermatologist and educator.','',{partner:1,code:'ASHISH50',since:'Oct 2026'}),
- D_('Brandon Hahr','Agencies','Agency founder. Built the technology behind Galderma, Merz and Evolus programs.',''),
+ D_('The Audrey Aesthetic','Consultancies & agencies','AI strategy for medical aesthetics. Writing, speaking and helping practices adopt AI tools.','theaudreyaesthetic.com',{person:'Audrey Campbell, MPH',mono:'A',partner:1,code:'AUDREY15',serves:'Med spas, plastic surgery, wellness'}),
+ D_('Aesthetic Practice Partners','Consultancies & agencies','Practice management consulting for aesthetics.','',{person:'Kara McClanahan',mono:'AP'}),
+ D_('Excelerate','Consultancies & agencies','Executive coaching for aesthetics leaders.','',{person:'Kimberly Gerber'}),
+ D_('Medical Insight','Consultancies & agencies','Aesthetics market research. Publishes THE Aesthetic Guide.','',{person:'Michael Moretti',mono:'MI'}),
+ D_('Kingsmen Digital Ventures','Consultancies & agencies','Digital agency. Built tech for Galderma and Merz.','',{person:'Brandon Hahr',mono:'KD'}),
+ D_('Aesthetic Influencer','Consultancies & agencies','Influencer marketing for aesthetics brands.','',{person:'Jasmine Hill, MBA',mono:'AI'}),
+ D_('Dr. Doris Day','People','Day Dermatology & Aesthetics, New York',''),
+ D_('Dr. Sachin Shridharani','People','LUXURGERY, New York',''),
+ D_('Dr. Mariano Busso','People','Dr. Busso Cosmetic Dermatology, Miami',''),
+ D_('Dr. Deepak Dugar','People','Beverly Hills Rhinoplasty Center (Scarless Nose)',''),
+ D_('Dr. Ashish Bhatia','People','Oak Dermatology, Chicago area. LAIR Medical Advisor.','',{partner:1,code:'ASHISH50'}),
+ D_('Dr. Roberta Del Campo','People','Del Campo Dermatology & Laser Institute, Miami',''),
+ D_('Dr. Benji Dhillon','People','Define Clinic, London','',{partner:1}),
+ D_('Dr. Marie Hayag','People','Fifth Avenue Aesthetics, New York',''),
+ D_('Dr. Jeff Lisiecki','People','Plastic surgeon, New York',''),
+ D_('Dr. Walter Joseph','People','Plastic surgeon, Beverly Hills',''),
+ D_('Dr. Anton Georgiev, DO','People','Zoyya Anti-Aging & Aesthetics, Garden City, NY',''),
+ D_('Dr. Tess Mauricio','People','M Beauty Clinic, Beverly Hills. LAIR Medical Director.','',{partner:1,code:'TESS50'}),
+ D_('Dr. Osborne Williams','People','R.Ve Aesthetics, Huntington, NY',''),
+ D_('Naomi Barrett, NP-C','People','Injection Artistry, Newport Beach',''),
+ D_('Dr. Janell Ocampo, DNP','People','Belle Vie Wellness & Aesthetics, Cerritos, CA',''),
+ D_('Linda Rank, PA-C','People','soul&beautyMEDx, Mission Viejo, CA',''),
+ D_('Angela Hash, BSN, RN','People','Savage Serenity MedSpa, Fresno, CA',''),
+ D_('Taryn Conway','People','Marketing executive. VP at Revance. Launched DAXXIFY, RHA.',''),
+ D_('Aneesh Patel, PharmD','People','Commercial executive. Ex-Galderma, Allergan, Evolus.',''),
+ D_('Benjamin Hahr','People','Tech executive. Built tech at Evolus, HintMD, Revance.',''),
+ D_('Kellie Lao','People','Marketing executive. Marketed Jeuveau, Evolysse, RHA.',''),
+ D_('Eric Sanders','People','Marketing executive. 10 years at Allergan. VP at Revance.',''),
+ D_('Jennifer Redmond, MBA','People','Commercial executive. Led sales at Merz. Built Endo\'s team. Ex-Allergan.',''),
+ D_('Opie Opfer','People','Creative executive. Launched RHA, DAXXIFY. Co-led Revance X.',''),
+ D_('Bryan Bullock','People','Marketing executive. Launched DAXXIFY at Revance. Now at AVITA Medical.',''),
+ D_('Jeff Allen','People','Sales executive. VP Sales, Collagen P.I.N. Ex-Teoxane, Revance.',''),
+ D_('Jill Gregory','People','Sales executive. Now at Acorn Biolabs. Ex-HydraFacial. Launched Juvéderm.',''),
+ D_('Dustin Sjuts','People','CEO, Revelyx Bio. Former President of Revance. Ex-Galderma.',''),
+ D_('Kara McClanahan','People','CEO, Aesthetic Practice Partners. Advisor to MedShift. Ex-Genesis.',''),
+ D_('Kimberly Gerber','People','CEO, Excelerate. Coaches leaders at Allergan, Revance.',''),
+ D_('Jasmine Hill, MBA','People','CEO, Aesthetic Influencer. Ex-Cynosure, Pierre Fabre.',''),
+ D_('Ben Wolber','People','CEO, Illume. Partners with Allergan. Ex-Fidelity.',''),
+ D_('Brandon Hahr','People','CEO, Kingsmen Digital Ventures. Built tech for Galderma, Merz.',''),
+ D_('Michael Moretti','People','CEO, Medical Insight. Publishes THE Aesthetic Guide. Ex-Allergan.',''),
  ...['Squarespace|squarespace.com','Wix|wix.com','Webflow|webflow.com','WordPress|wordpress.com','Shopify|shopify.com','GoDaddy|godaddy.com','Duda|duda.co'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Website builders','Website builder. Add your LAIR badge and schema to any site.',s2)}),
  ...['Boulevard|joinblvd.com|Salons and med spas','Zenoti|zenoti.com|Spas and med spas','Mangomint|mangomint.com|Salons and spas','Vagaro|vagaro.com|Salons, spas, fitness','Mindbody|mindbodyonline.com|Fitness and wellness','Jane|jane.app|Clinics','NexHealth|nexhealth.com|Dental and medical','Weave|getweave.com|Dental, vet, medical','Dutchie|dutchie.com|Dispensaries'].map(x=>{const[n,s2,sv]=x.split('|');return D_(n,'Booking & practice software',`Booking and practice software for ${sv.toLowerCase()}.`,s2,{serves:sv})}),
  ...['Birdeye|birdeye.com','Podium|podium.com','RealSelf|realself.com','Healthgrades|healthgrades.com','Trustpilot|trustpilot.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Reviews & reputation','Reviews and reputation. Reviews AI reads when it recommends a business.',s2)}),
  ...['Google Business Profile|business.google.com','Bing Places|bingplaces.com','Apple Business Connect|businessconnect.apple.com','Yelp for Business|business.yelp.com','Yext|yext.com','BrightLocal|brightlocal.com','Whitespark|whitespark.ca','Moz Local|moz.com/local'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Listings & local SEO','Business listings and local SEO. Where AI checks your basic facts.',s2)}),
  ...['Ahrefs|ahrefs.com','Semrush|semrush.com','Clay|clay.com','Perplexity|perplexity.ai','ChatGPT|chatgpt.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'AI & search tools','Search, AI and data tools.',s2)}),
- ...['Qwoted|qwoted.com','Press Ranger|pressranger.com','Muck Rack|muckrack.com','Business Wire|businesswire.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'PR & media','Press and media. Coverage AI treats as a trusted source.',s2)}),
- D_('OrbitBack','Financing & loyalty','Cashback memberships for local businesses. LAIR pages link to OrbitBack.','orbitback.com',{mono:'O',partner:1,since:'2026'}),
- D_('Cherry','Financing & loyalty','Patient financing for aesthetics and dental.','withcherry.com'),
- D_('CareCredit','Financing & loyalty','Health and wellness financing.','carecredit.com'),
- D_('American Med Spa Association','Associations & media','AmSpa. Med spa education, legal resources and the Medical Spa Show.','americanmedspa.org',{mono:'AM'}),
- D_('Modern Aesthetics','Associations & media','Aesthetics trade publication.','modernaesthetics.com'),
- D_('MJBizDaily','Associations & media','Cannabis business news and MJBizCon.','mjbizdaily.com')];
+ D_('OrbitBack','Payments & loyalty','Cashback memberships for local businesses. LAIR pages link to OrbitBack.','orbitback.com',{mono:'O',partner:1}),
+ D_('Cherry','Payments & loyalty','Patient financing for aesthetics and dental.','withcherry.com'),
+ D_('CareCredit','Payments & loyalty','Health and wellness financing.','carecredit.com'),
+ D_('Stripe','Payments & loyalty','Online payments.','stripe.com'),
+ D_('Square','Payments & loyalty','Payments and point of sale.','squareup.com'),
+ ...['Qwoted|qwoted.com|Expert sourcing for journalists.','Press Ranger|pressranger.com|Press outreach.','Muck Rack|muckrack.com|Journalist database and PR.','Business Wire|businesswire.com|Press release distribution.','American Med Spa Association|americanmedspa.org|AmSpa. Med spa education and the Medical Spa Show.','Modern Aesthetics|modernaesthetics.com|Aesthetics trade publication.','MJBizDaily|mjbizdaily.com|Cannabis business news and MJBizCon.'].map(x=>{const[n,s2,o]=x.split('|');return D_(n,'Press, media & associations',o,s2)})];
 const utm=p=>p.site?`https://${p.site}${p.site.includes('?')?'&':'?'}utm_source=localairegistry&utm_medium=directory&utm_campaign=works_with&utm_content=${p.id}`:'';
 const PRECV=[
  {name:'Bloom Med Spa',ask:'Wants help choosing an AI tool for front-desk booking',from:'Caron Cooper (LAIR)',st:'New',d:'2026-10-30'},
@@ -1273,12 +1287,12 @@ function dirView(){const L=dirList();const n=c=>PARTNERS.filter(p=>p.cat===c).le
  <div class="pgrid" id="dgrid">${dirCards(L)}</div>
  <div class="card row sp" style="flex-wrap:nowrap"><span class="small"><b>Want to be listed?</b> Consultancies, tools and industry people can apply.</span><button class="btn sm pri" data-a="toast" data-id="Opens the listing application">Apply</button></div>
  <div class="xs muted">Only listings marked Partner have a referral agreement with LAIR. Everyone else is listed because LAIR works with them. Get each person's OK before their listing goes public.</div>`}
-function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><span class="plogo" style="background:${p.col}">${esc(p.mono)}</span>${p.partner?chip('Partner','good'):''}</span><b>${esc(p.co)}</b><span class="xs muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span>${p.lvl?`<span>${lvlBadge(p.lvl)}</span>`:''}</button>`).join('')||'<div class="empty">Nothing matches.</div>'}
-function partnerPage(p,mine){const u=utm(p);return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${esc(p.mono)}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.lvl?lvlBadge(p.lvl,1):''}${p.partner?chip('✓ LAIR partner'+(p.since?' since '+p.since:''),'good'):''}</div></div></div>
+function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><span class="plogo" style="background:${p.col}">${esc(p.mono)}</span>${p.partner?chip('Partner','good'):''}</span><b>${esc(p.co)}</b><span class="xs muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span></button>`).join('')||'<div class="empty">Nothing matches.</div>'}
+function partnerPage(p,mine){const u=utm(p);return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${esc(p.mono)}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.partner?chip('✓ LAIR partner','good'):''}</div></div></div>
  <div class="small">${esc(mine&&S.pbio?S.pbio:p.one)}</div>
  ${p.serves||p.code?`<dl class="facts">${p.serves?`<dt>Serves</dt><dd>${esc(p.serves)}</dd>`:''}${p.code?`<dt>Code</dt><dd>${p.code}</dd>`:''}</dl>`:''}
  ${u?`<a class="btn pri block" href="${esc(u)}" target="_blank" rel="noopener">Visit ${esc(p.site.split('/')[0])}</a><div class="xs muted" style="overflow-wrap:anywhere">Tracked link: ${esc(u)}</div>`:''}
- ${mine?'':p.spec?`<button class="btn block" data-a="role" data-id="spec">Open their workspace</button>`:''}</div>`}
+</div>`}
 const shPview=({id})=>`<div class="row sp"><span></span><button class="btn ghost" data-a="close">Close</button></div>${partnerPage(PARTNERS.find(p=>p.id===id))}`;
 const shDir=()=>`<div class="row sp"><span></span><button class="btn ghost" data-a="close">Close</button></div>${dirView()}`;
 V.partner_pdir=()=>dirView();
