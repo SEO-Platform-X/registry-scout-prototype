@@ -410,7 +410,7 @@ const TABS={
  mkt:[['mql','MQLs','funnel'],['opps','Opportunities','bulb'],['camp','Campaigns','chart'],['send','New send','send']],
  cs:[['queue','Queue','inbox'],['watch','Provider watch','eye'],['look','Look up','search'],['macros','Macros','book']],
  people:[['phome','Home','home'],['shows','Shows','map'],['plan','Plan','brief'],['invite','Invite','send'],['team','Team','users']],
- partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pprof','Profile','store'],['pdir','Directory','map'],['pgrow','Grow','trophy']]};
+ partner:[['phome','Wallet','wallet'],['prefs','Referrals','users'],['pprof','Profile','store'],['pdir','Works with','map'],['pgrow','Grow','trophy']]};
 
 /* ================= data (sample) ================= */
 const W8=[['technical','Technical fixes'],['llms','llms.txt'],['cannibal','Cannibalization'],['topical','Topical map'],['crawl','Crawl budget'],['schema','Schema'],['onsite','Articles & blogs'],['offpage','Backlinks']];
@@ -786,7 +786,7 @@ V.rsm_make=()=>{const d=S.dl;
  <div id="dealOut" class="stack">${dealOut()}</div>
  <button class="btn pri block" data-a="createDeal">${d.for==='Everyone'?'Create deal':'Create and text it to them'}</button>
  <div class="sec">${lbl('Live deals',`${db.offers.length}`)}<div class="list">${db.offers.map(o=>{const p=pool({...o,plan:o.planN||1500});const left=ago(TODAY,o.exp);return li({icon:'bolt',ik:left<=1?'warn':'',t:esc(o.name),m:`${esc(o.for)} · ${o.used}/${o.cap} used · reps keep ${pf(p.reps)} ${left<=1?chip(left<=0?'Ends today':'Ends tomorrow','warn'):chip(left+' days left')}`,r:`<b class="num">${pf(p.used)}</b><div class="xs muted">of 30%</div>`})}).join('')}</div></div>
- <div class="sec">${lbl('Partner companies',`<span class="row" style="gap:12px"><button data-a="dirOpen">Directory</button><button data-a="newCode">+ New code</button></span>`)}<div class="list">${db.pcodes.map(c=>li({icon:'link',t:`${c.code} · ${esc(c.who)}`,m:`${esc(c.role)} · ${c.refs} referred · ${c.paying} paying · partner ${c.pct}%${c.cust?` + ${c.cust}% off for customer`:''}`,r:`<b class="num">${$(c.mrr*c.pct/100)}</b><div class="xs muted">/mo to them</div>`})).join('')}</div></div>`;};
+ <div class="sec">${lbl('Partner companies',`<span class="row" style="gap:12px"><button data-a="dirOpen">Works with</button><button data-a="newCode">+ New code</button></span>`)}<div class="list">${db.pcodes.map(c=>li({icon:'link',t:`${c.code} · ${esc(c.who)}`,m:`${esc(c.role)} · ${c.refs} referred · ${c.paying} paying · partner ${c.pct}%${c.cust?` + ${c.cust}% off for customer`:''}`,r:`<b class="num">${$(c.mrr*c.pct/100)}</b><div class="xs muted">/mo to them</div>`})).join('')}</div></div>`;};
 function dealUpdate(){const o=document.getElementById('dealOut');if(o)o.innerHTML=dealOut()}
 function shNewCode(){const c=S.pc;const p=pool({kind:'firstpct',amt:0,months:1,plan:1500},c.pct,c.cust);
  return `<div><div class="h1">New partner code</div><div class="sub">Partners earn up to 15% of what their referrals pay, every month they stay. Anything you give the customer comes out of the same 30% pool.</div></div>
@@ -913,7 +913,7 @@ V.god_over=()=>{
   ['rep','AIORS reps','31 claims this month, Kody #4 nationally.','good'],
   ['spec','Specialists','R.Ve is 6 days late on approvals and missing GA4/GSC.','bad'],
   ['cfo','Finance','Margin 49% vs 55% target. Biggest leak: failed cards and deal discounts.','warn'],
-  ['partner','Partners','Directory has 68 listings, 5 active partners. The Audrey Aesthetic brought in $6,000/mo.','good'],
+  ['partner','Partners','Works with page has 68 listings, 5 active partners. The Audrey Aesthetic brought in $6,000/mo.','good'],
   ['people','People & Partnerships','MJBizCon Dec 1: 2 booth reps haven\'t signed up yet.','warn'],
   ['cto','Product','Pricing exits: 41 owners. Survey ships Monday.','warn'],
   ['mkt','Marketing','Provider applications up 3x after Clutch post.','good'],
@@ -1190,10 +1190,10 @@ V.people_phome=()=>{const ts=trips();const nx=ts.find(t=>t.out>=TODAY&&!t.m.loca
 
 /* ---- Invite ---- */
 V.people_invite=()=>`<div><div class="hello">Invite your people.</div><div class="sub">Pick the kind of friend. We write the text for you.</div></div>
- <button class="bigpick" data-a="kinvite" data-id="partner"><span class="ic good" style="width:48px;height:48px">${ic('users',26)}</span><span><b>Runs a company that serves business owners?</b><span>Consultants, agencies, product reps. Make their company a partner. They get a listing in our directory, and we trade clients both ways.</span></span></button>
+ <button class="bigpick" data-a="kinvite" data-id="partner"><span class="ic good" style="width:48px;height:48px">${ic('users',26)}</span><span><b>Runs a company that serves business owners?</b><span>Consultants, agencies, product reps. Make their company a partner. They get a listing on our Works with page, and we trade clients both ways.</span></span></button>
  <button class="bigpick" data-a="kinvite" data-id="rep"><span class="ic" style="width:48px;height:48px">${ic('bolt',26)}</span><span><b>Wants to earn on the side?</b><span>Make them a sales rep. They earn up to 15% on every business they bring in, and can earn trips.</span></span></button>
  <div class="sec">${lbl('People you invited',`${db.kinv.length}`)}<div class="list">${db.kinv.map(k=>li({icon:k.type==='partner'?'users':'bolt',ik:k.st==='Signed up'?'good':'warn',t:esc(k.n),m:`${k.type==='partner'?'Partner':'Sales rep'} · ${fd(k.d)}${k.note?' · '+esc(k.note):''}`,r:k.st==='Signed up'?chip('Signed up','good'):`<button class="btn sm" data-a="remind" data-id="${esc(k.n)}">Remind</button>`,chev:false})).join('')}</div></div>`;
-function kinviteSheet({id}){const p=id==='partner';const txt0=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. Want to list your company in our partner directory? We send each other clients, and you earn 10% of what yours pay us. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! Want to make extra money on your own time? Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
+function kinviteSheet({id}){const p=id==='partner';const txt0=p?`Hey! I work with Local AI Registry. We help local businesses show up right in ChatGPT and Google. Want your company listed on our Works with page? We send each other clients, and you earn 10% of what yours pay us. Sign up here: localairegistry.com/join/partner?from=KERRIE5`:`Hey! Want to make extra money on your own time? Local AI Registry pays you to help local businesses claim their free page, up to 15% on every business, plus trips. Sign up here: localairegistry.com/join/rep?from=KERRIE5`;
  return `<div class="row sp"><div class="h1">${p?'Invite a partner':'Invite a sales rep'}</div><button class="btn ghost" data-a="close">Cancel</button></div>
  <label class="f" for="ki-n">Their name<input id="ki-n" placeholder="First and last name"></label>
  <label class="f" for="ki-p">Their phone<input id="ki-p" type="tel" placeholder="(619) 555-0100"></label>
@@ -1260,19 +1260,19 @@ const PARTNERS=[
  D_('American Med Spa Association','Associations & media','AmSpa. Med spa education, legal resources and the Medical Spa Show.','americanmedspa.org',{mono:'AM'}),
  D_('Modern Aesthetics','Associations & media','Aesthetics trade publication.','modernaesthetics.com'),
  D_('MJBizDaily','Associations & media','Cannabis business news and MJBizCon.','mjbizdaily.com')];
-const utm=p=>p.site?`https://${p.site}${p.site.includes('?')?'&':'?'}utm_source=localairegistry&utm_medium=directory&utm_campaign=partners&utm_content=${p.id}`:'';
+const utm=p=>p.site?`https://${p.site}${p.site.includes('?')?'&':'?'}utm_source=localairegistry&utm_medium=directory&utm_campaign=works_with&utm_content=${p.id}`:'';
 const PRECV=[
  {name:'Bloom Med Spa',ask:'Wants help choosing an AI tool for front-desk booking',from:'Caron Cooper (LAIR)',st:'New',d:'2026-10-30'},
  {name:'Coastline Aesthetics',ask:'Wants staff training on using ChatGPT safely',from:'Bridgette DeBrino (LAIR)',st:'Meeting booked',d:'2026-10-24'},
  {name:'Luna Skin Bar',ask:'Asked for an AI strategy workshop for 3 locations',from:'Kody Muffoletto (LAIR)',st:'Won',d:'2026-10-10'}];
 function dirList(){const cat=S.dcat||'all',q=(S.dq||'').toLowerCase();return PARTNERS.filter(p=>(cat==='all'||p.cat===cat)&&(!q||(p.co+p.one+p.cat+p.person+p.serves).toLowerCase().includes(q)))}
 function dirView(){const L=dirList();const n=c=>PARTNERS.filter(p=>p.cat===c).length;
- return `<div><div class="h1">Partner directory</div><div class="sub">${PARTNERS.length} companies, tools and people across AI visibility and local business. Public at localairegistry.com/partners.</div></div>
+ return `<div><div class="h1">Works with LAIR</div><div class="sub">${PARTNERS.length} tools, companies and people we work with. Your LAIR record connects to them, and they help owners get found in AI. Public at localairegistry.com/works-with.</div></div>
  <input id="dq" type="search" placeholder="Search by name, category or what they do" value="${esc(S.dq||'')}" data-in="dq" aria-label="Search the directory">
  <div class="seg">${[['all',`All ${PARTNERS.length}`],...PCAT.map(x=>[x,`${x} ${n(x)}`])].map(([k,l])=>`<button data-a="dcat" data-id="${k}" aria-pressed="${(S.dcat||'all')===k}">${l}</button>`).join('')}</div>
  <div class="pgrid" id="dgrid">${dirCards(L)}</div>
  <div class="card row sp" style="flex-wrap:nowrap"><span class="small"><b>Want to be listed?</b> Consultancies, tools and industry people can apply.</span><button class="btn sm pri" data-a="toast" data-id="Opens the listing application">Apply</button></div>
- <div class="xs muted">Prototype placeholders. Only listings marked Partner have an agreement with LAIR. Get each person's OK before their listing goes public.</div>`}
+ <div class="xs muted">Only listings marked Partner have a referral agreement with LAIR. Everyone else is listed because LAIR works with them. Get each person's OK before their listing goes public.</div>`}
 function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><span class="plogo" style="background:${p.col}">${esc(p.mono)}</span>${p.partner?chip('Partner','good'):''}</span><b>${esc(p.co)}</b><span class="xs muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span>${p.lvl?`<span>${lvlBadge(p.lvl)}</span>`:''}</button>`).join('')||'<div class="empty">Nothing matches.</div>'}
 function partnerPage(p,mine){const u=utm(p);return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${esc(p.mono)}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.lvl?lvlBadge(p.lvl,1):''}${p.partner?chip('✓ LAIR partner'+(p.since?' since '+p.since:''),'good'):''}</div></div></div>
  <div class="small">${esc(mine&&S.pbio?S.pbio:p.one)}</div>
@@ -1283,7 +1283,7 @@ const shPview=({id})=>`<div class="row sp"><span></span><button class="btn ghost
 const shDir=()=>`<div class="row sp"><span></span><button class="btn ghost" data-a="close">Close</button></div>${dirView()}`;
 V.partner_pdir=()=>dirView();
 V.partner_pprof=()=>{const p=PARTNERS[0];
- return `<div><div class="h1">Your company profile</div><div class="sub">This is your listing in our partner directory. Owners we send your way see it first.</div></div>
+ return `<div><div class="h1">Your company profile</div><div class="sub">This is your listing on our Works with page. Owners we send your way see it first.</div></div>
  ${partnerPage(p,1)}
  <label class="f" for="pp-bio">What you do, in one or two lines<textarea id="pp-bio" data-ch="pbio" style="min-height:80px">${esc(S.pbio||p.one)}</textarea></label>
  <label class="f" for="pp-want">Clients you want from us<input id="pp-want" value="Practices adopting AI tools, staff training, strategy workshops" data-ch="pwant"></label>
