@@ -914,7 +914,7 @@ V.god_over=()=>{
   ['rep','AIORS reps','31 claims this month, Kody #4 nationally.','good'],
   ['spec','Specialists','R.Ve is 6 days late on approvals and missing GA4/GSC.','bad'],
   ['cfo','Finance','Margin 49% vs 55% target. Biggest leak: failed cards and deal discounts.','warn'],
-  ['partner','Partners','8 partner companies. The Audrey Aesthetic sent 6 businesses, $6,000/mo.','good'],
+  ['partner','Partners','Directory has 69 listings, 6 active partners. The Audrey Aesthetic brought in $6,000/mo.','good'],
   ['people','People & Partnerships','MJBizCon Dec 1: 2 booth reps haven\'t signed up yet.','warn'],
   ['cto','Product','Pricing exits: 41 owners. Survey ships Monday.','warn'],
   ['mkt','Marketing','Provider applications up 3x after Clutch post.','good'],
@@ -1221,32 +1221,66 @@ function kitView(){const p=me();
  <div class="row" style="flex-wrap:nowrap"><input id="publink" readonly value="${p.url}"><button class="btn sm pri" data-a="copyMsg" data-id="${p.url}">Copy</button></div>
  <label class="f" for="pub-bio">Your short bio<textarea id="pub-bio" data-ch="bio" style="min-height:80px">${esc(S.bio?.[S.role]??p.bio)}</textarea></label>`}
 /* ================= PARTNER DIRECTORY (outside companies, like a vendor marketplace) ================= */
-const PCAT=['Consulting & education','Specialists','Medical advisors','Software','Agencies','Product reps'];
+const PCAT=['Consultancies','Industry leaders','KOLs & practitioners','Medical advisors','AEO specialists','Agencies','Website builders','Booking & practice software','Reviews & reputation','Listings & local SEO','AI & search tools','PR & media','Financing & loyalty','Associations & media'];
+const CCOL={'Consultancies':'#5a4e44','Industry leaders':'#0B1A2E','KOLs & practitioners':'#7a3e5a','Medical advisors':'#0B1A2E','AEO specialists':'#1F4FE0','Agencies':'#3a4a62','Website builders':'#2b2b2b','Booking & practice software':'#2e6b5e','Reviews & reputation':'#b5651d','Listings & local SEO':'#1F4FE0','AI & search tools':'#4b3fb5','PR & media':'#8a3324','Financing & loyalty':'#FF5A3C','Associations & media':'#3a4a62'};
+const D_=(co,cat,one,site,o={})=>({id:co.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),co,cat,one,site,person:o.person||co,mono:o.mono||co.replace(/^(Dr\.?|The) /,'').split(/[\s,.]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,2).toUpperCase(),col:CCOL[cat],partner:!!o.partner,code:o.code||'',serves:o.serves||'',lvl:o.lvl||0,since:o.since||'',spec:o.spec||0});
 const PARTNERS=[
- {id:'audrey',co:'The Audrey Aesthetic',mono:'A',person:'Audrey Campbell, MPH',cat:'Consulting & education',one:'AI strategy for medical aesthetics. Writing, speaking and helping practices choose and adopt AI tools.',serves:'Med spas, plastic surgery, wellness',site:'theaudreyaesthetic.com',code:'AUDREY15',give:6,get:3,since:'Oct 2026',col:'#5a4e44',real:1},
- {id:'caron',co:'Caron Cooper',mono:'CC',person:'Caron Cooper',cat:'Specialists',lvl:4,one:'AEO Specialist. SEO and AI visibility for medical practices. 96% client success, 21 clients improved.',serves:'Eye care, med spas, surgeons',site:'',code:'CARON5',give:2,get:8,since:'2026',col:'#1F4FE0',real:1,spec:1},
- {id:'tess',co:'Dr. Tess Mauricio',mono:'TM',person:'Dr. Tess Mauricio',cat:'Medical advisors',one:'LAIR Medical Director. Helps define where AI should look to find the best practices.',serves:'Dermatology, med spas',site:'',code:'TESS50',give:4,get:0,since:'Oct 2026',col:'#0B1A2E',real:1},
- {id:'ashish',co:'Dr. Ashish Bhatia',mono:'AB',person:'Dr. Ashish Bhatia',cat:'Medical advisors',one:'LAIR Medical Advisor. Dermatologist and educator.',serves:'Dermatology',site:'',code:'ASHISH50',give:2,get:0,since:'Oct 2026',col:'#0B1A2E',real:1},
- {id:'orbit',co:'OrbitBack',mono:'O',person:'OrbitBack team',cat:'Software',one:'Cashback memberships for local businesses. LAIR pages link claimed businesses to their OrbitBack page.',serves:'Any local business',site:'orbitback.com',code:'',give:0,get:5,since:'2026',col:'#FF5A3C',real:1},
- {id:'smile',co:'Smile Brokers Co.',mono:'SB',person:'Mark Ellison',cat:'Consulting & education',one:'Dental practice brokerage. Refers practices before and after a sale.',serves:'Dentists',site:'',code:'SMILEPRO10',give:3,get:1,since:'Sep 2026',col:'#3a4a62'},
- {id:'laser',co:'Northline Laser Rentals',mono:'NL',person:'Nina Park',cat:'Product reps',one:'Rents lasers to med spas. Shares LAIR with every new account.',serves:'Med spas',site:'',code:'LASERREP8',give:9,get:2,since:'Aug 2026',col:'#3a4a62'},
- {id:'budsoft',co:'Greenline POS',mono:'GP',person:'Partnerships team',cat:'Software',one:'Point of sale for dispensaries. Two-way listing swap.',serves:'Dispensaries',site:'',code:'GREENLINE10',give:0,get:0,since:'Pending',col:'#3a4a62',pending:1}];
+ D_('The Audrey Aesthetic','Consultancies','AI strategy for medical aesthetics. Writing, speaking and helping practices adopt AI tools.','theaudreyaesthetic.com',{person:'Audrey Campbell, MPH',mono:'A',partner:1,code:'AUDREY15',serves:'Med spas, plastic surgery, wellness',since:'Oct 2026'}),
+ D_('Aesthetic Practice Partners','Consultancies','Practice management consulting. Led by Kara McClanahan, 29 years in aesthetics.','',{person:'Kara McClanahan',mono:'AP'}),
+ D_('Excelerate','Consultancies','Executive coaching for aesthetics leaders. Led by Kimberly Gerber.','',{person:'Kimberly Gerber'}),
+ D_('Medical Insight','Consultancies','Aesthetics market research and THE Aesthetic Guide. Founded by Michael Moretti, ex-Allergan.','',{person:'Michael Moretti',mono:'MI'}),
+ D_('Taryn Conway','Industry leaders','Marketing executive. Ex-Allergan and Revance.',''),
+ D_('Kellie Lao','Industry leaders','Marketing leader. Ex-Allergan, Revance and Evolus.',''),
+ D_('Aneesh Patel, PharmD','Industry leaders','Industry leader. Ex-Evolus and Galderma.',''),
+ D_('Benjamin Hahr','Industry leaders','Tech executive. Ex-Evolus, Revance, HintMD and Growth99.',''),
+ D_('Dustin Sjuts','Industry leaders','CEO, Revelyx Bio. Former President of Revance.',''),
+ D_('Eric Sanders','Industry leaders','Former VP of Marketing and Business Development, Revance.',''),
+ D_('Ben Wolber','Industry leaders','Founder and CEO, Illume. Partners with Merz and Allergan.','joinillume.com'),
+ D_('Dr Benji Dhillon','KOLs & practitioners','Cosmetic surgeon, Define Clinic.','defineclinic.com',{partner:1,since:'2026'}),
+ D_('Dr. Doris Day','KOLs & practitioners','Dermatologist, New York.',''),
+ D_('Dr. Mariano Busso','KOLs & practitioners','Dermatologist and injector trainer.',''),
+ D_('Dr. Roberta Del Campo','KOLs & practitioners','Aesthetic physician and injector trainer.',''),
+ D_('Dr. Sachin Shridharani','KOLs & practitioners','Plastic surgeon, New York.',''),
+ D_('Dr. Deepak Dugar','KOLs & practitioners','Facial plastic surgeon, Beverly Hills.',''),
+ D_('Dr. Janet Allenby','KOLs & practitioners','Dermatologist, Delray Beach.','allenbydermatology.com'),
+ D_('Dr. Walter Joseph','KOLs & practitioners','Aesthetic physician.',''),
+ D_('Naomi Barrett, NP-C','KOLs & practitioners','Nurse practitioner and injector.',''),
+ D_('Linda Rank, PA-C','KOLs & practitioners','soul&beautyMEDx, Mission Viejo.','soulandbeautymedx.com'),
+ D_('Dr. Tess Mauricio','Medical advisors','LAIR Medical Director. M Beauty Clinic, Beverly Hills.','',{partner:1,code:'TESS50',since:'Oct 2026'}),
+ D_('Dr. Ashish Bhatia','Medical advisors','LAIR Medical Advisor. Dermatologist and educator.','',{partner:1,code:'ASHISH50',since:'Oct 2026'}),
+ D_('Caron Cooper','AEO specialists','AEO Specialist. SEO and AI visibility for medical practices. 96% client success, 21 clients improved.','',{mono:'CC',partner:1,lvl:4,spec:1,serves:'Eye care, med spas, surgeons',since:'2026'}),
+ D_('Brandon Hahr','Agencies','Agency founder. Built the technology behind Galderma, Merz and Evolus programs.',''),
+ ...['Squarespace|squarespace.com','Wix|wix.com','Webflow|webflow.com','WordPress|wordpress.com','Shopify|shopify.com','GoDaddy|godaddy.com','Duda|duda.co'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Website builders','Website builder. Add your LAIR badge and schema to any site.',s2)}),
+ ...['Boulevard|joinblvd.com|Salons and med spas','Zenoti|zenoti.com|Spas and med spas','Mangomint|mangomint.com|Salons and spas','Vagaro|vagaro.com|Salons, spas, fitness','Mindbody|mindbodyonline.com|Fitness and wellness','Jane|jane.app|Clinics','NexHealth|nexhealth.com|Dental and medical','Weave|getweave.com|Dental, vet, medical','Dutchie|dutchie.com|Dispensaries'].map(x=>{const[n,s2,sv]=x.split('|');return D_(n,'Booking & practice software',`Booking and practice software for ${sv.toLowerCase()}.`,s2,{serves:sv})}),
+ ...['Birdeye|birdeye.com','Podium|podium.com','RealSelf|realself.com','Healthgrades|healthgrades.com','Trustpilot|trustpilot.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Reviews & reputation','Reviews and reputation. Reviews AI reads when it recommends a business.',s2)}),
+ ...['Google Business Profile|business.google.com','Bing Places|bingplaces.com','Apple Business Connect|businessconnect.apple.com','Yelp for Business|business.yelp.com','Yext|yext.com','BrightLocal|brightlocal.com','Whitespark|whitespark.ca','Moz Local|moz.com/local'].map(x=>{const[n,s2]=x.split('|');return D_(n,'Listings & local SEO','Business listings and local SEO. Where AI checks your basic facts.',s2)}),
+ ...['Ahrefs|ahrefs.com','Semrush|semrush.com','Clay|clay.com','Perplexity|perplexity.ai','ChatGPT|chatgpt.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'AI & search tools','Search, AI and data tools.',s2)}),
+ ...['Qwoted|qwoted.com','Press Ranger|pressranger.com','Muck Rack|muckrack.com','Business Wire|businesswire.com'].map(x=>{const[n,s2]=x.split('|');return D_(n,'PR & media','Press and media. Coverage AI treats as a trusted source.',s2)}),
+ D_('OrbitBack','Financing & loyalty','Cashback memberships for local businesses. LAIR pages link to OrbitBack.','orbitback.com',{mono:'O',partner:1,since:'2026'}),
+ D_('Cherry','Financing & loyalty','Patient financing for aesthetics and dental.','withcherry.com'),
+ D_('CareCredit','Financing & loyalty','Health and wellness financing.','carecredit.com'),
+ D_('American Med Spa Association','Associations & media','AmSpa. Med spa education, legal resources and the Medical Spa Show.','americanmedspa.org',{mono:'AM'}),
+ D_('Modern Aesthetics','Associations & media','Aesthetics trade publication.','modernaesthetics.com'),
+ D_('MJBizDaily','Associations & media','Cannabis business news and MJBizCon.','mjbizdaily.com')];
+const utm=p=>p.site?`https://${p.site}${p.site.includes('?')?'&':'?'}utm_source=localairegistry&utm_medium=directory&utm_campaign=partners&utm_content=${p.id}`:'';
 const PRECV=[
  {name:'Bloom Med Spa',ask:'Wants help choosing an AI tool for front-desk booking',from:'Caron Cooper (LAIR)',st:'New',d:'2026-10-30'},
  {name:'Coastline Aesthetics',ask:'Wants staff training on using ChatGPT safely',from:'Bridgette DeBrino (LAIR)',st:'Meeting booked',d:'2026-10-24'},
  {name:'Luna Skin Bar',ask:'Asked for an AI strategy workshop for 3 locations',from:'Kody Muffoletto (LAIR)',st:'Won',d:'2026-10-10'}];
-function dirView(){const cat=S.dcat||'all',q=(S.dq||'').toLowerCase();const L=PARTNERS.filter(p=>(cat==='all'||p.cat===cat)&&(!q||(p.co+p.one+p.serves+p.person).toLowerCase().includes(q)));
- return `<div><div class="h1">Partner directory</div><div class="sub">Companies we trust and trade referrals with. Owners see this at localairegistry.com/partners.</div></div>
- <input id="dq" type="search" placeholder="Search partners or what they do" value="${esc(S.dq||'')}" data-in="dq" aria-label="Search partners">
- <div class="seg">${[['all','All'],...PCAT.map(x=>[x,x])].map(([k,l])=>`<button data-a="dcat" data-id="${k}" aria-pressed="${cat===k}">${l}</button>`).join('')}</div>
+function dirList(){const cat=S.dcat||'all',q=(S.dq||'').toLowerCase();return PARTNERS.filter(p=>(cat==='all'||p.cat===cat)&&(!q||(p.co+p.one+p.cat+p.person+p.serves).toLowerCase().includes(q)))}
+function dirView(){const L=dirList();const n=c=>PARTNERS.filter(p=>p.cat===c).length;
+ return `<div><div class="h1">Partner directory</div><div class="sub">${PARTNERS.length} companies, tools and people across AI visibility and local business. Public at localairegistry.com/partners.</div></div>
+ <input id="dq" type="search" placeholder="Search by name, category or what they do" value="${esc(S.dq||'')}" data-in="dq" aria-label="Search the directory">
+ <div class="seg">${[['all',`All ${PARTNERS.length}`],...PCAT.map(x=>[x,`${x} ${n(x)}`])].map(([k,l])=>`<button data-a="dcat" data-id="${k}" aria-pressed="${(S.dcat||'all')===k}">${l}</button>`).join('')}</div>
  <div class="pgrid" id="dgrid">${dirCards(L)}</div>
- <div class="xs muted">Smile Brokers, Northline Laser and Greenline POS are sample listings.</div>`}
-function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="plogo" style="background:${p.col}">${p.mono}</span><b>${esc(p.co)}</b><span class="small muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span><span class="row">${p.lvl?lvlBadge(p.lvl):''}${p.pending?chip('Pending','warn'):p.give?chip(`Sent us ${p.give}`,'blue'):''}${p.get?chip(`We sent ${p.get}`,'good'):''}</span></button>`).join('')||'<div class="empty">No partners match.</div>'}
-function partnerPage(p,mine){return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${p.mono}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.lvl?lvlBadge(p.lvl,1):''}${p.pending?chip('Pending review','warn'):chip('✓ LAIR partner since '+p.since,'good')}</div></div></div>
+ <div class="card row sp" style="flex-wrap:nowrap"><span class="small"><b>Want to be listed?</b> Consultancies, tools and industry people can apply.</span><button class="btn sm pri" data-a="toast" data-id="Opens the listing application">Apply</button></div>
+ <div class="xs muted">Prototype placeholders. Only listings marked Partner have an agreement with LAIR. Get each person's OK before their listing goes public.</div>`}
+function dirCards(L){return L.map(p=>`<button class="pcard" data-a="pview" data-id="${p.id}"><span class="row sp" style="flex-wrap:nowrap;align-items:flex-start"><span class="plogo" style="background:${p.col}">${esc(p.mono)}</span>${p.partner?chip('Partner','good'):''}</span><b>${esc(p.co)}</b><span class="xs muted">${esc(p.cat)}</span><span class="small">${esc(p.one)}</span>${p.lvl?`<span>${lvlBadge(p.lvl)}</span>`:''}</button>`).join('')||'<div class="empty">Nothing matches.</div>'}
+function partnerPage(p,mine){const u=utm(p);return `<div class="pubpg"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="plogo lg" style="background:${p.col}">${esc(p.mono)}</span><div style="min-width:0"><div style="font:800 20px var(--display)">${esc(p.co)}</div><div class="small muted">${esc(p.cat)}${p.co!==p.person?' · '+esc(p.person):''}</div><div class="row" style="margin-top:5px">${p.lvl?lvlBadge(p.lvl,1):''}${p.partner?chip('✓ LAIR partner'+(p.since?' since '+p.since:''),'good'):''}</div></div></div>
  <div class="small">${esc(mine&&S.pbio?S.pbio:p.one)}</div>
- <dl class="facts"><dt>Serves</dt><dd>${esc(p.serves)}</dd>${p.site?`<dt>Website</dt><dd>${esc(p.site)}</dd>`:''}${p.code?`<dt>Referral code</dt><dd>${p.code}</dd>`:''}</dl>
- <div class="cgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><span><b>${p.give}</b>businesses sent to LAIR</span><span><b>${p.get}</b>sent to them by LAIR</span></div>
- ${mine?'':`<div class="row"><button class="btn pri" style="flex:1" data-a="toast" data-id="Intro email drafted to ${esc(p.person)}">Send them a client</button>${p.spec?`<button class="btn" style="flex:1" data-a="role" data-id="spec">See their workspace</button>`:''}</div>`}</div>`}
+ ${p.serves||p.code?`<dl class="facts">${p.serves?`<dt>Serves</dt><dd>${esc(p.serves)}</dd>`:''}${p.code?`<dt>Code</dt><dd>${p.code}</dd>`:''}</dl>`:''}
+ ${u?`<a class="btn pri block" href="${esc(u)}" target="_blank" rel="noopener">Visit ${esc(p.site.split('/')[0])}</a><div class="xs muted" style="overflow-wrap:anywhere">Tracked link: ${esc(u)}</div>`:''}
+ ${mine?'':p.spec?`<button class="btn block" data-a="role" data-id="spec">Open their workspace</button>`:''}</div>`}
 const shPview=({id})=>`<div class="row sp"><span></span><button class="btn ghost" data-a="close">Close</button></div>${partnerPage(PARTNERS.find(p=>p.id===id))}`;
 const shDir=()=>`<div class="row sp"><span></span><button class="btn ghost" data-a="close">Close</button></div>${dirView()}`;
 V.partner_pdir=()=>dirView();
@@ -1634,7 +1668,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset.ch==='pbio'){S.pbio=el.value;render();toast('Profile saved');return}if(el.dataset.ch==='pwant'){toast('Saved. We\'ll send clients like these your way.');return}if(el.dataset.ch==='bio'){S.bio=S.bio||{};S.bio[S.role]=el.value;toast('Bio saved');return}if(el.dataset.ch==='planconf'){S.planConf=el.value;render()}if(el.dataset.ch==='crewadd'&&el.value){crew(CONFS.find(c=>c.n===S.planConf)).push({n:el.value,job:'Booth',pay:'share'});render()}if(el.dataset.ch==='aurole'){document.getElementById('auPrev').innerHTML=auPreview(el.value)}if(el.dataset.ch==='urole'){const u=db.users.find(x=>x.e===el.dataset.id);u.r=el.value;document.getElementById('auPrev').innerHTML=auPreview(el.value);render();toast(`${u.n} is now ${URO[u.r]}`)}if(el.dataset.ch==='dlfor'){S.dl.for=el.value;render()}if(el.dataset.ch==='dlpc'){S.dl.partner=el.value;dealUpdate()}});
 document.addEventListener('input',e=>{const el=e.target;if(el.id==='q'){document.getElementById('qres').innerHTML=searchRes(el.value);return}
- if(el.dataset.in==='dq'){S.dq=el.value;const q=el.value.toLowerCase(),cat=S.dcat||'all';document.getElementById('dgrid').innerHTML=dirCards(PARTNERS.filter(p=>(cat==='all'||p.cat===cat)&&(!q||(p.co+p.one+p.serves+p.person).toLowerCase().includes(q))));return}
+ if(el.dataset.in==='dq'){S.dq=el.value;const q=el.value.toLowerCase(),cat=S.dcat||'all';document.getElementById('dgrid').innerHTML=dirCards(dirList());return}
  if(el.dataset.in==='calc'){const k=el.dataset.id;S.calc[k]=+el.value;document.getElementById('clv-'+k).textContent=S.calc[k]+(k==='names'?'':'%');document.getElementById('calcOut').innerHTML=calcOut(CONFS.find(c=>c.n===S.planConf));return}
  if(el.dataset.in==='dl'){const k=el.dataset.id;S.dl[k]=+el.value;const lb=document.getElementById('dlv-'+k);if(lb)lb.textContent=k==='amt'?(S.dl.kind==='bonus'?$(S.dl[k]):S.dl[k]+'%'):S.dl[k];dealUpdate();return}
  if(el.dataset.in==='pc'){const k=el.dataset.id;S.pc[k]=+el.value;document.getElementById('pcv-'+k).textContent=S.pc[k]+'%';document.getElementById('pcOut').innerHTML=poolBar(pool({kind:'firstpct',amt:0,months:1,plan:1500},S.pc.pct,S.pc.cust));return}
